@@ -1,0 +1,233 @@
+/* GTK CSS File */
+
+window {
+    background-color: #000000;
+}
+
+#lbl_appname {
+    color: #ffffff;
+    font: 14px "Sans";
+    font-weight: bold;
+    padding: 5px;
+}
+
+#lbl_status_time,
+#lbl_status_bits_samplerate,
+#lbl_status_npoints_nwaves {
+    color: #ffffff;
+    font: 12px "Sans";
+    padding: 5px;
+}
+
+/* Run-State label styles */
+#lbl_status_run {
+}
+
+.runstate_common {
+    margin: 3px;    
+    padding: 1px;
+    font: 14px "Sans";
+    font-weight: bold;
+    border: 1px solid;
+    color: #ffffff;
+    background-color: #000000;
+    border-radius: 4px;
+}
+
+.runstate_wait_bri {
+    border-color: #db6e00;
+    background-image: linear-gradient(0deg, #ffb808, #db6e00);
+    color: #000000;
+}
+
+.runstate_wait_dim {
+    border-color: #4d4d4d;
+    background-image: linear-gradient(0deg, #a6a6a6, #4d4d4d);
+    color: #000000;
+}
+
+.runstate_auto_bri {
+    border-color: #007362;
+    background-image: linear-gradient(0deg, #00debd, #007362);
+    color: #000000;
+}
+
+.runstate_auto_dim {
+    border-color: #4d4d4d;
+    background-image: linear-gradient(0deg, #a6a6a6, #4d4d4d);
+    color: #000000;
+}
+
+.runstate_stop {
+    border-color: #550000;
+    background-image: linear-gradient(0deg, #cc0000, #550000);
+    color: #ffffff;
+}
+
+.runstate_trigd {
+    border-color: #236e00;
+    background-image: linear-gradient(0deg, #39b500, #236e00);
+    color: #000000;
+}
+
+/* Timebase, Delay, Trigger boxes */
+#box_status_timebase,
+#box_status_delay,
+#box_status_trigger {
+    margin: 3px;
+}
+
+#box_status_timebase label,
+#box_status_delay label,
+#box_status_trigger label {
+    font: 14px "Sans";
+    font-weight: bold;
+}
+
+#lbl_status_timebase_char,
+#lbl_status_timebase {
+    color: #00debd;
+}
+
+#lbl_status_delay_char,
+#lbl_status_delay {
+    color: #ffffff;
+}
+
+#lbl_status_trigger_char {
+    /* The colour of this is normally controlled by an external style which is
+       driven by the colour of the primary trigger channel. */
+    color: #ffffff;
+}
+
+#lbl_status_trigger_channel {
+    /* The bgcolour of this is normally controlled by an external style which is
+       driven by the colour of the channel. */
+    background-color: #ffffff;
+    color: #000000;
+    border-radius: 4px;
+    padding: 3px;
+}
+
+#lbl_status_trigger_info {
+    /* The colour of this is normally controlled by an external style which is
+       driven by the colour of the channel. */
+    color: #ffffff;
+}
+
+/* Status boxes at top of oscilloscope screen (common components). These can be
+   constructed from labels or boxes. */
+.status_box_left_horiz_common {
+    margin: 0px;
+    padding: 5px;
+    border: 1px solid #555555;
+    border-color: #4d4d4d;
+    border-radius: 4px;
+    border-right-style: none;
+    border-bottom-right-radius: 0;
+    border-top-right-radius: 0;
+    background-image: linear-gradient(0deg, #202020, #404040);
+}
+
+.status_box_middle_horiz_common {
+    margin: 0px;
+    padding: 5px;
+    border: 1px solid #555555;
+    border-color: #4d4d4d;
+    border-left-style: none;
+    border-right-style: none;
+    background-color: #151515;
+}
+
+.status_box_right_horiz_common {
+    margin: 0px;
+    padding: 5px;
+    border: 1px solid #555555;
+    border-color: #4d4d4d;
+    border-radius: 4px;
+    border-left-style: none;
+    border-bottom-left-radius: 0;
+    border-top-left-radius: 0;
+    background-color: #151515;
+}
+
+/* Settings/Control Notebook */
+#nbk_main_settings {
+    margin-top: 5px;
+    margin-bottom: 5px;
+    background-color: #000000;
+    border: none;
+}
+
+#nbk_main_settings > header {
+    background-color: #000000;
+    border-width: 0px;
+}
+
+#nbk_main_settings > header tab {
+    background-color: #000000;
+    color: #ffffff;
+    border: none;
+    padding: 4px;
+    margin-right: 5px;
+    margin-left: 0px;
+    border: 1px solid #555555;
+    border-left: none;
+    border-bottom-right-radius: 4px;
+    border-top-right-radius: 4px;
+    min-width: 0px;
+}
+
+#nbk_main_settings > header tab:hover {
+    background-image: linear-gradient(90deg, #404040, #808080);
+    box-shadow: none;
+}
+
+#nbk_main_settings > header tab:checked {
+    background-image: linear-gradient(90deg, #202020, #db6e00);
+    box-shadow: none;
+}
+
+#nbk_main_settings > header tab > label {
+    padding: 2px;
+    font: 14px "Sans";
+}
+
+#nbk_main_settings > stack, #nbk_main_settings > stack:backdrop {
+    background-color: #202020;
+    border: 1px solid #555555;
+    box-shadow: none;
+    padding: 5px;
+}
+
+#nbk_main_settings > stack label {
+    color: #ffffff;
+}
+
+#nbk_main_settings > stack frame border {
+    padding: 2px;
+}
+
+#nbk_main_settings > stack frame border {
+    border: 1px solid #555555;
+}
+
+#nbk_main_settings > stack frame > label {
+    color: #ffffff;
+    padding: 5px;
+    font: 12px "Sans";
+    font-style: normal;
+}
+
+#nbk_main_settings > stack frame > grid {
+    box-shadow: none;
+    margin: 2px;
+    padding: 2px;
+}
+
+button {
+    background-image: linear-gradient(0deg, #202020, #404040);
+    border: 1px solid #555555;
+    box-shadow: none;
+}
+
