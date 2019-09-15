@@ -2,7 +2,7 @@
 <!-- Generated with glade 3.22.1 -->
 <interface>
   <requires lib="gtk+" version="3.0"/>
-  <object class="GtkWindow" id="wnd_main">
+  <object class="GtkWindow" id="window1">
     <property name="width_request">1280</property>
     <property name="height_request">720</property>
     <property name="can_focus">False</property>
@@ -21,7 +21,7 @@
             <property name="visible">True</property>
             <property name="can_focus">False</property>
             <child>
-              <object class="GtkImage" id="img_logo">
+              <object class="GtkImage" id="img_openscope_logo">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
                 <property name="stock">gtk-missing-image</property>
@@ -34,7 +34,7 @@
               </packing>
             </child>
             <child>
-              <object class="GtkLabel" id="lbl_appname">
+              <object class="GtkLabel" id="lbl_openscope">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
                 <property name="xpad">5</property>
@@ -325,7 +325,7 @@
             <property name="valign">start</property>
             <property name="wide_handle">True</property>
             <child>
-              <object class="GtkGLArea" id="gl_scope">
+              <object class="GtkGLArea">
                 <property name="name">glarea</property>
                 <property name="width_request">1820</property>
                 <property name="height_request">900</property>
@@ -342,7 +342,7 @@
               </packing>
             </child>
             <child>
-              <object class="GtkNotebook" id="nbk_main_settings">
+              <object class="GtkNotebook" id="notebook1">
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="halign">end</property>
