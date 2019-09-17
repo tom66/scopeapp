@@ -168,14 +168,33 @@ window {
     background-color: #000000;
     color: #ffffff;
     border: none;
-    padding: 4px;
-    margin-right: 5px;
+    padding: 0px;
+    margin-right: 10px;
     margin-left: 0px;
     border: 1px solid #555555;
     border-left: none;
     border-bottom-right-radius: 4px;
     border-top-right-radius: 4px;
     min-width: 0px;
+}
+
+/* A button is used so we can absorb the event */
+#nbk_main_settings > header tab > button {
+    margin: 2px;
+    padding: 3px;
+    border: none;
+    background: none;
+    outline: none;
+    text-shadow: none;
+}
+
+#nbk_main_settings > header tab > button label {
+    color: #aaaaaa;
+    font: 14px "Sans";
+}
+
+#nbk_main_settings > header tab > button:hover label {
+    color: #ffffff;
 }
 
 #nbk_main_settings > header tab:hover {
@@ -185,12 +204,8 @@ window {
 
 #nbk_main_settings > header tab:checked {
     background-image: linear-gradient(90deg, #202020, #db6e00);
+    margin-right: 5px;
     box-shadow: none;
-}
-
-#nbk_main_settings > header tab > label {
-    padding: 2px;
-    font: 14px "Sans";
 }
 
 #nbk_main_settings > stack, #nbk_main_settings > stack:backdrop {
@@ -231,3 +246,16 @@ button {
     box-shadow: none;
 }
 
+button:disabled {
+    background-image: linear-gradient(0deg, #101010, #202020);
+    border: 1px solid #555555;
+    box-shadow: none;
+}
+
+/* Channel tab specific properties */
+#lbl_chan_name {
+    padding: 2px;
+    padding-bottom: 3px;
+    font: 14px "Sans";
+    font-weight: bold;
+}

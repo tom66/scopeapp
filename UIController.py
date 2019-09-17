@@ -15,7 +15,6 @@ import sys, time
 from datetime import datetime
 
 LAYOUT_FILE = "resources/mainapp.gtkbuilder"
-CHANNEL_TAB_LAYOUT_FILE = "resources/channel_tab.gtkbuilder"
 
 # Possible icon sizes
 SIZE_OTHER = 0
@@ -26,10 +25,15 @@ UI_REFRESH_MS = 50
 
 import AppConfigManager
 import ScopeController as SC
+import UIChannelTab
 
 # Very temporary hacking to try an idea out
 # This should be loaded from a CSS file
 flexible_css = """
+tab:nth-child($channel_index) {
+    background-image: linear-gradient(90deg, #202020, $channel_dkcolour);
+}
+
 tab:nth-child($channel_index):checked {
     background-image: linear-gradient(90deg, #202020, $channel_colour);
 }
@@ -46,6 +50,9 @@ class MainApplication(object):
     main_window = None
     
     status_icon_size = 0
+    channel_tab_shading_factor = 0.0
+    
+    ui_tabs = []
     
     # Flasher variable; flips state at config FlashFreq rate
     flash_period = 0
@@ -109,26 +116,12 @@ class MainApplication(object):
         # Load the GtkBuilder resource for the channel tabs in the selection notebook, and
         # add one tab for each channel
         self.nbk_main_settings = self.builder.get_object("nbk_main_settings")
-        self.nbk_main_settings_ctx = self.nbk_main_settings.get_style_context()
         
-        for channel in self.ctrl.channels[::-1]:
-            ch_builder = Gtk.Builder()
-            ch_builder.add_from_file(CHANNEL_TAB_LAYOUT_FILE)
-            ch_vbox = ch_builder.get_object("vbx_chan_container")
-            lbl = Gtk.Label(channel.internal_name)
-            lbl.set_angle(90)
-            self.nbk_main_settings.append_page(ch_vbox, lbl)
+        for channel in self.ctrl.channels:
+            ui_tab = UIChannelTab.ChannelTab(self.cfgmgr, channel, self.nbk_main_settings, len(self.ui_tabs) + 1)
+            ui_tab.append_to_notebook()
+            self.ui_tabs.append(ui_tab)
         
-            # Add CSS that's generated on the fly for the channel colour configuration
-            # This changes the colour of things like the trigger indicator 
-            self.css = Gtk.CssProvider()
-            fcss = flexible_css
-            fcss = fcss.replace("$channel_colour", channel.get_hex_colour(1.0))
-            fcss = fcss.replace("$channel_index", str(channel.index))
-            print(fcss)
-            self.css.load_from_data(bytes(fcss, encoding='ascii'))
-            self.nbk_main_settings_ctx.add_provider(self.css, Gtk.STYLE_PROVIDER_PRIORITY_USER)
-            
         # Read the flash rate and calculate the flash period.
         try:
             self.flash_period = 1.0 / float(self.cfgmgr['UI']['FlashFreq'])
@@ -168,6 +161,7 @@ class MainApplication(object):
         # Run helper functions
         self.ui_update_clock()
         self.ui_update_run_state()
+        self.ui_update_tabs()
         
         self.last_ui_time = time.time()
         self.ticks += 1
@@ -225,6 +219,10 @@ class MainApplication(object):
         if self.ticks % 100 == 0:
             self.ctrl.run_state += 1
             self.ctrl.run_state %= 4
+    
+    def ui_update_tabs(self):
+        for tab in self.ui_tabs:
+            tab.refresh_tab()
     
     def run(self):
         """

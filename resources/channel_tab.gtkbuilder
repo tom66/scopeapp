@@ -8,6 +8,98 @@
     <property name="hexpand">True</property>
     <property name="baseline_position">top</property>
     <child>
+      <object class="GtkLabel" id="lbl_chan_name">
+        <property name="name">lbl_chan_name</property>
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="label" translatable="yes">label</property>
+      </object>
+      <packing>
+        <property name="expand">True</property>
+        <property name="fill">True</property>
+        <property name="position">0</property>
+      </packing>
+    </child>
+    <child>
+      <object class="GtkBox">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <child>
+          <object class="GtkLabel" id="lbl_spacing1">
+            <property name="name">lbl_spacing</property>
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <property name="label" translatable="yes"> </property>
+            <property name="xalign">0</property>
+          </object>
+          <packing>
+            <property name="expand">True</property>
+            <property name="fill">True</property>
+            <property name="position">0</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkBox">
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <child>
+              <object class="GtkLabel" id="lbl_chan_name1">
+                <property name="name">lbl_enabled</property>
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="margin_right">5</property>
+                <property name="label" translatable="yes">Enabled</property>
+                <property name="xalign">0</property>
+              </object>
+              <packing>
+                <property name="expand">True</property>
+                <property name="fill">True</property>
+                <property name="position">0</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkSwitch" id="sw_chan_enabled">
+                <property name="name">sw_ch_enabled</property>
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="margin_left">5</property>
+                <property name="active">True</property>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">True</property>
+                <property name="position">1</property>
+              </packing>
+            </child>
+          </object>
+          <packing>
+            <property name="expand">True</property>
+            <property name="fill">True</property>
+            <property name="position">1</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkLabel" id="lbl_spacing">
+            <property name="name">lbl_spacing</property>
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <property name="label" translatable="yes"> </property>
+            <property name="xalign">0</property>
+          </object>
+          <packing>
+            <property name="expand">True</property>
+            <property name="fill">True</property>
+            <property name="position">2</property>
+          </packing>
+        </child>
+      </object>
+      <packing>
+        <property name="expand">True</property>
+        <property name="fill">True</property>
+        <property name="position">1</property>
+      </packing>
+    </child>
+    <child>
       <object class="GtkFrame">
         <property name="visible">True</property>
         <property name="can_focus">False</property>
@@ -28,7 +120,7 @@
             <property name="column_spacing">10</property>
             <property name="column_homogeneous">True</property>
             <child>
-              <object class="GtkButton" id="btn_chanX_atten_up">
+              <object class="GtkButton" id="btn_chan_atten_up">
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
@@ -47,7 +139,7 @@
               </packing>
             </child>
             <child>
-              <object class="GtkButton" id="btn_chanX_atten_down">
+              <object class="GtkButton" id="btn_chan_atten_down">
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
@@ -66,7 +158,7 @@
               </packing>
             </child>
             <child>
-              <object class="GtkButton" id="btn_chanX_offset_up">
+              <object class="GtkButton" id="btn_chan_offset_up">
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
@@ -85,7 +177,7 @@
               </packing>
             </child>
             <child>
-              <object class="GtkButton" id="btn_chanX_offset_down">
+              <object class="GtkButton" id="btn_chan_offset_down">
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
@@ -104,7 +196,7 @@
               </packing>
             </child>
             <child>
-              <object class="GtkLabel" id="lbl_chanX_atten">
+              <object class="GtkLabel" id="lbl_chan_atten">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
                 <property name="label" translatable="yes">500 mV/div</property>
@@ -115,7 +207,7 @@
               </packing>
             </child>
             <child>
-              <object class="GtkLabel" id="lbl_chanX_offset">
+              <object class="GtkLabel" id="lbl_chan_offset">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
                 <property name="label" translatable="yes">+47mV</property>
@@ -140,7 +232,7 @@
         <property name="expand">True</property>
         <property name="fill">True</property>
         <property name="padding">5</property>
-        <property name="position">0</property>
+        <property name="position">2</property>
       </packing>
     </child>
     <child>
@@ -159,7 +251,7 @@
             <property name="row_spacing">5</property>
             <property name="column_spacing">10</property>
             <child>
-              <object class="GtkButton" id="btn_chanX_tog_coup_AC">
+              <object class="GtkButton" id="btn_chan_tog_coup_AC">
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
@@ -169,6 +261,7 @@
                   <object class="GtkLabel">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
+                    <property name="margin_right">1</property>
                     <property name="hexpand">True</property>
                     <property name="label" translatable="yes">AC</property>
                   </object>
@@ -180,7 +273,7 @@
               </packing>
             </child>
             <child>
-              <object class="GtkButton" id="button2">
+              <object class="GtkButton" id="btn_chan_tog_coup_DC">
                 <property name="visible">True</property>
                 <property name="sensitive">False</property>
                 <property name="can_focus">True</property>
@@ -201,7 +294,7 @@
               </packing>
             </child>
             <child>
-              <object class="GtkButton" id="button3">
+              <object class="GtkButton" id="btn_chan_tog_coup_GND">
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
@@ -221,7 +314,7 @@
               </packing>
             </child>
             <child>
-              <object class="GtkCheckButton" id="chk_chanX_coup_invert">
+              <object class="GtkCheckButton" id="chk_chan_coup_invert">
                 <property name="label" translatable="yes">Invert</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
@@ -235,7 +328,7 @@
               </packing>
             </child>
             <child>
-              <object class="GtkCheckButton" id="chk_chanX_coup_20M">
+              <object class="GtkCheckButton" id="chk_chan_coup_20M">
                 <property name="label" translatable="yes">20MHz BW</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
@@ -249,7 +342,7 @@
               </packing>
             </child>
             <child>
-              <object class="GtkCheckButton" id="chk_chanX_coup_50R">
+              <object class="GtkCheckButton" id="chk_chan_coup_50R">
                 <property name="label" translatable="yes">50Ω Term.</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
@@ -277,7 +370,7 @@
         <property name="expand">True</property>
         <property name="fill">True</property>
         <property name="padding">5</property>
-        <property name="position">1</property>
+        <property name="position">3</property>
       </packing>
     </child>
     <child>
@@ -428,7 +521,7 @@
         <property name="expand">True</property>
         <property name="fill">True</property>
         <property name="padding">5</property>
-        <property name="position">2</property>
+        <property name="position">4</property>
       </packing>
     </child>
     <child>
@@ -487,7 +580,7 @@
         <property name="expand">True</property>
         <property name="fill">True</property>
         <property name="padding">5</property>
-        <property name="position">3</property>
+        <property name="position">5</property>
       </packing>
     </child>
     <child>
@@ -563,7 +656,7 @@
         <property name="expand">True</property>
         <property name="fill">True</property>
         <property name="padding">5</property>
-        <property name="position">4</property>
+        <property name="position">6</property>
       </packing>
     </child>
   </object>
