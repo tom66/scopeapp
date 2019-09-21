@@ -35,39 +35,39 @@ window {
 }
 
 .runstate_wait_bri {
-    border-color: #db6e00;
-    background-image: linear-gradient(0deg, #ffb808, #db6e00);
+    border-color: #ffb600;
+    background-image: linear-gradient(0deg, #db6e00, #eda900);
     color: #000000;
 }
 
 .runstate_wait_dim {
-    border-color: #4d4d4d;
-    background-image: linear-gradient(0deg, #a6a6a6, #4d4d4d);
+    border-color: #b0b0b0;
+    background-image: linear-gradient(0deg, #4d4d4d, #a6a6a6);
     color: #000000;
 }
 
 .runstate_auto_bri {
-    border-color: #007362;
-    background-image: linear-gradient(0deg, #00debd, #007362);
+    border-color: #00ffcc;
+    background-image: linear-gradient(0deg, #007362, #00debd);
     color: #000000;
 }
 
 .runstate_auto_dim {
-    border-color: #4d4d4d;
-    background-image: linear-gradient(0deg, #a6a6a6, #4d4d4d);
+    border-color: #b0b0b0;
+    background-image: linear-gradient(0deg, #4d4d4d, #a6a6a6);
     color: #000000;
 }
 
 .runstate_stop {
-    border-color: #550000;
-    background-image: linear-gradient(0deg, #cc0000, #550000);
+    border-color: #dd0000;
+    background-image: linear-gradient(0deg, #550000, #cc0000);
     color: #ffffff;
 }
 
 .runstate_trigd {
-    border-color: #236e00;
-    background-image: linear-gradient(0deg, #39b500, #236e00);
-    color: #000000;
+    border-color: #009c4c;
+    background-image: linear-gradient(0deg, #004723, #008a43);
+    color: #ffffff;
 }
 
 /* Timebase, Delay, Trigger boxes */
@@ -212,38 +212,70 @@ window {
     background-color: #202020;
     border: 1px solid #555555;
     box-shadow: none;
-    padding: 5px;
+    padding: 0px;
 }
 
 #nbk_main_settings > stack label {
     color: #ffffff;
 }
 
+#nbk_main_settings > stack frame {
+    margin: 5px;
+}
+
 #nbk_main_settings > stack frame border {
     padding: 2px;
 }
 
 #nbk_main_settings > stack frame border {
     border: 1px solid #555555;
+    border-radius: 4px;
 }
 
 #nbk_main_settings > stack frame > label {
     color: #ffffff;
-    padding: 5px;
+    padding-left: 0px;
+    padding-right: 4px;
     font: 12px "Sans";
     font-style: normal;
+    background: none;
+    box-shadow: none;
 }
 
 #nbk_main_settings > stack frame > grid {
     box-shadow: none;
-    margin: 2px;
-    padding: 2px;
+    /*background-color: #ff0000;*/
+    padding: 5px;
+    margin-top: -10px;
+    margin-bottom: -5px;
+}
+
+box.channel_tab {
+    min-width: 180px;
 }
 
 button {
     background-image: linear-gradient(0deg, #202020, #404040);
     border: 1px solid #555555;
     box-shadow: none;
+    padding: 5px;
+}
+
+button:hover {
+    background-image: linear-gradient(0deg, #404040, #808080);
+    border: 1px solid #555555;
+    box-shadow: none;
+}
+
+button:active {
+    background-image: linear-gradient(0deg, #404040, #808080);
+    border: 1px solid #ffffff;
+    box-shadow: none;
+}
+
+button label {
+    font: 14px "Sans";
+    text-shadow: none;
 }
 
 button:disabled {
@@ -254,8 +286,116 @@ button:disabled {
 
 /* Channel tab specific properties */
 #lbl_chan_name {
-    padding: 2px;
-    padding-bottom: 3px;
+    padding: 4px;
+    padding-top: 10px;
     font: 14px "Sans";
     font-weight: bold;
+}
+
+/* Based on Adwaita for GTK */
+switch {
+    outline-offset: -4px;
+    border: 1px solid #555555;
+    border-radius: 12px;
+    min-width: 40px;
+    min-height: 20px;
+    background-color: #202020;
+}
+
+switch:checked {
+    background-color: #004723;
+    border: 1px solid #009c4c;
+}
+
+switch:disabled {
+    color: #555555;
+    background-color: #202020;
+    border: 1px solid #555555;
+}
+
+switch slider {
+    margin: 1px;
+    min-width: 10px;
+    min-height: 10px;
+    border: 1px solid #202020;
+    border-radius: 10px;
+    transition: none;
+}
+
+/* On/off button states */
+button.button_on {
+    background-image: linear-gradient(0deg, #004723, #008a43);
+    border-color: #009c4c;
+}
+
+button.button_off {
+    background-image: linear-gradient(0deg, #202020, #404040);
+    border: 1px solid #555555;
+}
+
+button.button_off:hover {
+    background-image: linear-gradient(0deg, #404040, #808080);
+    border: 1px solid #555555;
+    box-shadow: none;
+}
+
+button.button_on:disabled {
+    background-image: linear-gradient(0deg, #202020, #404040);
+    border: 1px solid #555555;
+    box-shadow: none;
+}
+
+button.button_off:disabled {
+    background-image: linear-gradient(0deg, #101010, #202020);
+    border: 1px solid #555555;
+    box-shadow: none;
+}
+
+checkbutton > check {
+    background-color: #202020;
+    background-image: none;
+    box-shadow: none;
+    border: 1px solid #555555;
+}
+
+checkbutton:checked > check {
+   color: #008a43;
+   box-shadow: none;
+   outline: none;
+   -gtk-icon-shadow: none;
+   border: 1px solid #009c4c;
+}
+
+checkbutton > label {
+    padding-left: 4px;
+}
+
+/* Combobox & dropdown */
+combobox cellview, combobox arrow {
+    color: #ffffff;
+    text-shadow: none;
+    box-shadow: none;
+    text-decoration: none;
+}
+
+combobox > window.popup menu menuitem:hover {
+    background-color: #555555;
+}
+
+combobox > window.popup {
+    background: none;
+}
+
+combobox > window.popup menu {
+    background-color: #303030;
+    border: 1px solid #555555;
+}
+
+combobox > window.popup menu menuitem {
+    background: transparent;
+    color: #ffffff;
+}
+    
+combobox > window.popup menu menuitem:hover {
+    background-color: #555555;
 }

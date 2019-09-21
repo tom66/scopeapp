@@ -63,6 +63,8 @@ class MainApplication(object):
     
     ticks = 0
     
+    last_window_size = (0, 0)
+    
     def __init__(self):
         """
         Init function.  This loads the GUI configuration, the application configurator,
@@ -113,12 +115,26 @@ class MainApplication(object):
         self.add_css_class_by_widget_name("grd_status_trigger_channel_container", "status_box_middle_horiz_common")
         self.add_css_class_by_widget_name("lbl_status_trigger_info", "status_box_right_horiz_common")
         
+        # Connect to the window exposed event to hook onto resize events.
+        # Set the application title.
+        self.window = self.builder.get_object("wnd_main")
+        self.window.set_title(_("BluePulse Oscilloscope - Main"))
+        self.window.connect("configure-event", self.window_change_dimensions)
+        
+        # Connect to the GLArea.  Note, in future this will be instantiated through TomH's OpenGL layer.
+        #self.gl_area = self.builder.get_object("gl_main")
+        
         # Load the GtkBuilder resource for the channel tabs in the selection notebook, and
         # add one tab for each channel
         self.nbk_main_settings = self.builder.get_object("nbk_main_settings")
+        self.nbk_main_settings.set_hexpand(False)
+        self.nbk_main_settings.set_hexpand_set(True)
+        self.nbk_main_settings.set_size_request(50, 0)
+        #self.gl_area.set_hexpand(True)
+        #self.gl_area.set_hexpand_set(True)
         
         for channel in self.ctrl.channels:
-            ui_tab = UIChannelTab.ChannelTab(self.cfgmgr, channel, self.nbk_main_settings, len(self.ui_tabs) + 1)
+            ui_tab = UIChannelTab.ChannelTab(self, channel, self.nbk_main_settings, len(self.ui_tabs) + 1)
             ui_tab.append_to_notebook()
             self.ui_tabs.append(ui_tab)
         
@@ -127,6 +143,36 @@ class MainApplication(object):
             self.flash_period = 1.0 / float(self.cfgmgr['UI']['FlashFreq'])
         except:
             self.flash_period = 0.4 # Default
+    
+    def _user_exception(self, exc):
+        """Called by subclasses if a user exception occurs.  Handles the display of the warning message
+        to the user."""
+        print("_user_exception:", exc)
+    
+    def window_change_dimensions(self, wnd, event):
+        # Determine if the window has changed in size
+        sz = self.window.get_size()
+        print(event.type, event.width, event.height)
+        
+        size_offset = int(self.cfgmgr['UI']['SettingNotebookWidth'])
+        
+        if (event.width < self.last_window_size[0]):
+            size_offset += 100
+            print("Getting smaller")
+        
+        #self.gl_area.set_size_request(event.width - size_offset, -1)
+        self.last_window_size = event.width, event.height
+        
+        """
+        if sz[0] < self.last_window_size[0]:
+            self.gl_area.set_size_request(sz[0] - int(self.cfgmgr['UI']['SettingNotebookWidth']) - 200, -1)
+            print("Getting smaller")
+        elif self.last_window_size != sz:
+            # Compute new GL area width
+            print("NewSize: %d" % (sz[0] - int(self.cfgmgr['UI']['SettingNotebookWidth'])))
+        
+        self.last_window_size = self.window.get_size()
+        """
     
     def add_css_class_by_widget_name(self, widget, cls):
         self.builder.get_object(widget).get_style_context().add_class(cls)

@@ -5,3 +5,7 @@ tab:nth-child($channel_index) {
 tab:nth-child($channel_index):checked {
     background-image: linear-gradient(90deg, #202020 $channel_gradpct%, $channel_colour);
 }
+
+.channel_tab {
+    background-image: linear-gradient(180deg, $channel_colour, #202020 8px);
+}
