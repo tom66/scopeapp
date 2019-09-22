@@ -4,6 +4,10 @@ window {
     background-color: #000000;
 }
 
+dialog {
+    background-color: #202020;
+}
+
 #lbl_appname {
     color: #ffffff;
     font: 14px "Sans";
@@ -276,6 +280,7 @@ button:active {
 button label {
     font: 14px "Sans";
     text-shadow: none;
+    color: #ffffff;
 }
 
 button:disabled {
@@ -285,11 +290,20 @@ button:disabled {
 }
 
 /* Channel tab specific properties */
-#lbl_chan_name {
+.chan_name_std {
     padding: 4px;
     padding-top: 10px;
     font: 14px "Sans";
     font-weight: bold;
+    min-height: 18px;
+}
+
+.chan_name_small {
+    padding: 4px;
+    padding-top: 10px;
+    font: 11px "Sans";
+    font-weight: normal;
+    min-height: 18px;
 }
 
 /* Based on Adwaita for GTK */
@@ -358,12 +372,24 @@ checkbutton > check {
     border: 1px solid #555555;
 }
 
+checkbutton:disabled > check  {
+    background-color: #101010;
+    background-image: none;
+    border: 1px solid #555555;
+}
+
 checkbutton:checked > check {
    color: #008a43;
    box-shadow: none;
    outline: none;
    -gtk-icon-shadow: none;
    border: 1px solid #009c4c;
+}
+
+checkbutton:disabled:checked > check {
+   color: #555555;
+   border: 1px solid #555555;
+   transition: 200ms all;
 }
 
 checkbutton > label {
@@ -398,4 +424,82 @@ combobox > window.popup menu menuitem {
     
 combobox > window.popup menu menuitem:hover {
     background-color: #555555;
+}
+
+/* Entry boxes */
+entry {
+    color: #ffffff;
+    background-color: #202020;
+    border: 1px solid #555555;
+    border-radius: 3px;
+}
+
+entry:focus {
+    color: #ffffff;
+    background-color: #404040;
+    border: 1px solid #555555;
+    box-shadow: none;
+    caret-color: #ffffff;
+}
+
+/* Scales */
+scale trough {
+    background-color: #101010;
+    border: 1px solid #555555;
+}
+
+scale highlight {
+    background-color: #008a43;
+    border: 1px solid #009c4c;
+}
+
+/* Notify messages */
+.notify_global {
+    color: #ffffff;
+    border: 1px solid #555555;
+    margin: 0px;
+    padding: 5px;
+    background-image: linear-gradient(0deg, #202020, #404040);
+    font: 14px "Sans";
+}
+
+.notify_warning {
+    background-image: linear-gradient(0deg, #db6e00, #eda900);
+    border: 1px solid #ffb600;
+    color: #000000;
+    font: 16px "Sans";
+}
+
+/* Colour picker */
+#dlg_colour_picker #lbl_colour_picker_title {
+    color: #ffffff;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    padding-left: 4px;
+    font: 16px Sans;
+    font-weight: bold;
+}
+
+#dlg_colour_picker #lbl_colour_picker_sub {
+    color: #ffffff;
+    padding: 4px;
+    margin-right: 10px;
+    font: 12px Sans;
+}
+
+#dlg_colour_picker entry {
+    margin-bottom: 5px;
+}
+
+#dlg_colour_picker scale value {
+    color: #ffffff;
+}
+
+#cpk_colour_preview {
+    padding: 5px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    border: 0px;
+    border-radius: 10px;
+    /*background-color: #00ff00;*/
 }

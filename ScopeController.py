@@ -38,9 +38,6 @@ auto_long_names = [
     _("External Input")
 ]
 
-# Supported probe options
-probe_options = [0.1, 0.2, 0.5, 1, 2, 5, 10, 20, 50, 100]
-
 # Supported attenuation levels in V (at 1X probe setting)
 attenuation_options = [0.002, 0.005, 0.01, 0.02, 0.05, 0.1, 0.2, 0.5, 1, 2, 5]
 
@@ -61,15 +58,11 @@ COUP_AC = 1
 COUP_DC = 2
 COUP_GND = 3
 
-# Supported units
-UNIT_VOLT = 1
-UNIT_CURRENT = 2
-
 class ScopeChannelController(object):
     """
     This class manages the configuration of a single channel.
     """
-    enabled = False
+    enabled = True # TODO..change this
     index = None
     
     internal_name = _("Undefined")      # Always CH1, CH2, etc.
@@ -82,13 +75,14 @@ class ScopeChannelController(object):
     sat = 0
     
     # Channel settings
-    atten_div = attenuation_options[0]
+    atten_div = attenuation_options[5]
     probe_multiplier = 1
-    offset = 0
+    offset = -7.8
     coupling = COUP_AC
     invert = False
     bandwidth_20M = False
     termination_50R = False
+    unit = Utils.UnitVolt()
     
     def __init__(self, index, short_name=None, long_name=None):
         """Initialise a channel controller"""
@@ -128,7 +122,16 @@ class ScopeChannelController(object):
 
     def is_enabled(self):
         return self.enabled
-        
+    
+    def set_unit(self, unit):
+        if isinstance(unit, Utils.Unit):
+            self.unit = unit
+        else:
+            raise ValueError("Invalid unit, not a subclass of Utils.Unit")
+    
+    def get_unit(self):
+        return self.unit
+    
     def set_channel_name_global(self, short_name, long_name):
         self.short_name = str(short_name)
         self.long_name = str(long_name)
@@ -146,6 +149,15 @@ class ScopeChannelController(object):
         
     def get_computed_attenuation(self):
         return self.atten_div * self.probe_multiplier
+    
+    def get_computed_offset(self):
+        return self.offset * self.probe_multiplier
+    
+    def get_probe_gain(self):
+        return self.probe_multiplier
+        
+    def set_probe_gain(self, gain):
+        self.probe_multiplier = float(gain)
     
     def _get_nearest_atten_index(self):
         """Find the nearest value in the attenuation table to the current setting.

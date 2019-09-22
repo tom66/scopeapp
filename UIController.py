@@ -26,18 +26,7 @@ UI_REFRESH_MS = 50
 import AppConfigManager
 import ScopeController as SC
 import UIChannelTab
-
-# Very temporary hacking to try an idea out
-# This should be loaded from a CSS file
-flexible_css = """
-tab:nth-child($channel_index) {
-    background-image: linear-gradient(90deg, #202020, $channel_dkcolour);
-}
-
-tab:nth-child($channel_index):checked {
-    background-image: linear-gradient(90deg, #202020, $channel_colour);
-}
-"""
+import UINotifier
 
 class MainApplication(object):
     """
@@ -47,8 +36,6 @@ class MainApplication(object):
     It doesn't handle anything to do with waveform acquisition or rendering.  Those
     are handled from within WaveApp and the GL application.
     """
-    main_window = None
-    
     status_icon_size = 0
     channel_tab_shading_factor = 0.0
     
@@ -88,10 +75,23 @@ class MainApplication(object):
         # Load the GtkBuilder application object and load common objects.
         self.builder = Gtk.Builder()
         self.builder.add_from_file(LAYOUT_FILE)
-        self.main_window = self.builder.get_object("wnd_main")
+        self.overlay_main = Gtk.Overlay()
+        self.vbox_main = self.builder.get_object("vbox_main")
+        self.overlay_main.add(self.vbox_main)
+        self.overlay_fixed = Gtk.Fixed()
+        self.window = Gtk.Window()
+        self.window.add(self.overlay_main)
         self.lbl_status_time = self.builder.get_object("lbl_status_time")
         self.lbl_status_run = self.builder.get_object("lbl_status_run")
         self.lbl_status_run_ctx = self.lbl_status_run.get_style_context()
+        
+        # Create the notifier controller
+        self.notifier = UINotifier.NotifyController()
+        self.overlay_main.add_overlay(self.overlay_fixed)
+        self.overlay_main.set_overlay_pass_through(self.overlay_fixed, True)
+        self.notifier.set_fixed_container(self.overlay_fixed)
+        
+        #self.overlay_main.add_overlay(Gtk.Label("this is a test"))
         
         # Test default images
         self.set_svg_image("img_status_trigger_type", "trigger_rising_edge", SIZE_ICON)
@@ -117,9 +117,9 @@ class MainApplication(object):
         
         # Connect to the window exposed event to hook onto resize events.
         # Set the application title.
-        self.window = self.builder.get_object("wnd_main")
         self.window.set_title(_("BluePulse Oscilloscope - Main"))
-        self.window.connect("configure-event", self.window_change_dimensions)
+        self.window.connect("key_press_event", self._wnd_key_press)
+        self.window.connect("key_release_event", self._wnd_key_release)
         
         # Connect to the GLArea.  Note, in future this will be instantiated through TomH's OpenGL layer.
         #self.gl_area = self.builder.get_object("gl_main")
@@ -148,31 +148,13 @@ class MainApplication(object):
         """Called by subclasses if a user exception occurs.  Handles the display of the warning message
         to the user."""
         print("_user_exception:", exc)
+        self.notifier.push_notification(UINotifier.NotifyMessage(UINotifier.NOTIFY_WARNING, str(exc)))
     
-    def window_change_dimensions(self, wnd, event):
-        # Determine if the window has changed in size
-        sz = self.window.get_size()
-        print(event.type, event.width, event.height)
-        
-        size_offset = int(self.cfgmgr['UI']['SettingNotebookWidth'])
-        
-        if (event.width < self.last_window_size[0]):
-            size_offset += 100
-            print("Getting smaller")
-        
-        #self.gl_area.set_size_request(event.width - size_offset, -1)
-        self.last_window_size = event.width, event.height
-        
-        """
-        if sz[0] < self.last_window_size[0]:
-            self.gl_area.set_size_request(sz[0] - int(self.cfgmgr['UI']['SettingNotebookWidth']) - 200, -1)
-            print("Getting smaller")
-        elif self.last_window_size != sz:
-            # Compute new GL area width
-            print("NewSize: %d" % (sz[0] - int(self.cfgmgr['UI']['SettingNotebookWidth'])))
-        
-        self.last_window_size = self.window.get_size()
-        """
+    def _wnd_key_press(self, *args):
+        print("_wnd_key_press", args)
+
+    def _wnd_key_release(self, *args):
+        print("_wnd_key_release", args)
     
     def add_css_class_by_widget_name(self, widget, cls):
         self.builder.get_object(widget).get_style_context().add_class(cls)
@@ -208,6 +190,7 @@ class MainApplication(object):
         self.ui_update_clock()
         self.ui_update_run_state()
         self.ui_update_tabs()
+        self.notifier.update_overlay(self.window.get_size()[0])
         
         self.last_ui_time = time.time()
         self.ticks += 1
@@ -274,6 +257,6 @@ class MainApplication(object):
         """
         Start the MainApplication.  This launches all required threads and shows the user interface.
         """
-        self.main_window.show_all()
+        self.window.show_all()
         GLib.timeout_add(UI_REFRESH_MS, self.ui_tick, None, priority=GLib.PRIORITY_DEFAULT)
         Gtk.main()

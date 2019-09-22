@@ -13,9 +13,18 @@ from gi.repository import Gtk, GLib, Gio, Gdk, GdkPixbuf, GObject, Pango
 
 import Utils
 import ScopeController as SC
+import UIChannelColourPicker
 
 CHANNEL_TAB_LAYOUT_FILE = "resources/channel_tab.gtkbuilder"
 CHANNEL_TAB_CSS_FILE = "channel_tab.css"
+
+NAME_SIZE_THRESH = 18
+
+ATTEN_UNIT_X = 1
+ATTEN_UNIT_DB = 2
+
+# Supported probe options
+probe_atten_options = [0.01, 0.02, 0.05, 0.1, 0.2, 0.5, 1, 2, 5, 10, 20, 50, 100, 200, 500, 1000]
 
 # Supported channel names (long & short variants).  Translatable.
 # Short name: max 5 characters
@@ -100,17 +109,22 @@ user_channel_names = [
         (_("Temperature"), _("Temp")),
         (_("Demodulation"), _("Demod")),
         (_("Modulation"), _("Mod")),
-        (_("Rel. Flux"), _("RFlux")),
-        (_("Magn.-Reluctance"), _("MR")),
-        (_("Cap. Diractance"), _("CDR")),
+        (_("Magneto-Reluctance"), _("MR")),
+        (_("Capacitive Diractance"), _("CDR")),
         (_("Fusion Chamber"), _("88mph"))
     ]]
 ]
 
+probe_atten_options = sorted(probe_atten_options)
+
 class ChannelTab(object):
     last_enable_state = None
-    
     cssprov = None
+    
+    atten_update = True
+    atten_unit_update = True
+    atten_unit = ATTEN_UNIT_X
+    atten_init = False
     
     def __init__(self, root_mgr, channel, notebook, index):
         self.channel = channel
@@ -144,6 +158,12 @@ class ChannelTab(object):
         self.chk_chan_coup_invert = self.builder.get_object("chk_chan_coup_invert")
         self.chk_chan_coup_20M = self.builder.get_object("chk_chan_coup_20M")
         self.chk_chan_coup_50R = self.builder.get_object("chk_chan_coup_50R")
+        self.cmb_probe_atten = self.builder.get_object("cmb_probe_atten")
+        self.btn_probe_atten_units = self.builder.get_object("btn_probe_atten_units")
+        self.btn_chan_probe_V = self.builder.get_object("btn_chan_probe_V")
+        self.btn_chan_probe_A = self.builder.get_object("btn_chan_probe_A")
+        self.btn_chan_probe_other = self.builder.get_object("btn_chan_probe_other")
+        self.btn_chan_colour = self.builder.get_object("btn_chan_colour")
         
         self.sensitive_widgets.append(self.btn_chan_atten_up)
         self.sensitive_widgets.append(self.btn_chan_atten_down)
@@ -155,6 +175,12 @@ class ChannelTab(object):
         self.sensitive_widgets.append(self.chk_chan_coup_invert)
         self.sensitive_widgets.append(self.chk_chan_coup_20M)
         self.sensitive_widgets.append(self.chk_chan_coup_50R)
+        self.sensitive_widgets.append(self.cmb_probe_atten)
+        self.sensitive_widgets.append(self.btn_probe_atten_units)
+        self.sensitive_widgets.append(self.btn_chan_probe_V)
+        self.sensitive_widgets.append(self.btn_chan_probe_A)
+        self.sensitive_widgets.append(self.btn_chan_probe_other)
+        self.sensitive_widgets.append(self.btn_chan_colour)
         
         self.sw_chan_enabled.connect("state-set", self._channel_switch_state_set)
         self.btn_chan_atten_up.connect("clicked", self._btn_atten_up_press)
@@ -167,10 +193,32 @@ class ChannelTab(object):
         self.chk_chan_coup_invert.connect("toggled", self._chkbtn_invert)
         self.chk_chan_coup_20M.connect("toggled", self._chkbtn_20M)
         self.chk_chan_coup_50R.connect("toggled", self._chkbtn_50R)
+        self.cmb_probe_atten.connect("changed", self._cmb_probe_atten_changed)
+        self.btn_probe_atten_units.connect("clicked", self._btn_probe_atten_units_press)
+        self.btn_chan_probe_V.connect("clicked", self._btn_chan_probe_V_press)
+        self.btn_chan_probe_A.connect("clicked", self._btn_chan_probe_A_press)
+        self.btn_chan_probe_other.connect("clicked", self._btn_chan_probe_other_press)
+        self.btn_chan_colour.connect("clicked", self._btn_chan_colour_press)
+        
+        # i10n
+        self.btn_chan_tog_coup_AC.set_label(_("AC"))
+        self.btn_chan_tog_coup_DC.set_label(_("DC"))
+        self.btn_chan_tog_coup_GND.set_label(_("GND"))
+        self.chk_chan_coup_invert.set_label(_("Invert"))
+        self.chk_chan_coup_20M.set_label(_("20 MHz Filter"))
+        self.chk_chan_coup_50R.set_label(_("50\u03A9 Impedance"))
+        self.btn_chan_probe_other.set_label(_("..."))
+        self.btn_probe_atten_units.set_label("")
+        
+        self._update_probe_atten_options()
         
         self.btn_chan_tog_coup_AC_ctx = self.btn_chan_tog_coup_AC.get_style_context()
         self.btn_chan_tog_coup_DC_ctx = self.btn_chan_tog_coup_DC.get_style_context()
         self.btn_chan_tog_coup_GND_ctx = self.btn_chan_tog_coup_GND.get_style_context()
+        self.btn_chan_probe_V_ctx = self.btn_chan_probe_V.get_style_context()
+        self.btn_chan_probe_A_ctx = self.btn_chan_probe_A.get_style_context()
+        self.btn_chan_probe_other_ctx = self.btn_chan_probe_other.get_style_context()
+        self.lbl_chan_name_ctx = self.lbl_chan_name.get_style_context()
         
         self.cmb_chan_label = self.builder.get_object("cmb_chan_label")
         
@@ -218,6 +266,7 @@ class ChannelTab(object):
         self.cmb_chan_label.add_attribute(col_cell_text_short, "text", 0)
         self.cmb_chan_label.pack_start(col_cell_text_long, True)
         self.cmb_chan_label.add_attribute(col_cell_text_long, "text", 1)
+        self.cmb_chan_label.set_active(0)
         self.cmb_chan_label.connect("changed", self._cmb_chan_label_changed)
         
         self.sensitive_widgets.append(self.cmb_chan_label)
@@ -242,6 +291,16 @@ class ChannelTab(object):
         
         return wrapper
     
+    def _channel_switch_state_set(self, *args):
+        # Sets the channel state to on or off according to the new switch state
+        if self.sw_chan_enabled.get_active():
+            self.sw_chan_enabled.set_state(True)
+            self.channel.enable_channel()
+        else:
+            self.sw_chan_enabled.set_state(False)
+            self.channel.disable_channel()
+        
+        return True
     @__user_exception_handler
     def _btn_atten_up_press(self, *args):
         # TODO: vernier mode
@@ -275,6 +334,16 @@ class ChannelTab(object):
     def _btn_coup_GND(self, *args):
         self.channel.set_coupling(SC.COUP_GND)
     
+    def _btn_chan_probe_V_press(self, *args):
+        self.channel.set_unit(Utils.UnitVolt())
+    
+    def _btn_chan_probe_A_press(self, *args):
+        self.channel.set_unit(Utils.UnitAmp())
+    
+    @__user_exception_handler
+    def _btn_chan_probe_other_press(self, *args):
+        raise Utils.UserRequestUnsupported(_("This option is not supported right now"))
+    
     def _chkbtn_invert(self, widget, *args):
         self.channel.toggle_invert()
         widget.set_state(False)   # initially just disable the checkbutton; it's enabled by the state updater
@@ -287,17 +356,25 @@ class ChannelTab(object):
         self.channel.toggle_50_ohm_termination()
         widget.set_state(False)
     
-    def _channel_switch_state_set(self, *args):
-        # Sets the channel state to on or off according to the new switch state
-        if self.sw_chan_enabled.get_active():
-            self.sw_chan_enabled.set_state(True)
-            self.channel.enable_channel()
-        else:
-            self.sw_chan_enabled.set_state(False)
-            self.channel.disable_channel()
-        
-        return True
+    def _btn_probe_atten_units_press(self, *args):
+        if self.atten_unit == ATTEN_UNIT_X:
+            self.atten_unit = ATTEN_UNIT_DB
+        elif self.atten_unit == ATTEN_UNIT_DB:
+            self.atten_unit = ATTEN_UNIT_X
+            
+        self.atten_unit_update = True
+        self._update_probe_atten_options()
     
+    def _cmb_probe_atten_changed(self, *args):
+        if self.atten_init and not self.atten_unit_update and not self.atten_update:
+            print("Set probe gain to %f" % probe_atten_options[self.cmb_probe_atten.get_active()])
+            self.channel.set_probe_gain(probe_atten_options[self.cmb_probe_atten.get_active()])
+    
+    def _btn_chan_colour_press(self, *args):
+        colour_picker = UIChannelColourPicker.ChannelColourPicker(self.channel.long_name)
+        colour_picker.run()
+    
+    @__user_exception_handler
     def _cmb_chan_label_changed(self, *args):
         path = list(map(int, str(self.cmb_chan_label.get_model().get_path(self.cmb_chan_label.get_active_iter())).split(":")))
         if len(path) == 1:
@@ -305,7 +382,7 @@ class ChannelTab(object):
                 print("Reset channel name to defaults")
                 self.channel.set_channel_name_defaults()
             elif path[0] == 1:
-                print("Request custom name - not currently supported")
+                raise Utils.UserRequestUnsupported(_("This option is not supported right now"))
         else:
             print("Request templated name")
             key = user_channel_names[path[0] - 2][1][path[1]]
@@ -319,30 +396,60 @@ class ChannelTab(object):
         else:
             self.notebook.set_current_page(self.notebook_index - 1)
     
-    def _generate_css_provider(self, css, index, grad_pct_bkgnd, grad_pct, dk_colour, pri_colour):
-        """
-        Generates a CSS provider for dynamic styling of a channel tab.
-        
-        @FIXME  there may be a better way to do this, but I couldn't find it
-        """
-        css_prov = Gtk.CssProvider()
-        data = open(css, "r").read()
-        data = data.replace("$channel_gradpct_bkgrnd", grad_pct_bkgnd)
-        data = data.replace("$channel_gradpct", grad_pct)
-        data = data.replace("$channel_dkcolour", dk_colour)
-        data = data.replace("$channel_colour", pri_colour)
-        data = data.replace("$channel_index", str(index))
-        css_prov.load_from_data(bytes(data, encoding='ascii'))  
-        return css_prov
+    def _update_probe_atten_options(self):
+        if self.atten_unit == ATTEN_UNIT_X:
+            self.btn_probe_atten_units.set_label(_("X"))
+        elif self.atten_unit == ATTEN_UNIT_DB:
+            self.btn_probe_atten_units.set_label(_("dB"))
+        else:
+            self.btn_probe_atten_units.set_label(_("?"))
     
+        if self.atten_unit_update:
+            self.cmb_probe_atten.remove_all()
+        
+            for option in probe_atten_options:
+                if self.atten_unit == ATTEN_UNIT_X:
+                    self.cmb_probe_atten.append_text(_("{0}X").format(option))
+                elif self.atten_unit == ATTEN_UNIT_DB:
+                    self.cmb_probe_atten.append_text(Utils.value_20_log_db(option))
+            
+            self.atten_unit_update = False
+            self.atten_update = True
+            
+        # Select the current attenuation (we select the nearest option)
+        # if the option has changed
+        if self.atten_update:
+            min_error = 1e99
+            for i, option in enumerate(probe_atten_options):
+                error = abs(option - self.channel.get_probe_gain())
+                if error < min_error:
+                    min_error = error
+                    self.cmb_probe_atten.set_active(i)
+            self.atten_update = False
+            self.atten_init = True
+        
     def refresh_tab(self):
         self.lbl_tab.set_markup(self.channel.short_name)
         
         if self.channel.has_default_name():
             self.lbl_chan_name.set_markup(self.channel.long_name)
+            self.lbl_chan_name_ctx.remove_class("chan_name_small")
+            self.lbl_chan_name_ctx.add_class("chan_name_std")
         else:
-            self.lbl_chan_name.set_markup(_("{long_channel_name} ({short_internal_name})")\
-                .format(long_channel_name=self.channel.long_name, short_internal_name=self.channel.internal_name))
+            # If the channel name exceeds a threshold, then apply a reduced-size class
+            markup = _("{long_channel_name} ({short_internal_name})").format(\
+                long_channel_name=self.channel.long_name, short_internal_name=self.channel.internal_name)
+            
+            print(markup, len(markup), NAME_SIZE_THRESH)
+            
+            if len(markup) > NAME_SIZE_THRESH:
+                self.lbl_chan_name_ctx.remove_class("chan_name_std")
+                self.lbl_chan_name_ctx.add_class("chan_name_small")
+            else:
+                self.lbl_chan_name_ctx.remove_class("chan_name_small")
+                self.lbl_chan_name_ctx.add_class("chan_name_std")
+            
+            self.lbl_chan_name.set_markup(markup)
 
         self.apply_css()
         
@@ -350,8 +457,8 @@ class ChannelTab(object):
         # the state of the toggle switch
         
         # Sync the offset and attenuation fields
-        self.lbl_chan_atten.set_markup(Utils.unit_format_atten(self.channel.get_computed_attenuation()))
-        self.lbl_chan_offset.set_markup(Utils.unit_format_voltage(self.channel.offset, precision=2))
+        self.lbl_chan_atten.set_markup(self.channel.get_unit().unit_format_atten(self.channel.get_computed_attenuation()))
+        self.lbl_chan_offset.set_markup(self.channel.get_unit().unit_format(self.channel.get_computed_offset(), precision=2))
         
         # Adjust the coupling toggle-buttons 
         self.btn_chan_tog_coup_AC_ctx.add_class("button_off")
@@ -376,6 +483,26 @@ class ChannelTab(object):
         self.chk_chan_coup_20M.set_state(self.channel.get_bandwidth_20M())
         self.chk_chan_coup_50R.set_state(self.channel.get_50_ohm_termination())
         
+        # Sync the unit buttons
+        self.btn_chan_probe_V_ctx.add_class("button_off")
+        self.btn_chan_probe_A_ctx.add_class("button_off")
+        self.btn_chan_probe_other_ctx.add_class("button_off")
+        self.btn_chan_probe_V_ctx.remove_class("button_on")
+        self.btn_chan_probe_A_ctx.remove_class("button_on")
+        self.btn_chan_probe_other_ctx.remove_class("button_on")
+        self.btn_chan_probe_other.set_label(_("..."))
+        
+        if isinstance(self.channel.get_unit(), Utils.UnitVolt):
+            self.btn_chan_probe_V_ctx.remove_class("button_off")
+            self.btn_chan_probe_V_ctx.add_class("button_on")
+        elif isinstance(self.channel.get_unit(), Utils.UnitAmp):
+            self.btn_chan_probe_A_ctx.remove_class("button_off")
+            self.btn_chan_probe_A_ctx.add_class("button_on")
+        else:
+            self.btn_chan_probe_other_ctx.remove_class("button_off")
+            self.btn_chan_probe_other_ctx.add_class("button_on")
+            self.btn_chan_probe_other.set_label(self.channel.get_unit().get_short_name())
+        
         # If the channel is disabled, then all the controls related to the channel are also disabled
         sens = self.channel.is_enabled()
         
@@ -385,6 +512,28 @@ class ChannelTab(object):
         
         for wdg in self.sensitive_widgets:
             wdg.set_sensitive(sens)
+            
+        # Update probe settings
+        self._update_probe_atten_options()
+        
+        # TEST
+        #self._btn_chan_colour_press(None)
+    
+    def _generate_css_provider(self, css, index, grad_pct_bkgnd, grad_pct, dk_colour, pri_colour):
+        """
+        Generates a CSS provider for dynamic styling of a channel tab.
+        
+        @FIXME  there may be a better way to do this, but I couldn't find it
+        """
+        css_prov = Gtk.CssProvider()
+        data = open(css, "r").read()
+        data = data.replace("$channel_gradpct_bkgrnd", grad_pct_bkgnd)
+        data = data.replace("$channel_gradpct", grad_pct)
+        data = data.replace("$channel_dkcolour", dk_colour)
+        data = data.replace("$channel_colour", pri_colour)
+        data = data.replace("$channel_index", str(index))
+        css_prov.load_from_data(bytes(data, encoding='ascii'))  
+        return css_prov
     
     def get_css_provider(self, index):
         # Generate different style for enabled/disabled channels

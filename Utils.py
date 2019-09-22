@@ -11,8 +11,52 @@ _ = gettext.gettext
 
 import math
 
+# Supported units
+class Unit(object):
+    _short = "?"
+    _category = "???????"
+    
+    def unit_format(self, value, precision=2):
+        return unit_format_suffix(value, self._short, precision)
+
+    def unit_format_atten(self, value):
+        return unit_format_atten(value, self._short)
+
+    def get_short_name(self):
+        return self._short
+    
+    def get_category(self):
+        return self._category
+    
+    def get_long_name(self, num):
+        raise ValueError("base class Unit not a valid unit")
+    
+class UnitVolt(Unit):
+    _short = _("V")
+    _category = _("Voltage")
+
+    def get_long_name(self, num):
+        return gettext.ngettext("volt", "volts", num)
+
+class UnitAmp(Unit):
+    _short = _("A")
+    _category = _("Current")
+
+    def get_long_name(self, num):
+        return gettext.ngettext("amp", "amperes", num)
+
+class UnitWatt(Unit):
+    _short = _("W")
+    _category = _("Power")
+
+    def get_long_name(self, num):
+        return gettext.ngettext("watt", "watts", num)
+
+supported_units = [UnitVolt, UnitAmp, UnitWatt]
+        
 class UserRequestError(Exception): pass
 class UserRequestOutOfRange(UserRequestError): pass
+class UserRequestUnsupported(UserRequestError): pass
 
 def float_trail_free(x):
     """Return a formatted float without trailing zeroes.  This is an awful hack."""
@@ -51,19 +95,21 @@ def unit_format_suffix(value, suffix, precision=2):
     elif abs(value) >= .99e12:
         return _("{value} T{unit}").format(value=float_trail_free(round_sig_figs(value * 1e-15, precision)), unit=suffix)
 
-def unit_format_atten(value):
-    """Print given value in V as a uV/div, mV/div, V/div or kV/div setting.  Input is as a voltage,
-    floating point."""
+def unit_format_atten(value, suffix):
+    """Print given value (e.g. V) as a uV/div, mV/div, V/div or kV/div setting.  Input is floating point."""
     if value < 1e-3:
-        return _("{vdiv:.0f} \u03BCV/div").format(vdiv=int(value * 1e6))
+        return _("{vdiv:.0f} \u03BC{unit}/div").format(vdiv=int(value * 1e6), unit=suffix)
     elif value >= 1e-3 and value < 1: 
-        return _("{vdiv:.0f} mV/div").format(vdiv=int(value * 1e3))
+        return _("{vdiv:.0f} m{unit}/div").format(vdiv=int(value * 1e3), unit=suffix)
     elif value >= 1 and value < 1e3: 
-        return _("{vdiv:.0f} V/div").format(vdiv=int(value))
+        return _("{vdiv:.0f} {unit}/div").format(vdiv=int(value), unit=suffix)
     elif value >= 1e3: 
-        return _("{vdiv:.0f} kV/div").format(vdiv=int(value * 1e-3))
+        return _("{vdiv:.0f} k{unit}/div").format(vdiv=int(value * 1e-3), unit=suffix)
 
 def unit_format_voltage(value, precision=2):
     """Print given value as a voltage.  Precision option specifies how many significant digits to display."""
     # TRANSLATORS: Unit is 'voltage'
     return unit_format_suffix(value, _("V"), precision)
+
+def value_20_log_db(ratio, precision=0):
+    return _("{ratio:.{prec}f} dB").format(ratio=(20 * math.log10(ratio)), prec=precision)
