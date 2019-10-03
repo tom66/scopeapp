@@ -65,7 +65,7 @@ class ScopeChannelController(object):
     enabled = True # TODO..change this
     index = None
     
-    internal_name = _("Undefined")      # Always CH1, CH2, etc.
+    internal_name = _("???")            # Always CH1, CH2, etc.
     default_long_name = _("Undefined")  # Always Channel 1, Channel 2, etc.
     short_name = _("Undefined")         # Could be CLK, DAT, etc.
     long_name = _("Undefined")          # Longer version of above: Clock, Serial Out, etc.
@@ -97,19 +97,21 @@ class ScopeChannelController(object):
     def set_colour(self, hue, sat):
         """Set the colour of a channel.  Only the hue and saturation of a channel may be set, to allow
         for value variation for highlighting and intensity grading."""
-        assert 0 <= hue < 360
+        assert 0 <= hue <= 360
         assert 0 <= sat <= 1
         
         self.hue = hue
         self.sat = sat
     
+    def get_colour(self):
+        """Return a tuple containing hue and saturation."""
+        print("GetColour", self.hue, self.sat)
+        return (self.hue, self.sat)
+    
     def get_hex_colour(self, value):
         """Get hex representation (e.g. #ff0000) of channel colour given @value (0-1)."""
         assert 0 <= value <= 1
-        
-        rgb = colorsys.hsv_to_rgb(self.hue / 360.0, self.sat, value)
-        rgb = (int(rgb[0] * 255), int(rgb[1] * 255), int(rgb[2] * 255))
-        return "#%02x%02x%02x" % rgb
+        return Utils.get_hex_colour_hsv(self.hue, self.sat, value)
 
     def enable_channel(self):
         self.enabled = True

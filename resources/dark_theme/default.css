@@ -503,3 +503,25 @@ scale highlight {
     border-radius: 10px;
     /*background-color: #00ff00;*/
 }
+
+#dlg_colour_picker scale.hue trough {
+    background-size: cover;
+    background-image: linear-gradient(90deg, #ff0000 16%, #ffff00 32%, #00ff00 50%, #00ffff 66%, #0000ff 82%, #ff00ff 100%);
+    border: 1px solid #202020;
+}
+
+#dlg_colour_picker scale.hue highlight {
+    background-color: transparent;
+    border: 1px solid #202020;
+}
+
+#dlg_colour_picker scale.sat trough {
+    background-size: cover;
+    background-image: linear-gradient(90deg, #ffffff 0%, #0000ff 100%);
+    border: 1px solid #202020;
+}
+
+#dlg_colour_picker scale.sat highlight {
+    background-color: transparent;
+    border: 1px solid #202020;
+}

@@ -1,11 +1,11 @@
-tab:nth-child($channel_index) {
-    background-image: linear-gradient(90deg, #202020 $channel_gradpct%, $channel_dkcolour);
+tab:nth-child($channel_index$) {
+    background-image: linear-gradient(90deg, #202020 $channel_gradpct$%, $channel_dkcolour$);
 }
 
-tab:nth-child($channel_index):checked {
-    background-image: linear-gradient(90deg, #202020 $channel_gradpct%, $channel_colour);
+tab:nth-child($channel_index$):checked {
+    background-image: linear-gradient(90deg, #202020 $channel_gradpct$%, $channel_colour$);
 }
 
 .channel_tab {
-    background-image: linear-gradient(180deg, $channel_colour, #202020 8px);
+    background-image: linear-gradient(180deg, $channel_colour$, #202020 8px);
 }

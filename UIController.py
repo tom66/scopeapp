@@ -26,6 +26,7 @@ UI_REFRESH_MS = 50
 import AppConfigManager
 import ScopeController as SC
 import UIChannelTab
+import UIChannelWidget
 import UINotifier
 
 class MainApplication(object):
@@ -40,6 +41,7 @@ class MainApplication(object):
     channel_tab_shading_factor = 0.0
     
     ui_tabs = []
+    ui_widgets = []
     
     # Flasher variable; flips state at config FlashFreq rate
     flash_period = 0
@@ -138,6 +140,14 @@ class MainApplication(object):
             ui_tab.append_to_notebook()
             self.ui_tabs.append(ui_tab)
         
+        # Add a ChannelWidget for each channel to the channel widget container
+        self.box_channel_info = self.builder.get_object("box_channel_info")
+        
+        for channel in self.ctrl.channels:
+            wdg = UIChannelWidget.ChannelWidget(self, channel)
+            self.box_channel_info.pack_start(wdg.get_embedded_container(), False, True, 0)
+            self.ui_widgets.append(wdg)
+        
         # Read the flash rate and calculate the flash period.
         try:
             self.flash_period = 1.0 / float(self.cfgmgr['UI']['FlashFreq'])
@@ -190,6 +200,8 @@ class MainApplication(object):
         self.ui_update_clock()
         self.ui_update_run_state()
         self.ui_update_tabs()
+        self.ui_update_widgets()
+        
         self.notifier.update_overlay(self.window.get_size()[0])
         
         self.last_ui_time = time.time()
@@ -252,6 +264,10 @@ class MainApplication(object):
     def ui_update_tabs(self):
         for tab in self.ui_tabs:
             tab.refresh_tab()
+    
+    def ui_update_widgets(self):
+        for wdg in self.ui_widgets:
+            wdg.refresh_widget()
     
     def run(self):
         """

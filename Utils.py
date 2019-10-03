@@ -9,7 +9,7 @@ gettext.bindtextdomain('yaosapp', '/lang')
 gettext.textdomain('yaosapp')
 _ = gettext.gettext
 
-import math
+import math, colorsys
 
 # Supported units
 class Unit(object):
@@ -57,6 +57,11 @@ supported_units = [UnitVolt, UnitAmp, UnitWatt]
 class UserRequestError(Exception): pass
 class UserRequestOutOfRange(UserRequestError): pass
 class UserRequestUnsupported(UserRequestError): pass
+
+def get_hex_colour_hsv(h, s, v):
+    rgb = colorsys.hsv_to_rgb(h / 360.0, s, v)
+    rgb = (int(rgb[0] * 255), int(rgb[1] * 255), int(rgb[2] * 255))
+    return "#%02x%02x%02x" % rgb
 
 def float_trail_free(x):
     """Return a formatted float without trailing zeroes.  This is an awful hack."""

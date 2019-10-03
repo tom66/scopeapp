@@ -77,9 +77,11 @@
               </packing>
             </child>
             <child>
-              <object class="GtkBox" id="box_defined_colours">
+              <object class="GtkBox" id="box_default_colours">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
+                <property name="margin_right">1</property>
+                <property name="margin_bottom">5</property>
                 <child>
                   <placeholder/>
                 </child>
@@ -129,6 +131,9 @@
                     <property name="round_digits">0</property>
                     <property name="draw_value">False</property>
                     <property name="value_pos">left</property>
+                    <style>
+                      <class name="hue"/>
+                    </style>
                   </object>
                   <packing>
                     <property name="left_attach">1</property>
@@ -144,6 +149,9 @@
                     <property name="round_digits">1</property>
                     <property name="draw_value">False</property>
                     <property name="value_pos">left</property>
+                    <style>
+                      <class name="sat"/>
+                    </style>
                   </object>
                   <packing>
                     <property name="left_attach">1</property>

@@ -14,6 +14,7 @@ from gi.repository import Gtk, GLib, Gio, Gdk, GdkPixbuf, GObject, Pango
 import Utils
 import ScopeController as SC
 import UIChannelColourPicker
+import CSSManager
 
 CHANNEL_TAB_LAYOUT_FILE = "resources/channel_tab.gtkbuilder"
 CHANNEL_TAB_CSS_FILE = "channel_tab.css"
@@ -79,7 +80,7 @@ user_channel_names = [
         (_("Vdd"), _("Vdd")),
         (_("Vcc"), _("Vcc")),
         (_("Vee"), _("Vee")),
-        (_("Vcore"), _("Vcore")),
+        (_("Vcore"), _("Vcre")),
         (_("15V"), _("15V")),
         (_("12V"), _("12V")),
         (_("9V"), _("9V")),
@@ -107,11 +108,11 @@ user_channel_names = [
         (_("Position"), _("POS")),
         (_("RSSI"), _("RSSI")),
         (_("Temperature"), _("Temp")),
-        (_("Demodulation"), _("Demod")),
+        (_("Demodulation"), _("DMod")),
         (_("Modulation"), _("Mod")),
         (_("Magneto-Reluctance"), _("MR")),
         (_("Capacitive Diractance"), _("CDR")),
-        (_("Fusion Chamber"), _("88mph"))
+        (_("Fusion Chamber"), _("88MI"))
     ]]
 ]
 
@@ -279,6 +280,11 @@ class ChannelTab(object):
         self.lbl_btn.add(self.lbl_tab)
         self.lbl_btn.connect("clicked", self._tab_clicked)
         self.lbl_btn.show_all()
+        
+        # Add all relevant widgets to the CSS manager
+        self.css_manager = CSSManager.CSSManager(self.cfgmgr['Theme']['ResourceDir'] + CHANNEL_TAB_CSS_FILE)
+        self.css_manager.add_widget(self.notebook, None)
+        self.css_manager.add_widget(self.vbox, None)
     
     def __user_exception_handler(func):
         def wrapper(self, *args):
@@ -372,7 +378,8 @@ class ChannelTab(object):
     
     def _btn_chan_colour_press(self, *args):
         colour_picker = UIChannelColourPicker.ChannelColourPicker(self.channel.long_name)
-        colour_picker.run()
+        colour_picker.set_hue_sat(*self.channel.get_colour())
+        self.channel.set_colour(*colour_picker.run())
     
     @__user_exception_handler
     def _cmb_chan_label_changed(self, *args):
@@ -450,8 +457,21 @@ class ChannelTab(object):
                 self.lbl_chan_name_ctx.add_class("chan_name_std")
             
             self.lbl_chan_name.set_markup(markup)
-
-        self.apply_css()
+        
+        self.css_manager.set_variable("channel_index", self.notebook_index)
+        
+        if self.channel.enabled:
+            self.css_manager.set_variable("channel_colour", self.channel.get_hex_colour(1.0))
+            self.css_manager.set_variable("channel_dkcolour", self.channel.get_hex_colour(float(self.cfgmgr['Theme']['ChannelTabEnabledShade'])))
+            self.css_manager.set_variable("channel_gradpct", self.cfgmgr['Theme']['ChannelTabEnabledGradePct'])
+            self.css_manager.set_variable("channel_gradpct_bkgrnd", self.cfgmgr['Theme']['ChannelBkgndGradePct'])
+        else:
+            self.css_manager.set_variable("channel_colour", self.channel.get_hex_colour(1.0))
+            self.css_manager.set_variable("channel_dkcolour", self.channel.get_hex_colour(float(self.cfgmgr['Theme']['ChannelTabShade'])))
+            self.css_manager.set_variable("channel_gradpct", self.cfgmgr['Theme']['ChannelTabGradePct'])
+            self.css_manager.set_variable("channel_gradpct_bkgrnd", self.cfgmgr['Theme']['ChannelBkgndGradePct'])
+        
+        self.css_manager.refresh_css()
         
         # TODO: We need some way to read that channel enable state has changed externally and refresh
         # the state of the toggle switch
@@ -515,65 +535,12 @@ class ChannelTab(object):
             
         # Update probe settings
         self._update_probe_atten_options()
-        
-        # TEST
-        #self._btn_chan_colour_press(None)
-    
-    def _generate_css_provider(self, css, index, grad_pct_bkgnd, grad_pct, dk_colour, pri_colour):
-        """
-        Generates a CSS provider for dynamic styling of a channel tab.
-        
-        @FIXME  there may be a better way to do this, but I couldn't find it
-        """
-        css_prov = Gtk.CssProvider()
-        data = open(css, "r").read()
-        data = data.replace("$channel_gradpct_bkgrnd", grad_pct_bkgnd)
-        data = data.replace("$channel_gradpct", grad_pct)
-        data = data.replace("$channel_dkcolour", dk_colour)
-        data = data.replace("$channel_colour", pri_colour)
-        data = data.replace("$channel_index", str(index))
-        css_prov.load_from_data(bytes(data, encoding='ascii'))  
-        return css_prov
-    
-    def get_css_provider(self, index):
-        # Generate different style for enabled/disabled channels
-        if self.channel.enabled:
-            css_file = self.cfgmgr['Theme']['ResourceDir'] + CHANNEL_TAB_CSS_FILE
-            css = self._generate_css_provider(css_file, index, \
-                self.cfgmgr['Theme']['ChannelBkgndGradePct'], \
-                self.cfgmgr['Theme']['ChannelTabEnabledGradePct'], \
-                self.channel.get_hex_colour(float(self.cfgmgr['Theme']['ChannelTabEnabledShade'])), \
-                self.channel.get_hex_colour(1.0))
-        else:
-            css_file = self.cfgmgr['Theme']['ResourceDir'] + CHANNEL_TAB_CSS_FILE
-            css = self._generate_css_provider(css_file, index, \
-                self.cfgmgr['Theme']['ChannelBkgndGradePct'], \
-                self.cfgmgr['Theme']['ChannelTabGradePct'], \
-                self.channel.get_hex_colour(float(self.cfgmgr['Theme']['ChannelTabShade'])), \
-                self.channel.get_hex_colour(1.0))
-        
-        return css
     
     def append_to_notebook(self):
         self.notebook.append_page(self.get_embedded_container(), self.get_embedded_label())
     
-    def apply_css(self):
-        nb_ctx = self.notebook.get_style_context()
-        vb_ctx = self.vbox.get_style_context()
-        
-        try:
-            nb_ctx.remove_provider(self.css_prov)
-            vb_ctx.remove_provider(self.css_prov)
-        except Exception as e:
-            pass
-        
-        self.css_prov = self.get_css_provider(self.notebook_index)
-        
-        nb_ctx.add_provider(self.css_prov, Gtk.STYLE_PROVIDER_PRIORITY_USER)
-        vb_ctx.add_provider(self.css_prov, Gtk.STYLE_PROVIDER_PRIORITY_USER)
-    
     def get_embedded_label(self):
-        return self.lbl_btn #event_box
+        return self.lbl_btn
     
     def get_embedded_container(self):
         return self.vbox
