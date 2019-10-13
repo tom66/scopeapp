@@ -105,7 +105,6 @@ class ScopeChannelController(object):
     
     def get_colour(self):
         """Return a tuple containing hue and saturation."""
-        print("GetColour", self.hue, self.sat)
         return (self.hue, self.sat)
     
     def get_hex_colour(self, value):

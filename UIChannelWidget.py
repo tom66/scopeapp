@@ -23,26 +23,33 @@ class ChannelWidget(object):
         self.cfgmgr = root_mgr.cfgmgr
         self.root_mgr = root_mgr
         
+        self.event_box = Gtk.EventBox()
         self.container = Gtk.Box()
         
         self.label_left = Gtk.Label()
-        self.label_left.set_selectable(True)
         self.label_modes = Gtk.Label()
         self.label_right = Gtk.Label()
-        self.label_right.set_selectable(True)
+        #self.label_right.set_selectable(True)
         
         self.container.pack_end(self.label_right, True, True, 0)
         self.container.pack_end(self.label_modes, True, True, 0)
         self.container.pack_end(self.label_left, True, True, 0)
         
-        self.css_manager = CSSManager.CSSManager(self.cfgmgr['Theme']['ResourceDir'] + CHANNEL_WIDGET_CSS_FILE)
+        self.css_manager = CSSManager.CSSManager(CHANNEL_WIDGET_CSS_FILE)
         self.css_manager.set_variable("channel_colour", "#000000")
         self.css_manager.set_variable("channel_dkcolour", "#000000")
         self.css_manager.add_widget(self.label_left, "cwdg_left")
         self.css_manager.add_widget(self.label_modes, "cwdg_mid")
         self.css_manager.add_widget(self.label_right, "cwdg_right")
         
+        self.event_box.add(self.container)
+        self.event_box.connect("button-press-event", self.widget_clicked)
+        
         self.refresh_widget()
+    
+    def widget_clicked(self, *args):
+        # Send the channel click signal to the root_mgr
+        self.root_mgr.channel_widget_click(self.channel)
     
     def refresh_widget(self):
         self.label_left.set_markup(self.channel.short_name)
@@ -66,4 +73,4 @@ class ChannelWidget(object):
         self.css_manager.refresh_css()
         
     def get_embedded_container(self):
-        return self.container
+        return self.event_box

@@ -1,0 +1,10 @@
+button {
+    background-color: $colour$;
+    background-image: none;
+    margin-right: 10px;
+    border: 1px solid #202020;
+}
+
+button:last-child {
+    margin-right: 0px;
+}

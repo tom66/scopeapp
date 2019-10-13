@@ -63,6 +63,17 @@ def get_hex_colour_hsv(h, s, v):
     rgb = (int(rgb[0] * 255), int(rgb[1] * 255), int(rgb[2] * 255))
     return "#%02x%02x%02x" % rgb
 
+def get_hue_fg_colour(h, s, v):
+    """Returns the best foreground colour for a given background colour (black or white.)"""
+    if s > 0.6:
+        if h > 20 and h <= 200:
+            return "black"
+    elif s <= 0.6:
+        if v > 0.8:
+            return "black"
+    
+    return "white"
+   
 def float_trail_free(x):
     """Return a formatted float without trailing zeroes.  This is an awful hack."""
     # https://stackoverflow.com/a/2440786/313032, Alex Martelli

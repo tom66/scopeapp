@@ -1,0 +1,17 @@
+.cpk_colour_preview { 
+    background-color: $colour$;
+    background-image: none;
+    margin-right: 10px;
+    border: 1px solid #202020;
+    /*color: $fg_colour$;*/
+}
+
+scale.scl_sat trough {
+    background-size: cover;
+    background-image: linear-gradient(90deg, #ffffff 0%, $colour_full_sat$ 100%);
+    border: 1px solid #202020;
+}
+
+button:last-child {
+    margin-right: 0px;
+}

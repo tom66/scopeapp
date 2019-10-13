@@ -166,6 +166,13 @@ class MainApplication(object):
     def _wnd_key_release(self, *args):
         print("_wnd_key_release", args)
     
+    def channel_widget_click(self, channel):
+        # Find the appropriate ChannelTab instance and send the click message
+        for tab in self.ui_tabs:
+            if isinstance(tab, UIChannelTab.ChannelTab):
+                if tab.channel == channel:
+                    tab.tab_clicked(None)
+    
     def add_css_class_by_widget_name(self, widget, cls):
         self.builder.get_object(widget).get_style_context().add_class(cls)
     

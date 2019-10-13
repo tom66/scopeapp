@@ -13,23 +13,14 @@ from gi.repository import Gtk, GLib, Gio, Gdk, GdkPixbuf, GObject, Pango
 
 import colorsys
 
-import Utils
+import Utils, CSSManager
 
 COLOUR_PICKER_LAYOUT_FILE = "resources/colour_picker.gtkbuilder"
+COLOUR_PICKER_CSS_FILE = "colour_picker.css"
+COLOUR_PICKER_BUTTON_CSS_FILE = "colour_picker_button.css"
 
 WIDTH_REQUEST = 500
 HEIGHT_REQUEST = 400
-
-base_css = """
-#cpk_colour_preview { 
-    background-color: $bgcolour; 
-}
-
-#dlg_colour_picker scale.sat trough {
-    background-size: cover;
-    background-image: linear-gradient(90deg, #ffffff 0%, $bgcolour 100%);
-    border: 1px solid #202020;
-}"""
 
 button_css = """
 button {
@@ -111,10 +102,18 @@ class ChannelColourPicker(object):
         self.ent_sat.connect("key-release-event", self.ent_change)
         
         self.cpk_colour_preview = self.builder.get_object("cpk_colour_preview")
+        self.cpk_colour_preview.set_label("")
+        
+        self.css = CSSManager.CSSManager(COLOUR_PICKER_CSS_FILE)
+        self.css.add_widget(self.scl_sat, "scl_sat")
+        self.css.add_widget(self.cpk_colour_preview, "cpk_colour_preview")
+        
         self.box_default_colours = self.builder.get_object("box_default_colours")
         
         # Add pre-defined colours
         for col in range(default_colour_count):
+            button_css = CSSManager.CSSManager(COLOUR_PICKER_BUTTON_CSS_FILE)
+            
             hue = (360.0 / default_colour_count) * col
             sat = default_saturation
             self.default_colours.append((hue, sat))
@@ -124,12 +123,9 @@ class ChannelColourPicker(object):
             self.box_default_colours.pack_end(btn, True, True, 0)
             btn.connect("clicked", self.btn_default_colour_clicked)
             
-            css = button_css.replace('$bgcolour', Utils.get_hex_colour_hsv(hue, sat, 1))
-            
-            css_prov = Gtk.CssProvider()
-            css_prov.load_from_data(bytes(css, encoding='ascii'))  
-            
-            btn.get_style_context().add_provider(css_prov, Gtk.STYLE_PROVIDER_PRIORITY_USER)
+            button_css.set_variable("colour", Utils.get_hex_colour_hsv(hue, sat, 1))
+            button_css.add_widget(btn, None)
+            button_css.refresh_css()
         
         self.refresh_ui()
     
@@ -150,7 +146,7 @@ class ChannelColourPicker(object):
     def btn_cancel_clicked(self, *args):
         print("btn_cancel_clicked")
         self.set_hue_sat(self.old_hue, self.old_sat)
-        self.dialog.response(Gtk.ResponseType.Cancel)
+        self.dialog.response(Gtk.ResponseType.CANCEL)
         self.dialog.close()
     
     def get_hue_sat(self):
@@ -192,21 +188,15 @@ class ChannelColourPicker(object):
         assert 0 <= hue <= 360
         assert 0 <= sat <= 1
         
-        print(hue, sat)
-        
         self.hue = float(hue)
         self.sat = float(sat)
         self.old_hue = self.hue
         self.old_sat = self.sat
         
-        print("Set internal I:", (self.hue, self.sat))
-        
         self.scl_inhibit = True
         self.scl_hue.set_value(self.hue)
         self.scl_sat.set_value(self.sat * 100)
         self.scl_inhibit = False
-        
-        print("Set internal II:", (self.hue, self.sat))
         
         self.refresh_ui()
     
@@ -214,25 +204,11 @@ class ChannelColourPicker(object):
         self.ent_hue.set_text("%d" % self.hue)
         self.ent_sat.set_text("%d" % (self.sat * 100))
         
-        # TODO should be a common block in Utils
-        rgb = colorsys.hsv_to_rgb(self.hue / 360.0, self.sat, 1)
-        rgb = (int(rgb[0] * 255), int(rgb[1] * 255), int(rgb[2] * 255))
-        self.render_colour = "#%02x%02x%02x" % rgb
+        self.css.set_variable('colour', Utils.get_hex_colour_hsv(self.hue, self.sat, 1))
+        self.css.set_variable('colour_full_sat', Utils.get_hex_colour_hsv(self.hue, 1, 1))
+        #self.css.set_variable('fg_colour', Utils.get_hue_fg_colour(self.hue, self.sat, 1))
         
-        try:
-            ctx.remove_provider(self.css_prov)
-        except Exception as e:
-            pass
-            
-        css = base_css.replace('$bgcolour', self.render_colour)
-        
-        self.css_prov = Gtk.CssProvider()
-        self.css_prov.load_from_data(bytes(css, encoding='ascii'))  
-        
-        self.cpk_colour_preview.get_style_context().add_provider(self.css_prov, Gtk.STYLE_PROVIDER_PRIORITY_USER)
-        self.scl_sat.get_style_context().add_provider(self.css_prov, Gtk.STYLE_PROVIDER_PRIORITY_USER)
-        
-        print(css)
+        self.css.refresh_css()
     
     def scl_change(self, *args):
         if self.scl_inhibit:

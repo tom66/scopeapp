@@ -34,4 +34,10 @@
     border-bottom-right-radius: 3px;
     margin-right: 5px;
     font: 12px "Sans";
+    min-width: 80px;
+}
+
+.cwdg_right selection {
+    background-color: $channel_colour$;
+    color: #000000;
 }

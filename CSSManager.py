@@ -11,7 +11,12 @@ import gi
 gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk, GLib, Gio, Gdk, GdkPixbuf, GObject, Pango
 
+import os
+
 import Utils
+import AppConfigManager
+
+global_cfg = AppConfigManager.AppConfigManager()
 
 class CSSManager(object):
     vars = {}
@@ -19,10 +24,15 @@ class CSSManager(object):
     old_css_prov = None
     var_change = False
     
-    def __init__(self, input_file):
+    def __init__(self, input_file, themed_file=True):
         self.vars = {}
         self.wdgs = []
-        self.input_data = open(input_file, "r").read()
+        
+        if themed_file:
+            self.input_data = open(os.path.join(global_cfg.Theme.resourcedir, input_file), "r").read()
+        else:
+            raise NotImplementedError(_("File should be a themed type, global styles not currently implemented"))
+            
         self.var_change = True
     
     def set_variable(self, key, value):

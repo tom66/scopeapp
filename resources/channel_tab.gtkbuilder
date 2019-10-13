@@ -580,12 +580,7 @@
                 <property name="valign">center</property>
                 <property name="hexpand">True</property>
                 <child>
-                  <object class="GtkLabel">
-                    <property name="visible">True</property>
-                    <property name="can_focus">False</property>
-                    <property name="hexpand">True</property>
-                    <property name="label" translatable="yes"> </property>
-                  </object>
+                  <placeholder/>
                 </child>
               </object>
               <packing>

@@ -211,6 +211,10 @@ class ChannelTab(object):
         self.btn_chan_probe_other.set_label(_("..."))
         self.btn_probe_atten_units.set_label("")
         
+        self.btn_chan_colour_label = Gtk.Label()
+        self.btn_chan_colour.add(self.btn_chan_colour_label)
+        self.btn_chan_colour_label.set_markup(_("Colour"))
+        
         self._update_probe_atten_options()
         
         self.btn_chan_tog_coup_AC_ctx = self.btn_chan_tog_coup_AC.get_style_context()
@@ -278,13 +282,15 @@ class ChannelTab(object):
         self.lbl_tab.set_angle(90)
         self.lbl_btn = Gtk.Button()
         self.lbl_btn.add(self.lbl_tab)
-        self.lbl_btn.connect("clicked", self._tab_clicked)
+        self.lbl_btn.connect("clicked", self.tab_clicked)
         self.lbl_btn.show_all()
         
         # Add all relevant widgets to the CSS manager
-        self.css_manager = CSSManager.CSSManager(self.cfgmgr['Theme']['ResourceDir'] + CHANNEL_TAB_CSS_FILE)
+        self.css_manager = CSSManager.CSSManager(CHANNEL_TAB_CSS_FILE)
         self.css_manager.add_widget(self.notebook, None)
         self.css_manager.add_widget(self.vbox, None)
+        self.css_manager.add_widget(self.btn_chan_colour, "channel_button_color")
+        self.css_manager.add_widget(self.btn_chan_colour_label, "channel_button_color_label")
     
     def __user_exception_handler(func):
         def wrapper(self, *args):
@@ -395,14 +401,6 @@ class ChannelTab(object):
             key = user_channel_names[path[0] - 2][1][path[1]]
             self.channel.set_channel_name_global(key[1], key[0])
     
-    def _tab_clicked(self, *args):
-        # Clicking a tab when the channel is not currently selected will select the tab
-        # Clicking the tab when the channel is selected will toggle the channel enable state
-        if (self.notebook.get_current_page() + 1) == self.notebook_index:
-            self.channel.toggle_channel()
-        else:
-            self.notebook.set_current_page(self.notebook_index - 1)
-    
     def _update_probe_atten_options(self):
         if self.atten_unit == ATTEN_UNIT_X:
             self.btn_probe_atten_units.set_label(_("X"))
@@ -435,6 +433,14 @@ class ChannelTab(object):
             self.atten_update = False
             self.atten_init = True
         
+    def tab_clicked(self, *args):
+        # Clicking a tab when the channel is not currently selected will select the tab
+        # Clicking the tab when the channel is selected will toggle the channel enable state
+        if (self.notebook.get_current_page() + 1) == self.notebook_index:
+            self.channel.toggle_channel()
+        else:
+            self.notebook.set_current_page(self.notebook_index - 1)
+    
     def refresh_tab(self):
         self.lbl_tab.set_markup(self.channel.short_name)
         
@@ -446,8 +452,6 @@ class ChannelTab(object):
             # If the channel name exceeds a threshold, then apply a reduced-size class
             markup = _("{long_channel_name} ({short_internal_name})").format(\
                 long_channel_name=self.channel.long_name, short_internal_name=self.channel.internal_name)
-            
-            print(markup, len(markup), NAME_SIZE_THRESH)
             
             if len(markup) > NAME_SIZE_THRESH:
                 self.lbl_chan_name_ctx.remove_class("chan_name_std")
@@ -462,15 +466,16 @@ class ChannelTab(object):
         
         if self.channel.enabled:
             self.css_manager.set_variable("channel_colour", self.channel.get_hex_colour(1.0))
-            self.css_manager.set_variable("channel_dkcolour", self.channel.get_hex_colour(float(self.cfgmgr['Theme']['ChannelTabEnabledShade'])))
-            self.css_manager.set_variable("channel_gradpct", self.cfgmgr['Theme']['ChannelTabEnabledGradePct'])
-            self.css_manager.set_variable("channel_gradpct_bkgrnd", self.cfgmgr['Theme']['ChannelBkgndGradePct'])
+            self.css_manager.set_variable("channel_dkcolour", self.channel.get_hex_colour(self.cfgmgr.Theme.ChannelTabEnabledShade))
+            self.css_manager.set_variable("channel_gradpct", self.cfgmgr.Theme.ChannelTabEnabledGradePct)
+            self.css_manager.set_variable("channel_gradpct_bkgrnd", self.cfgmgr.Theme.ChannelBkgndGradePct)
         else:
             self.css_manager.set_variable("channel_colour", self.channel.get_hex_colour(1.0))
-            self.css_manager.set_variable("channel_dkcolour", self.channel.get_hex_colour(float(self.cfgmgr['Theme']['ChannelTabShade'])))
-            self.css_manager.set_variable("channel_gradpct", self.cfgmgr['Theme']['ChannelTabGradePct'])
-            self.css_manager.set_variable("channel_gradpct_bkgrnd", self.cfgmgr['Theme']['ChannelBkgndGradePct'])
+            self.css_manager.set_variable("channel_dkcolour", self.channel.get_hex_colour(self.cfgmgr.Theme.ChannelTabShade))
+            self.css_manager.set_variable("channel_gradpct", self.cfgmgr.Theme.ChannelTabGradePct)
+            self.css_manager.set_variable("channel_gradpct_bkgrnd", self.cfgmgr.Theme.ChannelBkgndGradePct)
         
+        self.css_manager.set_variable("channel_btn_fgcolour", Utils.get_hue_fg_colour(*self.channel.get_colour(), 1.0))
         self.css_manager.refresh_css()
         
         # TODO: We need some way to read that channel enable state has changed externally and refresh
