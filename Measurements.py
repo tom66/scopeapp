@@ -8,6 +8,7 @@ gettext.textdomain('yaosapp')
 _ = gettext.gettext
 
 import multiprocessing
+from multiprocessing import shared_memory
 
 class MeasResultState(object): 
     """Encompassing state for all measurement results."""
@@ -78,6 +79,7 @@ class Measurement(multiprocessing.Process):
     _result = None
     _state = MeasResultNotReady()
     _conn_rx, _conn_tx = (None, None)
+    _data_shm = None
     
     def __init__(self, pipe, src_name, bounds):
        self._conn_rx, self._conn_tx = pipe
@@ -100,6 +102,8 @@ class Measurement(multiprocessing.Process):
         packet = self._conn_rx.recv()
 
         if isinstance(packet, MeasRequestStart):
+            self._data_shm = np.ndarray((packet.nd_array_dims,), dtype=np.float32, buffer=shared_memory.SharedMemory(name=packet.shm_name).buf)
+        
             try:
                 self._measurement_task()
             except Exception as e:
@@ -135,6 +139,10 @@ class MeasurementController(object):
     """Resulting measurements."""
     _result_meas = {}
     
+    """Statistics."""
+    stat_meas_waiting = 0
+    stat_meas_configured = 0
+    
     def __init__(self, controller):
         self._ctrl = controller
     
@@ -150,18 +158,21 @@ class MeasurementController(object):
     
         pipe = multiprocessing.Pipe(False)
         meas = type(meas_classname)(pipe, source_name, data_bounds)
-        meas.start()
-        self._working_meas.append([meas, source_name, pipe, False])
+        meas_key = hash(meas) # TODO: Use a guaranteed unique key?
+        self._working_meas.append({'meas' : meas, 'src' : source_name, 'pipe' : pipe, 'waiting' : False, 'key' : meas_key])
+        _result_meas[meas['key']] = None
     
     def remove_measurement(self, source_name, meas_classname):
         idx = self.find_measurement(source_name, meas_classname)
+        
         if idx != None:
+            del self._result_meas[self._working_meas[idx]['key']]
             self._working_meas.remove(self._working_meas[idx])
     
     def find_measurement(self, source_name, meas_classname):
-        for meas in self._working_meas:
+        for idx, meas in enumerate(self._working_meas):
             if isinstance(meas[0], type(meas_classname)) and meas[1] == source_name:
-                return meas
+                return idx
         
         return None
     
@@ -170,6 +181,28 @@ class MeasurementController(object):
         for updated data, and results are made available in this class
         as each becomes available.  This function is non-blocking - but the
         results may not be available immediately."""
+        num_waiting = 0
+        num_meas_configured = 0
+        
         for meas in self._working_meas:
+            num_meas_configured += 1
+            
             # Only send the request if we are not waiting on data from this measurement
-            meas[3] ###? 
+            if not meas['waiting']:
+                meas['meas'].stop()
+                meas['meas'].start()
+                meas['pipe'][0].send(MeasRequestStart())
+                meas['waiting'] = True
+        
+        # Check to see if data is available; ping the task if the pipe is not currently blocked
+        for meas in self._working_meas:
+            if meas['waiting']:
+                num_waiting += 1
+                
+                if meas['pipe'][1].poll():
+                    res = meas['pipe'][1].recv()
+                    _result_meas[meas['key']] = res
+                    meas['waiting'] = False
+
+        self.stat_meas_waiting = num_waiting
+        self.stat_meas_configured = num_meas_configured
