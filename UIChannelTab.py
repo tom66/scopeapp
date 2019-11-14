@@ -16,6 +16,8 @@ import ScopeController as SC
 import UIChannelColourPicker
 import CSSManager
 
+import copy
+
 CHANNEL_TAB_LAYOUT_FILE = "resources/channel_tab.gtkbuilder"
 CHANNEL_TAB_CSS_FILE = "channel_tab.css"
 
@@ -126,6 +128,11 @@ class ChannelTab(object):
     atten_unit_update = True
     atten_unit = ATTEN_UNIT_X
     atten_init = False
+    
+    init_refresh = False
+    
+    last_state = None
+    now_state = None
     
     def __init__(self, root_mgr, channel, notebook, index):
         self.channel = channel
@@ -292,6 +299,11 @@ class ChannelTab(object):
         self.css_manager.add_widget(self.btn_chan_colour, "channel_button_color")
         self.css_manager.add_widget(self.btn_chan_colour_label, "channel_button_color_label")
     
+    def make_state(self):
+        """Generate a state tuple;  this is compared against older states to see if any
+        settings have changed & if a refresh is needed."""
+        return copy.copy(vars(self.channel),)
+    
     def __user_exception_handler(func):
         def wrapper(self, *args):
             try:
@@ -443,6 +455,18 @@ class ChannelTab(object):
     
     def refresh_tab(self):
         self.lbl_tab.set_markup(self.channel.short_name)
+        
+        # Tab not refreshed if not active, and this is not the first run
+        if self.notebook.get_current_page() != (self.notebook_index - 1) and self.init_refresh:
+            return
+        
+        self.init_refresh = True
+        
+        # Tab not refreshed if Nothing Has Changed (T.May, 2017)
+        self.new_state = self.make_state()
+        if self.new_state == self.last_state:
+            return
+        self.last_state = self.new_state
         
         if self.channel.has_default_name():
             self.lbl_chan_name.set_markup(self.channel.long_name)

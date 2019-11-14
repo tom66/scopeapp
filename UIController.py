@@ -21,7 +21,7 @@ SIZE_OTHER = 0
 SIZE_ICON = 1
 
 # How often to refresh UI data.  Lower number = more CPU, faster refresh.
-UI_REFRESH_MS = 50
+UI_REFRESH_MS = 25
 
 import AppConfigManager
 import ScopeController as SC
