@@ -14,20 +14,37 @@ from gi.repository import Gtk, GLib, Gio, Gdk, GdkPixbuf
 import sys, time
 from datetime import datetime
 
+import AppConfigManager
+import ScopeController as SC
+import UIChannelTab
+import UIChannelWidget
+import UINotifier
+import Utils
+
 LAYOUT_FILE = "resources/mainapp.gtkbuilder"
 
 # Possible icon sizes
 SIZE_OTHER = 0
 SIZE_ICON = 1
 
+# Popup menu options
+popdown_menu_options = [
+    (_("Save Settings"),            "_menu_save_settings",      "<Ctrl>S"), 
+    (_("Load Settings"),            "_menu_load_settings",      "<Ctrl>O"), 
+    (_("Defaults"),                 "_menu_load_defaults"),
+    None,
+    (_("Help"),                     "_menu_help",               "F1"),
+    (_("About & Credits"),          "_menu_about"), 
+    (_("Licences"),                 "_menu_licence"), 
+    None,
+    (_("Preferences"),              "_menu_preferences"), 
+    (_("Shutdown"),                 "_menu_shutdown"), 
+    (_("Reboot"),                   "_menu_reboot"), 
+    (_("Exit Application"),         "_menu_exit",               "<Alt>F4"), 
+]
+
 # How often to refresh UI data.  Lower number = more CPU, faster refresh.
 UI_REFRESH_MS = 25
-
-import AppConfigManager
-import ScopeController as SC
-import UIChannelTab
-import UIChannelWidget
-import UINotifier
 
 class MainApplication(object):
     """
@@ -51,7 +68,6 @@ class MainApplication(object):
     last_ui_time = None
     
     ticks = 0
-    
     last_window_size = (0, 0)
     
     def __init__(self):
@@ -87,13 +103,15 @@ class MainApplication(object):
         self.lbl_status_run = self.builder.get_object("lbl_status_run")
         self.lbl_status_run_ctx = self.lbl_status_run.get_style_context()
         
+        # Create the AccelGroup for all key bindings
+        self.agr = Gtk.AccelGroup()
+        self.window.add_accel_group(self.agr)
+        
         # Create the notifier controller
         self.notifier = UINotifier.NotifyController()
         self.overlay_main.add_overlay(self.overlay_fixed)
         self.overlay_main.set_overlay_pass_through(self.overlay_fixed, True)
         self.notifier.set_fixed_container(self.overlay_fixed)
-        
-        #self.overlay_main.add_overlay(Gtk.Label("this is a test"))
         
         # Test default images
         self.set_svg_image("img_status_trigger_type", "trigger_rising_edge", SIZE_ICON)
@@ -103,6 +121,8 @@ class MainApplication(object):
         self.set_svg_image("img_status_mute", "blank", SIZE_ICON)
         
         # Set logo
+        self.ebx_img_logo = self.builder.get_object("ebx_img_logo")
+        self.ebx_img_logo.connect("button-press-event", self._logo_clicked)
         self.img_logo = self.builder.get_object("img_logo")
         self.img_logo.set_from_file(self.cfgmgr['UI']['Logo'])
         
@@ -123,18 +143,13 @@ class MainApplication(object):
         self.window.connect("key_press_event", self._wnd_key_press)
         self.window.connect("key_release_event", self._wnd_key_release)
         
-        # Connect to the GLArea.  Note, in future this will be instantiated through TomH's OpenGL layer.
-        #self.gl_area = self.builder.get_object("gl_main")
-        
         # Load the GtkBuilder resource for the channel tabs in the selection notebook, and
         # add one tab for each channel
         self.nbk_main_settings = self.builder.get_object("nbk_main_settings")
         self.nbk_main_settings.set_hexpand(False)
         self.nbk_main_settings.set_hexpand_set(True)
         self.nbk_main_settings.set_size_request(50, 0)
-        #self.gl_area.set_hexpand(True)
-        #self.gl_area.set_hexpand_set(True)
-        
+
         for channel in self.ctrl.channels:
             ui_tab = UIChannelTab.ChannelTab(self, channel, self.nbk_main_settings, len(self.ui_tabs) + 1)
             ui_tab.append_to_notebook()
@@ -147,6 +162,27 @@ class MainApplication(object):
             wdg = UIChannelWidget.ChannelWidget(self, channel)
             self.box_channel_info.pack_start(wdg.get_embedded_container(), False, True, 0)
             self.ui_widgets.append(wdg)
+        
+        # Create the dropdown general purpose menu that is triggered by key press or clicking
+        # the application logo
+        self.popdown_menu = Gtk.Menu()
+        self.popdown_menu.set_accel_group(self.agr)
+        row = 0
+        
+        for opt in popdown_menu_options:
+            if opt is None:
+                item = Gtk.SeparatorMenuItem()
+            else:
+                item = Gtk.MenuItem(opt[0])
+                
+                if len(opt) == 3:
+                    keyval, mod = Gtk.accelerator_parse(opt[2])
+                    item.add_accelerator("activate", self.agr, keyval, mod, Gtk.AccelFlags.VISIBLE)
+                    
+                item.connect("activate", getattr(self, opt[1]))
+                
+            self.popdown_menu.attach(item, 0, 1, row, row + 1)
+            row += 1
         
         # Read the flash rate and calculate the flash period.
         try:
@@ -166,6 +202,54 @@ class MainApplication(object):
     def _wnd_key_release(self, *args):
         print("_wnd_key_release", args)
     
+    def _logo_clicked(self, *args):
+        print("_logo_clicked", args)
+        self.popdown_menu.show_all()
+        self.popdown_menu.popup_at_widget(self.img_logo, Gdk.Gravity.SOUTH_WEST, Gdk.Gravity.NORTH_WEST, None)
+    
+    def _app_nice_quit(self):
+        # we'd kill all subprocesses nicely; waiting up to 5 seconds for them to terminate...
+        
+        # then we'll save our configuration
+        
+        # then we'll shut down the AFE and other parts cleanly
+        
+        # then we'll nicely quit
+        
+        # ... but for now, just sys.exit()
+        sys.exit()
+    
+    def _menu_save_settings(self, *args):
+        self._user_exception(Utils.UserRequestUnsupported(_("Function not implemented yet")))
+        
+    def _menu_load_settings(self, *args):
+        self._user_exception(Utils.UserRequestUnsupported(_("Function not implemented yet")))
+        
+    def _menu_load_defaults(self, *args):
+        self._user_exception(Utils.UserRequestUnsupported(_("Function not implemented yet")))
+
+    def _menu_help(self, *args):
+        self._user_exception(Utils.UserRequestUnsupported(_("Function not implemented yet")))
+
+    def _menu_about(self, *args):
+        self._user_exception(Utils.UserRequestUnsupported(_("Function not implemented yet")))
+
+    def _menu_licence(self, *args):
+        self._user_exception(Utils.UserRequestUnsupported(_("Function not implemented yet")))
+
+    def _menu_preferences(self, *args):
+        self._user_exception(Utils.UserRequestUnsupported(_("Function not implemented yet")))
+
+    def _menu_shutdown(self, *args):
+        self._user_exception(Utils.UserRequestUnsupported(_("Function not implemented yet")))
+
+    def _menu_reboot(self, *args):
+        self._user_exception(Utils.UserRequestUnsupported(_("Function not implemented yet")))
+
+    def _menu_exit(self, *args):
+        # prompt to exit?
+        self._app_nice_quit()
+
     def channel_widget_click(self, channel):
         # Find the appropriate ChannelTab instance and send the click message
         for tab in self.ui_tabs:

@@ -7,7 +7,7 @@ gettext.bindtextdomain('yaosapp', '/lang')
 gettext.textdomain('yaosapp')
 _ = gettext.gettext
 
-import colorsys, math
+import colorsys, math, json
 
 import Utils
 
@@ -22,7 +22,9 @@ SCOPE_CH_1 = 0
 SCOPE_CH_2 = 1
 SCOPE_CH_3 = 2
 SCOPE_CH_4 = 3
-SCOPE_CH_EXT = 5
+SCOPE_CH_EXT = 4
+
+CHANNEL_INDEXES = [0, 1, 2, 3, 4]
 
 # Automatic channel names. Not translated.
 auto_short_names = [
@@ -76,13 +78,40 @@ class ScopeChannelController(object):
     
     # Channel settings
     atten_div = attenuation_options[5]
+    atten_raw = 0
     probe_multiplier = 1
+    vernier = False
     offset = -7.8
     coupling = COUP_AC
     invert = False
     bandwidth_20M = False
     termination_50R = False
     unit = Utils.UnitVolt()
+    
+    # Whether 50R mode is to be applied is determined by confirming with the user;  the setting
+    # is not written until the user confirms if the setting is restored after a power up.
+    termination_50R_applied = False
+    
+    pack_vars_types = {
+        "enabled":              [(bool,)],
+        "index":                [(int,), CHANNEL_INDEXES[0], CHANNEL_INDEXES[-1]],
+        "internal_name":        [(str,), 20],
+        "default_long_name":    [(str,), 20],
+        "short_name":           [(str,), 5],
+        "long_name":            [(str,), 20],
+        "hue":                  [(float,), 0, 360],
+        "sat":                  [(float,), 0, 1],
+        "atten_div":            [(int,), 0, len(attenuation_options)],
+        "atten_raw":            [(float,)], # validated later
+        "probe_multiplier":     [(float,)], # validated later
+        "vernier":              [(bool,)], 
+        "offset":               [(float,), MIN_OFFSET, MAX_OFFSET], 
+        "coupling":             [(int,), COUP_AC, COUP_GND], 
+        "invert":               [(bool,)], 
+        "bandwidth_20M":        [(bool,)], 
+        "termination_50R":      [(bool,)], 
+        "unit":                 [False], 
+    } 
     
     def __init__(self, index, short_name=None, long_name=None):
         """Initialise a channel controller"""
@@ -94,6 +123,16 @@ class ScopeChannelController(object):
         else:
             self.set_channel_name_global(short_name, long_name)
 
+    def prepare_state(self):
+        return Utils.pack_dict_json(self, self.pack_vars)
+    
+    def restore_state(self, json_dict):
+        try:
+            Utils.unpack_json(self, json_dict, self.pack_vars)
+            self.unit = Utils.unpack_unit(self.unit)
+        except Exception as e:
+            raise Utils.StateSaveFileCorrupted(_("Unable to restore configuration file: Exception - %s" % str(e)))
+    
     def set_colour(self, hue, sat):
         """Set the colour of a channel.  Only the hue and saturation of a channel may be set, to allow
         for value variation for highlighting and intensity grading."""
@@ -235,6 +274,7 @@ class ScopeChannelController(object):
     def set_50_ohm_termination(self, state):
         assert isinstance(state, bool)
         self.termination_50R = state
+        self.termination_50R_applied = state
     
     def set_bandwidth_20M(self, state):
         assert isinstance(state, bool)
@@ -246,6 +286,9 @@ class ScopeChannelController(object):
     
     def get_50_ohm_termination(self):
         return self.termination_50R 
+    
+    def get_50_ohm_termination_applied(self):
+        return self.termination_50R_applied
     
     def get_bandwidth_20M(self):
         return self.bandwidth_20M
@@ -285,4 +328,34 @@ class ScopeController(object):
         self.channels[1].set_colour(60, 0.85)
         self.channels[2].set_colour(160, 0.85)
         self.channels[3].set_colour(270, 0.65)
+    
+    def prepare_json_state(self):
+        state = { 'version'     : (Utils.APP_VERSION_MAJOR, Utils.APP_VERSION_MINOR), 
+                  'n_channels'  : int(len(self.channels)) }
         
+        for n in len(self.channels):
+            state['channel%d' % n] = self.channels[n].prepare_state()
+        
+        return json.dumps(state)
+    
+    def unpack_json_state(self, state):
+        try:
+            json_obj = json.loads(state)
+            
+            if int(json_obj['version'][0]) > Utils.APP_VERSION_MAJOR:
+                raise StateSaveFileCorrupted(_("Unable to restore configuration file: Major version newer, cannot load"))
+            
+            self.channels = []
+            
+            for ch in range(int(json_obj['n_channels'])):
+                ch_obj = ScopeChannelController(ch)
+                ch_obj.restore_state(json_obj['channel%d' % ch])
+                             
+            # Default to stopped
+            self.run_state = STATE_STOPPED  
+        except StateSaveFileCorrupted as e:
+            raise e
+        except Exception as e:
+            raise StateSaveFileCorrupted(_("Unable to restore configuration file: General load error"))
+
+    

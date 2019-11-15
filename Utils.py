@@ -11,7 +11,16 @@ _ = gettext.gettext
 
 import math, colorsys
 
-# Supported units
+APP_VERSION_MAJOR = 0
+APP_VERSION_MINOR = 1
+
+class UserRequestError(Exception): pass
+class UserRequestOutOfRange(UserRequestError): pass
+class UserRequestUnsupported(UserRequestError): pass
+class StateSaveFileCorrupted(UserRequestError): pass
+
+class ObjectUnpickled(Exception): pass
+
 class Unit(object):
     _short = "?"
     _category = "???????"
@@ -30,6 +39,9 @@ class Unit(object):
     
     def get_long_name(self, num):
         raise ValueError("base class Unit not a valid unit")
+    
+    def safe_pickle(self):
+        return "Unit:%s" % self.__class__.__name__
     
 class UnitVolt(Unit):
     _short = _("V")
@@ -53,10 +65,16 @@ class UnitWatt(Unit):
         return gettext.ngettext("watt", "watts", num)
 
 supported_units = [UnitVolt, UnitAmp, UnitWatt]
-        
-class UserRequestError(Exception): pass
-class UserRequestOutOfRange(UserRequestError): pass
-class UserRequestUnsupported(UserRequestError): pass
+
+def unit_unpickle(pickle_str):
+    if pickle_str.startswith("Unit:"):
+        parts = pickle_str.split(":")
+        for unit in supported_units:
+            if unit.__name__ == parts[1]:
+                return unit
+    
+    # otherwise...
+    return None
 
 def get_hex_colour_hsv(h, s, v):
     rgb = colorsys.hsv_to_rgb(h / 360.0, s, v)
@@ -129,3 +147,57 @@ def unit_format_voltage(value, precision=2):
 
 def value_20_log_db(ratio, precision=0):
     return _("{ratio:.{prec}f} dB").format(ratio=(20 * math.log10(ratio)), prec=precision)
+
+def pack_dict_json(obj, vars_):
+    """
+    Generate a dict of objects safe to pack into a JSON structure for storage.
+    """
+    vars_ = keys(vars_)
+    json_dict = {}
+    
+    for v in vars_:
+        try:
+            x = getattr(obj, v)
+            if isinstance(x, [int, float, str]):
+                json_dict[v] = x
+            else:
+                json_dict[v] = x.safe_pickle()
+        except Exception as e:
+            json_dict[v] = ObjectUnpickled(str(e))
+
+    return json_dict
+
+def unpack_json(obj, json_dict, vars_):
+    """
+    Process values in a dict and unpack into an object, safely.
+    """
+    seen = []
+    safed = {}
+    
+    for key, value in json_dict.items():
+        k = str(key)
+        
+        if k not in vars_:
+            raise StateSaveFileCorrupted(_("Unable to restore configuration file: Unknown key '%s' (old version?)" % k))
+        
+        seen.append(k)
+        typing = vars_[k]
+        
+        if not isinstance(value, typing):
+            raise StateSaveFileCorrupted(_("Unable to restore configuration file: Invalid type for '%s' (old version?)" % k))
+        
+        if typing[1][0] == str:
+            if len(value) > typing[1][1]:
+                raise StateSaveFileCorrupted(_("Unable to restore configuration file: Value excessively long"))
+        elif len(typing[1]) == 3:
+            if value < typing[1][1] or value > typing[1][2]:
+                raise StateSaveFileCorrupted(_("Unable to restore configuration file: Value out of range for '%s'" % k))
+        
+        safed[k] = value
+    
+    for key in keys(vars_):
+        if key not in seen:
+            raise StateSaveFileCorrupted(_("Unable to restore configuration file: Not all configuration values present"))
+    
+    for key, value in safed.items():
+        setattr(obj, str(key), value)
