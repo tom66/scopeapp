@@ -129,17 +129,23 @@
               </packing>
             </child>
             <child>
-              <object class="GtkLabel" id="lbl_status_timebase">
-                <property name="name">lbl_status_timebase</property>
+              <object class="GtkEventBox" id="evt_lbl_status_timebase">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
-                <property name="label" translatable="yes">2.0μs/div</property>
-                <property name="justify">center</property>
-                <property name="width_chars">12</property>
+                <child>
+                  <object class="GtkLabel" id="lbl_status_timebase">
+                    <property name="name">lbl_status_timebase</property>
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <property name="label" translatable="yes">2.0μs/div</property>
+                    <property name="justify">center</property>
+                    <property name="width_chars">12</property>
+                  </object>
+                </child>
               </object>
               <packing>
                 <property name="expand">False</property>
-                <property name="fill">False</property>
+                <property name="fill">True</property>
                 <property name="position">1</property>
               </packing>
             </child>

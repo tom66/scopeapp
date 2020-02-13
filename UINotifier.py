@@ -44,7 +44,6 @@ class NotifyController(object):
         
         # If allocated_width is small, hide the widget for now; we'll show it on the next frame
         # (This is used to avoid the widget snapping into place after it is attached to the GtkFixed)
-        print( wdg.get_allocated_width())
         if wdg.get_allocated_width() <= 1:
             wdg.set_opacity(0)
         
@@ -72,7 +71,7 @@ class NotifyController(object):
                 self.notifiers.remove(ntf)
                 continue
             else:
-                print(wdg, time.time() - ntf.t_created, time.time() - ntf.t_started)
+                #print(wdg, time.time() - ntf.t_created, time.time() - ntf.t_started)
                 break
         
         if wdg == False:
@@ -98,12 +97,12 @@ class NotifyMessage(object):
     
     def __lt__(self, other):
         # Sort by priority first, then age
-        print("__lt__ %r %r" % (self, other))
+        #print("__lt__ %r %r" % (self, other))
         if self.cls == other.cls:
             # newer age wins
             return self.t_created > other.t_created
         else:
-            return self.cls < other.cls
+            return self.cls > other.cls
     
     def get_widget(self):
         if self.t_started == None:

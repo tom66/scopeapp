@@ -20,10 +20,11 @@ import CSSManager
 CHANNEL_WIDGET_CSS_FILE = "channel_widget.css"
 
 class ChannelWidget(object):
-    def __init__(self, root_mgr, channel):
-        self.channel = channel
+    def __init__(self, root_mgr, channel_index):
+        self.channel_index = channel_index
         self.cfgmgr = root_mgr.cfgmgr
         self.root_mgr = root_mgr
+        self.refresh_object_attach()
         
         self.event_box = Gtk.EventBox()
         self.container = Gtk.Box()
@@ -52,6 +53,9 @@ class ChannelWidget(object):
         
         self.refresh_widget()
     
+    def refresh_object_attach(self):
+        self.channel = self.root_mgr.ctrl.channels[self.channel_index]
+        
     def make_state(self):
         """Generate a state tuple;  this is compared against older states to see if any
         settings have changed & if a refresh is needed."""
@@ -60,6 +64,7 @@ class ChannelWidget(object):
     def widget_clicked(self, *args):
         # Send the channel click signal to the root_mgr
         self.root_mgr.channel_widget_click(self.channel)
+        self.root_mgr.state_change_notify()
     
     def refresh_widget(self):
         # Don't refresh widget if Nothing Has Changed

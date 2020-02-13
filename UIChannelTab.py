@@ -14,6 +14,7 @@ from gi.repository import Gtk, GLib, Gio, Gdk, GdkPixbuf, GObject, Pango
 import Utils
 import ScopeController as SC
 import UIChannelColourPicker
+import UIController
 import CSSManager
 
 import copy
@@ -134,12 +135,15 @@ class ChannelTab(object):
     last_state = None
     now_state = None
     
-    def __init__(self, root_mgr, channel, notebook, index):
-        self.channel = channel
+    _chk_sensitive = True
+    
+    def __init__(self, root_mgr, channel_index, notebook, index):
+        self.channel_index = channel_index
         self.cfgmgr = root_mgr.cfgmgr
         self.root_mgr = root_mgr
         self.notebook = notebook
         self.notebook_index = index
+        self.channel = self.root_mgr.ctrl.channels[self.channel_index]
         
         # Widgets whose sensitivity will be affected by channel enable/disable
         self.sensitive_widgets = []
@@ -222,8 +226,6 @@ class ChannelTab(object):
         self.btn_chan_colour.add(self.btn_chan_colour_label)
         self.btn_chan_colour_label.set_markup(_("Colour"))
         
-        self._update_probe_atten_options()
-        
         self.btn_chan_tog_coup_AC_ctx = self.btn_chan_tog_coup_AC.get_style_context()
         self.btn_chan_tog_coup_DC_ctx = self.btn_chan_tog_coup_DC.get_style_context()
         self.btn_chan_tog_coup_GND_ctx = self.btn_chan_tog_coup_GND.get_style_context()
@@ -298,7 +300,29 @@ class ChannelTab(object):
         self.css_manager.add_widget(self.vbox, None)
         self.css_manager.add_widget(self.btn_chan_colour, "channel_button_color")
         self.css_manager.add_widget(self.btn_chan_colour_label, "channel_button_color_label")
+        
+        # Refresh channel object connection
+        self.refresh_object_attach()
+        self._update_probe_atten_options()
     
+    def refresh_object_attach(self):
+        self.channel = self.root_mgr.ctrl.channels[self.channel_index]
+        
+        # refresh attenuation combobox if it's been instantiated already
+        self.atten_unit_update = True
+        self.atten_update = True
+        self._update_probe_atten_options()
+        
+        # refresh channel name combobox
+        self._update_channel_name_combobox()
+        
+        # refresh checkboxes
+        self._chk_sensitive = False
+        self.chk_chan_coup_invert.set_active(self.channel.invert)
+        self.chk_chan_coup_20M.set_active(self.channel.bandwidth_20M)
+        self.chk_chan_coup_50R.set_active(self.channel.termination_50R)
+        self._chk_sensitive = True
+
     def make_state(self):
         """Generate a state tuple;  this is compared against older states to see if any
         settings have changed & if a refresh is needed."""
@@ -315,6 +339,14 @@ class ChannelTab(object):
         
         return wrapper
     
+    def __state_change(func):
+        def wrapper(self, *args):
+            self.root_mgr.state_change_notify()
+            return func(self, *args)
+        
+        return wrapper
+    
+    @__state_change
     def _channel_switch_state_set(self, *args):
         # Sets the channel state to on or off according to the new switch state
         if self.sw_chan_enabled.get_active():
@@ -325,42 +357,52 @@ class ChannelTab(object):
             self.channel.disable_channel()
         
         return True
+    
+    @__state_change
     @__user_exception_handler
     def _btn_atten_up_press(self, *args):
         # TODO: vernier mode
         self.channel.atten_up_coarse()
         return True
         
+    @__state_change
     @__user_exception_handler
     def _btn_atten_down_press(self, *args):
         # TODO: vernier mode
         self.channel.atten_down_coarse()
         return True
         
+    @__state_change
     @__user_exception_handler
     def _btn_offset_up_press(self, *args):
         # TODO: vernier mode
         self.channel.offset_up_coarse()
         return True
         
+    @__state_change
     @__user_exception_handler
     def _btn_offset_down_press(self, *args):
         # TODO: vernier mode
         self.channel.offset_down_coarse()
         return True
     
+    @__state_change
     def _btn_coup_AC(self, *args):
         self.channel.set_coupling(SC.COUP_AC)
     
+    @__state_change
     def _btn_coup_DC(self, *args):
         self.channel.set_coupling(SC.COUP_DC)
     
+    @__state_change
     def _btn_coup_GND(self, *args):
         self.channel.set_coupling(SC.COUP_GND)
     
+    @__state_change
     def _btn_chan_probe_V_press(self, *args):
         self.channel.set_unit(Utils.UnitVolt())
     
+    @__state_change
     def _btn_chan_probe_A_press(self, *args):
         self.channel.set_unit(Utils.UnitAmp())
     
@@ -368,18 +410,35 @@ class ChannelTab(object):
     def _btn_chan_probe_other_press(self, *args):
         raise Utils.UserRequestUnsupported(_("This option is not supported right now"))
     
+    @__state_change
     def _chkbtn_invert(self, widget, *args):
-        self.channel.toggle_invert()
-        widget.set_state(False)   # initially just disable the checkbutton; it's enabled by the state updater
+        if self._chk_sensitive:
+            self.channel.toggle_invert()
+            widget.set_state(False)   # initially just disable the checkbutton; it's enabled by the state updater
         
+    @__state_change
     def _chkbtn_20M(self, widget, *args):
-        self.channel.toggle_bandwidth_20M()
-        widget.set_state(False)
+        if self._chk_sensitive:
+            self.channel.toggle_bandwidth_20M()
+            widget.set_state(False)
     
+    @__state_change
     def _chkbtn_50R(self, widget, *args):
-        self.channel.toggle_50_ohm_termination()
-        widget.set_state(False)
+        if self._chk_sensitive:
+            widget.set_state(False)
+            
+            if not self.channel.get_50_ohm_termination():
+                resp = UIController.dialog_box(
+                            pri_text=_("Do you want to enable 50 ohm termination?"),
+                            sec_text=_("Exceeding 10 volts DC on terminated inputs may cause instrument damage.\n\nYou can disable this message in the Preferences dialog."), 
+                            icon=Gtk.MessageType.QUESTION, buttons=Gtk.ButtonsType.YES_NO,
+                            window=self.root_mgr.window)
+                
+                if resp == Gtk.ResponseType.YES:
+                    self.channel.toggle_50_ohm_termination()
+                    widget.set_state(True)
     
+    @__state_change
     def _btn_probe_atten_units_press(self, *args):
         if self.atten_unit == ATTEN_UNIT_X:
             self.atten_unit = ATTEN_UNIT_DB
@@ -389,16 +448,19 @@ class ChannelTab(object):
         self.atten_unit_update = True
         self._update_probe_atten_options()
     
+    @__state_change
     def _cmb_probe_atten_changed(self, *args):
         if self.atten_init and not self.atten_unit_update and not self.atten_update:
             print("Set probe gain to %f" % probe_atten_options[self.cmb_probe_atten.get_active()])
             self.channel.set_probe_gain(probe_atten_options[self.cmb_probe_atten.get_active()])
     
+    @__state_change
     def _btn_chan_colour_press(self, *args):
         colour_picker = UIChannelColourPicker.ChannelColourPicker(self.channel.long_name)
         colour_picker.set_hue_sat(*self.channel.get_colour())
         self.channel.set_colour(*colour_picker.run())
     
+    @__state_change
     @__user_exception_handler
     def _cmb_chan_label_changed(self, *args):
         path = list(map(int, str(self.cmb_chan_label.get_model().get_path(self.cmb_chan_label.get_active_iter())).split(":")))
@@ -413,6 +475,34 @@ class ChannelTab(object):
             key = user_channel_names[path[0] - 2][1][path[1]]
             self.channel.set_channel_name_global(key[1], key[0])
     
+    @__state_change
+    def _update_channel_name_combobox(self):
+        model = self.cmb_chan_label.get_model()
+        row = model.get_iter_first()
+        
+        while True:
+            child = model.iter_children(row)
+            
+            if child != None:
+                while True:
+                    key, long = model.get_value(child, 0), model.get_value(child, 1)
+                    if len(key) == 0:
+                        key = long
+                    
+                    if key == self.channel.short_name and long == self.channel.long_name:
+                        self.cmb_chan_label.set_active_iter(child)
+                        self._cmb_chan_label_changed(None)
+                    
+                    child = model.iter_next(child)
+                    if child == None:
+                        break
+                
+            row = model.iter_next(row)
+            
+            if row == None:
+                break
+    
+    @__state_change
     def _update_probe_atten_options(self):
         if self.atten_unit == ATTEN_UNIT_X:
             self.btn_probe_atten_units.set_label(_("X"))
@@ -444,7 +534,7 @@ class ChannelTab(object):
                     self.cmb_probe_atten.set_active(i)
             self.atten_update = False
             self.atten_init = True
-        
+    
     def tab_clicked(self, *args):
         # Clicking a tab when the channel is not currently selected will select the tab
         # Clicking the tab when the channel is selected will toggle the channel enable state
@@ -454,8 +544,6 @@ class ChannelTab(object):
             self.notebook.set_current_page(self.notebook_index - 1)
     
     def refresh_tab(self):
-        self.lbl_tab.set_markup(self.channel.short_name)
-        
         # Tab not refreshed if not active, and this is not the first run
         if self.notebook.get_current_page() != (self.notebook_index - 1) and self.init_refresh:
             return
@@ -467,6 +555,8 @@ class ChannelTab(object):
         if self.new_state == self.last_state:
             return
         self.last_state = self.new_state
+        
+        self.lbl_tab.set_markup(self.channel.short_name)
         
         if self.channel.has_default_name():
             self.lbl_chan_name.set_markup(self.channel.long_name)

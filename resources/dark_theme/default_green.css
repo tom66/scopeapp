@@ -317,9 +317,9 @@ switch {
 }
 
 switch:checked {
-    background-color: #003b93;
+    background-color: #004723;
     background-image: none;
-    border: 1px solid #005eeb;
+    border: 1px solid #009c4c;
 }
 
 switch:disabled {
@@ -340,8 +340,8 @@ switch slider {
 
 /* On/off button states */
 button.button_on {
-    background-image: linear-gradient(0deg, #001847, #003b93);
-    border-color: #005eeb;
+    background-image: linear-gradient(0deg, #004723, #008a43);
+    border-color: #009c4c;
 }
 
 button.button_off {
@@ -381,11 +381,11 @@ checkbutton:disabled > check  {
 }
 
 checkbutton:checked > check {
-   color: #005eeb;
+   color: #008a43;
    box-shadow: none;
    outline: none;
    -gtk-icon-shadow: none;
-   border: 1px solid #005eeb;
+   border: 1px solid #009c4c;
 }
 
 checkbutton:disabled:checked > check {
@@ -452,7 +452,7 @@ scale trough {
 
 scale highlight {
     background-color: #008a43;
-    border: 1px solid #00369c;
+    border: 1px solid #009c4c;
 }
 
 /* Notify messages */
@@ -526,48 +526,4 @@ scale highlight {
 #dlg_colour_picker scale.sat highlight {
     background-color: transparent;
     border: 1px solid #202020;
-}
-
-/* Menus, including dropdowns */
-menu {
-    background-image: none;
-    background-color: #202020;   
-}
-
-menuitem {
-    background-image: none;
-    background-color: #202020;   
-}
-
-menuitem:hover {
-    background-image: none;
-    background-color: #005eeb;   
-    border-color: #005eeb;
-}
-
-menuitem > label {
-    color: #ffffff;
-}
-
-menu > separator {
-    background: #333333;
-    margin-top: 4px;
-    margin-bottom: 4px;
-}
-
-/* Dialog box */
-messagedialog {
-    background-color: #222222;  
-}
-
-messagedialog box {
-    margin-top: 4px;
-}
-
-messagedialog label {
-    color: #ffffff;
-}
-
-messagedialog button {
-    margin: 5px;
 }

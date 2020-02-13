@@ -67,11 +67,13 @@ class UnitWatt(Unit):
 supported_units = [UnitVolt, UnitAmp, UnitWatt]
 
 def unit_unpickle(pickle_str):
+    print(pickle_str)
+    
     if pickle_str.startswith("Unit:"):
         parts = pickle_str.split(":")
         for unit in supported_units:
             if unit.__name__ == parts[1]:
-                return unit
+                return unit()
     
     # otherwise...
     return None
@@ -131,14 +133,21 @@ def unit_format_suffix(value, suffix, precision=2):
 
 def unit_format_atten(value, suffix):
     """Print given value (e.g. V) as a uV/div, mV/div, V/div or kV/div setting.  Input is floating point."""
-    if value < 1e-3:
+    # TRANSLATORS: SI units generally are not translated, please check carefully before translating.
+    if value >= 1e-12 and value < 1e-9:
+        return _("{vdiv:.0f} p{unit}/div").format(vdiv=int(value * 1e12), unit=suffix)
+    elif value >= 1e-9 and value < 1e-6:
+        return _("{vdiv:.0f} n{unit}/div").format(vdiv=int(value * 1e9), unit=suffix)
+    elif value >= 1e-6 and value < 1e-3:
         return _("{vdiv:.0f} \u03BC{unit}/div").format(vdiv=int(value * 1e6), unit=suffix)
     elif value >= 1e-3 and value < 1: 
         return _("{vdiv:.0f} m{unit}/div").format(vdiv=int(value * 1e3), unit=suffix)
     elif value >= 1 and value < 1e3: 
         return _("{vdiv:.0f} {unit}/div").format(vdiv=int(value), unit=suffix)
-    elif value >= 1e3: 
+    elif value >= 1e3 and value < 1e6: 
         return _("{vdiv:.0f} k{unit}/div").format(vdiv=int(value * 1e-3), unit=suffix)
+    elif value >= 1e6 and value < 1e9: 
+        return _("{vdiv:.0f} M{unit}/div").format(vdiv=int(value * 1e-6), unit=suffix)
 
 def unit_format_voltage(value, precision=2):
     """Print given value as a voltage.  Precision option specifies how many significant digits to display."""
@@ -152,17 +161,18 @@ def pack_dict_json(obj, vars_):
     """
     Generate a dict of objects safe to pack into a JSON structure for storage.
     """
-    vars_ = keys(vars_)
+    vars_ = vars_.keys()
     json_dict = {}
     
     for v in vars_:
         try:
             x = getattr(obj, v)
-            if isinstance(x, [int, float, str]):
+            if isinstance(x, (int, float, str)):
                 json_dict[v] = x
             else:
                 json_dict[v] = x.safe_pickle()
         except Exception as e:
+            print(e)
             json_dict[v] = ObjectUnpickled(str(e))
 
     return json_dict
@@ -183,21 +193,34 @@ def unpack_json(obj, json_dict, vars_):
         seen.append(k)
         typing = vars_[k]
         
-        if not isinstance(value, typing):
+        # skip if item not required
+        if typing[0] == False:
+            continue
+        
+        print(typing)
+        
+        if not isinstance(value, tuple(typing[0])):
             raise StateSaveFileCorrupted(_("Unable to restore configuration file: Invalid type for '%s' (old version?)" % k))
         
-        if typing[1][0] == str:
-            if len(value) > typing[1][1]:
-                raise StateSaveFileCorrupted(_("Unable to restore configuration file: Value excessively long"))
-        elif len(typing[1]) == 3:
-            if value < typing[1][1] or value > typing[1][2]:
-                raise StateSaveFileCorrupted(_("Unable to restore configuration file: Value out of range for '%s'" % k))
+        if typing[0] == (bool,):
+            print("bool value", key, value, bool(value))
+            value = bool(value)
+        else:
+            if typing[0] == (str,):
+                if len(value) > typing[1]:
+                    raise StateSaveFileCorrupted(_("Unable to restore configuration file: Value excessively long"))
+            elif len(typing) == 3:
+                if value < typing[1] or value > typing[2]:
+                    raise StateSaveFileCorrupted(_("Unable to restore configuration file: Value out of range for '%s'" % k))
         
         safed[k] = value
     
-    for key in keys(vars_):
+    for key in vars_.keys():
         if key not in seen:
             raise StateSaveFileCorrupted(_("Unable to restore configuration file: Not all configuration values present"))
     
     for key, value in safed.items():
+        print(obj, key, value)
         setattr(obj, str(key), value)
+
+        

@@ -43,6 +43,12 @@ auto_long_names = [
 # Supported attenuation levels in V (at 1X probe setting)
 attenuation_options = [0.002, 0.005, 0.01, 0.02, 0.05, 0.1, 0.2, 0.5, 1, 2, 5]
 
+# Supported timebases
+timebase_options = [1e-9, 2e-9, 5e-9, 10e-9, 20e-9, 50e-9, 100e-9, 200e-9, 500e-9, 
+                    1e-6, 2e-6, 5e-6, 10e-6, 20e-6, 50e-6, 100e-6, 200e-6, 500e-6, 
+                    1e-3, 2e-3, 5e-3, 10e-3, 20e-3, 50e-3, 100e-3, 200e-3, 500e-3, 
+                    1,    2,    5,    10,    20,    50,    100]
+
 # Maximum V/div and minimum V/div.  TODO:  Load from oscilloscope configuration.
 MAX_V_DIV = 5
 MIN_V_DIV = 0.002
@@ -55,16 +61,25 @@ COARSE_OFFSET = 0.1
 MAX_OFFSET = +8
 MIN_OFFSET = -8
 
+# Maximum supported timebase range
+MAX_TIMEBASE_SHIFT_NEG = -100
+MAX_TIMEBASE_SHIFT_POS = +100
+
 # Coupling modes supported
 COUP_AC = 1
 COUP_DC = 2
 COUP_GND = 3
 
+# Settings files
+TEMP_SETTING_FILE = "user/temp.stg"
+DEFAULT_SETTING_FILE = "user/default.stg"
+LAST_SETTING_FILE = "user/last.stg"
+
 class ScopeChannelController(object):
     """
     This class manages the configuration of a single channel.
     """
-    enabled = True # TODO..change this
+    enabled = False
     index = None
     
     internal_name = _("???")            # Always CH1, CH2, etc.
@@ -81,8 +96,8 @@ class ScopeChannelController(object):
     atten_raw = 0
     probe_multiplier = 1
     vernier = False
-    offset = -7.8
-    coupling = COUP_AC
+    offset = 0.0
+    coupling = COUP_DC
     invert = False
     bandwidth_20M = False
     termination_50R = False
@@ -97,20 +112,21 @@ class ScopeChannelController(object):
         "index":                [(int,), CHANNEL_INDEXES[0], CHANNEL_INDEXES[-1]],
         "internal_name":        [(str,), 20],
         "default_long_name":    [(str,), 20],
+        "_using_default_name":  [(bool,)],
         "short_name":           [(str,), 5],
         "long_name":            [(str,), 20],
-        "hue":                  [(float,), 0, 360],
-        "sat":                  [(float,), 0, 1],
-        "atten_div":            [(int,), 0, len(attenuation_options)],
-        "atten_raw":            [(float,)], # validated later
-        "probe_multiplier":     [(float,)], # validated later
+        "hue":                  [(float, int), 0, 360],
+        "sat":                  [(float, int), 0, 1],
+        "atten_div":            [(float, int)], # validated later
+        "atten_raw":            [(float, int)], # validated later
+        "probe_multiplier":     [(float, int)], # validated later
         "vernier":              [(bool,)], 
-        "offset":               [(float,), MIN_OFFSET, MAX_OFFSET], 
+        "offset":               [(float, int), MIN_OFFSET, MAX_OFFSET], 
         "coupling":             [(int,), COUP_AC, COUP_GND], 
         "invert":               [(bool,)], 
         "bandwidth_20M":        [(bool,)], 
         "termination_50R":      [(bool,)], 
-        "unit":                 [False], 
+        "unit":                 [(str,), 20],
     } 
     
     def __init__(self, index, short_name=None, long_name=None):
@@ -124,12 +140,13 @@ class ScopeChannelController(object):
             self.set_channel_name_global(short_name, long_name)
 
     def prepare_state(self):
-        return Utils.pack_dict_json(self, self.pack_vars)
+        return Utils.pack_dict_json(self, self.pack_vars_types)
     
     def restore_state(self, json_dict):
         try:
-            Utils.unpack_json(self, json_dict, self.pack_vars)
-            self.unit = Utils.unpack_unit(self.unit)
+            Utils.unpack_json(self, json_dict, self.pack_vars_types)
+            print("??termination_50R", self.termination_50R)
+            self.unit = Utils.unit_unpickle(self.unit)
         except Exception as e:
             raise Utils.StateSaveFileCorrupted(_("Unable to restore configuration file: Exception - %s" % str(e)))
     
@@ -305,6 +322,55 @@ class ScopeChannelController(object):
     def toggle_invert(self):
         self.set_invert(not self.invert)
 
+class ScopeTimebaseController(object):
+    timebase_index = 0
+    offset = 0
+    
+    pack_vars_types = {
+        "timebase_index":       [(int,)],
+        "offset":               [(float, int)],
+    } 
+    
+    def __init__(self):
+        pass
+    
+    def prepare_state(self):
+        return Utils.pack_dict_json(self, self.pack_vars_types)
+    
+    def get_timebase(self):
+        if self.timebase_index < 0: 
+            self.timebase_index = 0
+        
+        if self.timebase_index >= len(timebase_options):
+            self.timebase_index = len(timebase_options) - 1
+        
+        return timebase_options[self.timebase_index]
+    
+    def timebase_up(self):
+        print("timebase_up", self.timebase_index)
+        self.timebase_index += 1
+        if self.timebase_index >= len(timebase_options):
+            self.timebase_index = len(timebase_options) - 1
+            raise Utils.UserRequestOutOfRange(_("Timebase at maximum"))
+    
+    def timebase_down(self):
+        print("timebase_down")
+        self.timebase_index -= 1
+        if self.timebase_index < 0:
+            self.timebase_index = 0
+            raise Utils.UserRequestOutOfRange(_("Timebase at minimum"))
+    
+    def adjust_offset(self, adj):
+        max_limit = (MAX_TIMEBASE_SHIFT_POS * self.get_timebase_value())
+        min_limit = (MAX_TIMEBASE_SHIFT_NEG * self.get_timebase_value())
+        
+        self.offset += adj
+        self.offset = min(max_limit, self.offset)
+        self.offset = max(min_limit, self.offset)
+    
+    def get_offset(self):
+        return self.offset
+            
 class ScopeController(object):
     """
     This class manages the overall oscilloscope function.  It controls acquisition, via the FPGA,
@@ -318,6 +384,12 @@ class ScopeController(object):
     # Set of channels
     channels = []
     
+    # Currently selected tab for UI
+    active_tab = 0
+    
+    # Timebase
+    timebase = ScopeTimebaseController()
+    
     def __init__(self):
         # TODO: We need to determine whether the instrument is 2ch or 4ch
         self.channels.append(ScopeChannelController(SCOPE_CH_1))
@@ -329,33 +401,64 @@ class ScopeController(object):
         self.channels[2].set_colour(160, 0.85)
         self.channels[3].set_colour(270, 0.65)
     
+    def save_settings_temp(self):
+        self.save_settings(TEMP_SETTING_FILE)
+        
+    def save_settings_last(self):
+        self.save_settings(LAST_SETTING_FILE)
+        
+    def restore_settings_temp(self):
+        self.restore_settings(TEMP_SETTING_FILE)
+        
+    def restore_settings_last(self):
+        self.restore_settings(LAST_SETTING_FILE)
+        
+    def restore_settings_default(self):
+        self.restore_settings(DEFAULT_SETTING_FILE)
+        
     def prepare_json_state(self):
         state = { 'version'     : (Utils.APP_VERSION_MAJOR, Utils.APP_VERSION_MINOR), 
-                  'n_channels'  : int(len(self.channels)) }
+                  'n_channels'  : int(len(self.channels)), 
+                  'timebase'    : self.timebase.prepare_state(),
+                  'active_tab'  : self.active_tab }
         
-        for n in len(self.channels):
+        for n in range(len(self.channels)):
             state['channel%d' % n] = self.channels[n].prepare_state()
         
         return json.dumps(state)
     
     def unpack_json_state(self, state):
+        print("unpack_json_state", state)
         try:
             json_obj = json.loads(state)
             
             if int(json_obj['version'][0]) > Utils.APP_VERSION_MAJOR:
-                raise StateSaveFileCorrupted(_("Unable to restore configuration file: Major version newer, cannot load"))
-            
-            self.channels = []
+                raise Utils.StateSaveFileCorrupted(_("Unable to restore configuration file: Major version newer, cannot load"))
             
             for ch in range(int(json_obj['n_channels'])):
-                ch_obj = ScopeChannelController(ch)
-                ch_obj.restore_state(json_obj['channel%d' % ch])
+                self.channels[ch].restore_state(json_obj['channel%d' % ch])
+                #print("unpack_json_state", self.channels[ch].termination_50R, self.channels[ch].termination_50R_applied)
+                #self.channels[ch].termination_50R_applied = False
                              
-            # Default to stopped
-            self.run_state = STATE_STOPPED  
-        except StateSaveFileCorrupted as e:
+            self.run_state = STATE_STOPPED              # Default to stopped
+            self.active_tab = json_obj['active_tab']    # Recall tab
+            
+            print("actTab?", self.active_tab)
+            
+        except Utils.StateSaveFileCorrupted as e:
             raise e
         except Exception as e:
-            raise StateSaveFileCorrupted(_("Unable to restore configuration file: General load error"))
+            raise Utils.StateSaveFileCorrupted(_("Unable to restore configuration file: General load error"))
 
-    
+    def save_settings(self, fname):
+        """Save settings file, overwriting any existing file with this name."""
+        f = open(fname, "w")
+        f.write(self.prepare_json_state())
+        f.close()
+        
+    def restore_settings(self, fname):
+        """Restore settings from file."""
+        f = open(fname, "r")
+        self.unpack_json_state(f.read())
+        f.close()
+        

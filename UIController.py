@@ -29,22 +29,36 @@ SIZE_ICON = 1
 
 # Popup menu options
 popdown_menu_options = [
-    (_("Save Settings"),            "_menu_save_settings",      "<Ctrl>S"), 
-    (_("Load Settings"),            "_menu_load_settings",      "<Ctrl>O"), 
+    (_("Save Settings"),            "_menu_save_settings",          "<Ctrl>S"), 
+    (_("Load Settings"),            "_menu_load_settings",          "<Ctrl>O"), 
+    (_("Quick Save Settings"),      "_menu_quick_save_settings",    "<Ctrl><Alt>S"), 
+    (_("Quick Load Settings"),      "_menu_quick_load_settings",    "<Ctrl><Alt>O"), 
     (_("Defaults"),                 "_menu_load_defaults"),
     None,
-    (_("Help"),                     "_menu_help",               "F1"),
+    (_("Help"),                     "_menu_help",                   "F1"),
     (_("About & Credits"),          "_menu_about"), 
     (_("Licences"),                 "_menu_licence"), 
     None,
     (_("Preferences"),              "_menu_preferences"), 
     (_("Shutdown"),                 "_menu_shutdown"), 
     (_("Reboot"),                   "_menu_reboot"), 
-    (_("Exit Application"),         "_menu_exit",               "<Alt>F4"), 
+    (_("Exit Application"),         "_menu_exit",                   "<Alt>F4"), 
 ]
 
 # How often to refresh UI data.  Lower number = more CPU, faster refresh.
 UI_REFRESH_MS = 25
+
+# How long to wait before syncing a last save state.
+STATE_SYNC_WAIT = 10
+
+def dialog_box(window, pri_text, sec_text, icon, buttons):
+    """Helper function to make a dialog box appear and return the result."""
+    dlg = Gtk.MessageDialog(window, 0, icon, buttons, "")
+    dlg.set_markup("<b>{0}</b>".format(pri_text))
+    dlg.format_secondary_text(sec_text)
+    resp = dlg.run()
+    dlg.destroy()
+    return resp
 
 class MainApplication(object):
     """
@@ -60,15 +74,22 @@ class MainApplication(object):
     ui_tabs = []
     ui_widgets = []
     
+    active_ch = 0
+    
     # Flasher variable; flips state at config FlashFreq rate
     flash_period = 0
     flash_state = False
     flash_timer = 0
     flash_error = 0
     last_ui_time = None
+    last_clock_time = 0
     
     ticks = 0
     last_window_size = (0, 0)
+    
+    # Last time the state was synced and whether a new state needs to be synced
+    last_state_sync_time = time.time()
+    state_sync_pending = True
     
     def __init__(self):
         """
@@ -98,11 +119,18 @@ class MainApplication(object):
         self.overlay_main.add(self.vbox_main)
         self.overlay_fixed = Gtk.Fixed()
         self.window = Gtk.Window()
+        self.window.set_size_request(1280, 800)
         self.window.add(self.overlay_main)
         self.lbl_status_time = self.builder.get_object("lbl_status_time")
         self.lbl_status_run = self.builder.get_object("lbl_status_run")
         self.lbl_status_run_ctx = self.lbl_status_run.get_style_context()
         
+        # Connect to the timebase labels
+        self.evt_lbl_status_timebase = self.builder.get_object("evt_lbl_status_timebase")
+        self.evt_lbl_status_timebase.connect("button-press-event", self._timebase_click)
+        self.lbl_status_timebase = self.builder.get_object("lbl_status_timebase")
+        self.ui_update_timebase_labels()
+                                             
         # Create the AccelGroup for all key bindings
         self.agr = Gtk.AccelGroup()
         self.window.add_accel_group(self.agr)
@@ -149,17 +177,18 @@ class MainApplication(object):
         self.nbk_main_settings.set_hexpand(False)
         self.nbk_main_settings.set_hexpand_set(True)
         self.nbk_main_settings.set_size_request(50, 0)
+        self.nbk_main_settings.connect("select_page", self._nbk_select_page)
 
-        for channel in self.ctrl.channels:
-            ui_tab = UIChannelTab.ChannelTab(self, channel, self.nbk_main_settings, len(self.ui_tabs) + 1)
+        for idx, channel in enumerate(self.ctrl.channels):
+            ui_tab = UIChannelTab.ChannelTab(self, idx, self.nbk_main_settings, len(self.ui_tabs) + 1)
             ui_tab.append_to_notebook()
             self.ui_tabs.append(ui_tab)
         
         # Add a ChannelWidget for each channel to the channel widget container
         self.box_channel_info = self.builder.get_object("box_channel_info")
         
-        for channel in self.ctrl.channels:
-            wdg = UIChannelWidget.ChannelWidget(self, channel)
+        for idx, channel in enumerate(self.ctrl.channels):
+            wdg = UIChannelWidget.ChannelWidget(self, idx)
             self.box_channel_info.pack_start(wdg.get_embedded_container(), False, True, 0)
             self.ui_widgets.append(wdg)
         
@@ -184,17 +213,51 @@ class MainApplication(object):
             self.popdown_menu.attach(item, 0, 1, row, row + 1)
             row += 1
         
+        # Try to load the last settings file.
+        # If this fails load the default setting file and show an error.
+        # If *this* fails, then save a default setting file on the basis of default state
+        # configuration in the various objects.
+        try:
+            self.ctrl.restore_settings_last()
+        except:
+            try:
+                self.ctrl.restore_settings_default()
+                self.notifier.push_notification(UINotifier.NotifyMessage(UINotifier.NOTIFY_WARNING, "Unable to load last configuration - reverting to default configuration"))
+            except:
+                self.notifier.push_notification(UINotifier.NotifyMessage(UINotifier.NOTIFY_WARNING, "Unable to load last OR default configuration - configuration have errors"))
+        self.ui_sync_config()
+            
         # Read the flash rate and calculate the flash period.
         try:
             self.flash_period = 1.0 / float(self.cfgmgr['UI']['FlashFreq'])
         except:
             self.flash_period = 0.4 # Default
+        
+    def __user_exception_handler(func):
+        def wrapper(self, *args):
+            try:
+                return func(self, *args)
+            except Utils.UserRequestError as e:
+                self._user_exception(e)
+                return True # stop events being duplicated
+        
+        return wrapper
     
     def _user_exception(self, exc):
         """Called by subclasses if a user exception occurs.  Handles the display of the warning message
         to the user."""
         print("_user_exception:", exc)
         self.notifier.push_notification(UINotifier.NotifyMessage(UINotifier.NOTIFY_WARNING, str(exc)))
+    
+    def _user_message(self, msg):
+        """Called to display a message to the user."""
+        print("_user_message:", msg)
+        self.notifier.push_notification(UINotifier.NotifyMessage(UINotifier.NOTIFY_INFO, str(msg)))
+    
+    def _nbk_select_page(self, *args):
+        # Store tab in ctrl structure so this can be recalled from saved configurations
+        self.ctrl.active_tab = self.nbk_main_settings.get_current_tab()
+        self.state_change_notify()
     
     def _wnd_key_press(self, *args):
         print("_wnd_key_press", args)
@@ -224,7 +287,20 @@ class MainApplication(object):
         
     def _menu_load_settings(self, *args):
         self._user_exception(Utils.UserRequestUnsupported(_("Function not implemented yet")))
-        
+    
+    def _menu_quick_save_settings(self, *args):
+        print("_menu_quick_save_settings")
+        self.ctrl.save_settings_temp()
+        self._user_message(_("Present settings saved into quick restore file"))
+    
+    def _menu_quick_load_settings(self, *args):
+        print("_menu_quick_load_settings")
+        self.ctrl.restore_settings_temp()
+        self.ui_sync_config()
+        self.prompt_user_50ohm()
+        self.ui_sync_config()
+        self._user_message(_("Settings restored from quick restore file"))
+    
     def _menu_load_defaults(self, *args):
         self._user_exception(Utils.UserRequestUnsupported(_("Function not implemented yet")))
 
@@ -249,7 +325,59 @@ class MainApplication(object):
     def _menu_exit(self, *args):
         # prompt to exit?
         self._app_nice_quit()
-
+    
+    @__user_exception_handler
+    def _timebase_click(self, wdg, evt):
+        # Compute position of click.   
+        xp = evt.x / wdg.get_allocation().width
+        
+        if xp >= 0 and xp < 0.33:
+            # Clicks in the first 1/3rd are interpreted as a decreased timebase;  
+            self.ctrl.timebase.timebase_down()
+        elif xp >= 0.33 and xp < 0.66:
+            # Clicks in the last 1/3rd are interpreted as an increase timebase; 
+            pass
+        elif xp >= 0.66 and xp < 1:
+            # Clicks in between the two are interpreted as selecting the timebase/horizontal options.
+            self.ctrl.timebase.timebase_up()
+        
+        self.ui_update_timebase_labels()
+    
+    def state_change_notify(self):
+        # Set a flag.  Changes are synced after a few seconds.
+        self.state_sync_pending = True
+    
+    def prompt_user_50ohm(self):
+        """Check if any channels have 50 ohm mode selected after restoring settings.
+        If any have 50 ohm enabled then the user is prompted to confirm before continuing,
+        to prevent accidental hardware damage."""
+        names = []
+        
+        for ch in self.ctrl.channels:
+            if not ch.termination_50R_applied and ch.termination_50R:
+                names.append(ch.default_long_name)
+        
+        if len(names) > 0:
+            names_catenated = ", ".join(names)
+            message = gettext.ngettext("{0} has 50 ohm mode enabled. ", "Inputs ({0}) have 50 ohm mode enabled. ", len(names)).format(names_catenated) + "\n\n" + \
+                                     _("If a terminated channel has a voltage greater than 10 volts applied, instrument damage could occur. \n\n"
+                                       "Would you like to enable the termination for these channels?")
+            
+            res = dialog_box(pri_text=_("Warning - 50 ohm mode enabled for some channels!"),
+                            sec_text=message, icon=Gtk.MessageType.WARNING, buttons=Gtk.ButtonsType.YES_NO,
+                            window=self.window)
+            
+            if res == Gtk.ResponseType.YES:
+                for ch in self.ctrl.channels:
+                    if not ch.termination_50R_applied and ch.termination_50R:
+                        ch.termination_50R = True
+                        ch.termination_50R_applied = True
+            else:
+                for ch in self.ctrl.channels:
+                    if not ch.termination_50R_applied and ch.termination_50R:
+                        ch.termination_50R = False
+                        ch.termination_50R_applied = False
+    
     def channel_widget_click(self, channel):
         # Find the appropriate ChannelTab instance and send the click message
         for tab in self.ui_tabs:
@@ -297,6 +425,16 @@ class MainApplication(object):
         
         self.last_ui_time = time.time()
         self.ticks += 1
+        
+        # Check if a sync is pending. The state is synced every 10 seconds.
+        # (But only if the state changes.)
+        if self.state_sync_pending:
+            tdelta = time.time() - self.last_state_sync_time
+            if tdelta < 0 or tdelta > STATE_SYNC_WAIT:
+                print("Syncing last oscilloscope state")
+                self.ctrl.save_settings_last()
+                self.last_state_sync_time = time.time()
+                self.state_sync_pending = False
             
         # To keep iteration running, return True
         return True
@@ -306,14 +444,16 @@ class MainApplication(object):
         Update the date and time on the user interface.
         """
         # Not all OSes support %n in strftime, so split and generate timestrings for each
-        time_strs = []
-        time_format = str(self.cfgmgr['UI']['TimeFormat']).split('%n')
-        
-        for line in time_format:
-            time_strs.append(datetime.now().strftime(line.strip()))
-        
-        time_outstr = "\n".join(time_strs)
-        self.lbl_status_time.set_markup(time_outstr)
+        if (time.time() - self.last_clock_time) > 1.0:
+            time_strs = []
+            time_format = str(self.cfgmgr['UI']['TimeFormat']).split('%n')
+
+            for line in time_format:
+                time_strs.append(datetime.now().strftime(line.strip()))
+
+            time_outstr = "\n".join(time_strs)
+            self.lbl_status_time.set_markup(time_outstr)
+            self.last_clock_time = time.time()
     
     def ui_update_run_state(self):
         """
@@ -348,9 +488,9 @@ class MainApplication(object):
             self.lbl_status_run_ctx.add_class("runstate_trigd")
             self.lbl_status_run.set_markup(_("TRIG'D"))
     
-        if self.ticks % 100 == 0:
-            self.ctrl.run_state += 1
-            self.ctrl.run_state %= 4
+    def ui_update_timebase_labels(self):
+        print(self.ctrl.timebase.get_timebase())
+        self.lbl_status_timebase.set_markup(Utils.unit_format_atten(self.ctrl.timebase.get_timebase(), "s"))
     
     def ui_update_tabs(self):
         for tab in self.ui_tabs:
@@ -359,6 +499,16 @@ class MainApplication(object):
     def ui_update_widgets(self):
         for wdg in self.ui_widgets:
             wdg.refresh_widget()
+    
+    def ui_sync_config(self):
+        for tab in self.ui_tabs:
+            tab.refresh_object_attach()
+            
+        for wdg in self.ui_widgets:
+            wdg.refresh_object_attach()
+    
+        print("active_tab:", self.ctrl.active_tab)
+        self.nbk_main_settings.set_current_page(self.ctrl.active_tab)
     
     def run(self):
         """
