@@ -1,3 +1,3 @@
 import ZynqScope
 
-zs = ZynqScope()
+zs = ZynqScope.ZynqScope()
