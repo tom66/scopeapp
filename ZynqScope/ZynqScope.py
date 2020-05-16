@@ -57,7 +57,7 @@ class ZynqScopeSampleRateBehaviourModel(object):
         freq = self.pll_frequency[index] * 1e6
         return freq / divider
 
-class ZynqScopeSampleRateBehaviourModel_8Bit(object): pass
+class ZynqScopeSampleRateBehaviourModel_8Bit(object): 
     adc_divider   = [1,    1,   1,   2,   4,   8,   8,   8]
     pll_frequency = [1000, 500, 250, 250, 250, 250, 125, 62.5] # in MHz
                     
