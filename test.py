@@ -1,0 +1,3 @@
+import ZynqScope
+
+zs = ZynqScope()
