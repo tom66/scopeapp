@@ -31,10 +31,10 @@ class ZynqScopeTimebaseOption(object):
     def __repr__(self):
         return "<ZynqScopeTimebaseOption div=%s span=%s actual_span=%s memory_auto=%s memory_max=%s " \
                "sample_rate_auto=%s interp=%d>" % \
-            (Utils.unit_format_suffix(self.timebase_div, 's'), Utils.unit_format_suffix(self.timebase_span, 's'), \
-             Utils.unit_format_suffix(self.timebase_span_actual, 's'), \
-             Utils.unit_format_suffix(self.memory_auto, 's'), Utils.unit_format_suffix(self.memory_max, 's'), \
-             Utils.unit_format_suffix(self.sample_rate_auto, 's'), Utils.unit_format_suffix(self.sample_rate_max, 's'), 
+            (Utils.unit_format_suffix_handle_exc(self.timebase_div, 's'), Utils.unit_format_suffix_handle_exc(self.timebase_span, 's'), \
+             Utils.unit_format_suffix_handle_exc(self.timebase_span_actual, 's'), \
+             Utils.unit_format_suffix_handle_exc(self.memory_auto, 's'), Utils.unit_format_suffix_handle_exc(self.memory_max, 's'), \
+             Utils.unit_format_suffix_handle_exc(self.sample_rate_auto, 's'), Utils.unit_format_suffix_handle_exc(self.sample_rate_max, 's'), 
              self.interp)
         
 class ZynqScopeSampleRateBehaviourModel(object): 

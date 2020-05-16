@@ -149,6 +149,20 @@ def unit_format_atten(value, suffix):
     elif value >= 1e6 and value < 1e9: 
         return _("{vdiv:.0f} M{unit}/div").format(vdiv=int(value * 1e-6), unit=suffix)
 
+def unit_format_suffix_handle_exc(value, suffix, precision=2):
+    """Print a given value but handle None and exceptions during processing."""
+    if value is None:
+        # TRANSLATORS: do not translate {unit};  "None" is equivalent to "Not Applicable" or "No Value"
+        return _("[None] {unit}").format(unit=suffix)
+    else:
+        try:
+            return unit_format_suffix(value, suffix, precision)
+        except Exception as e:
+            print(_("Exception during unit_format_suffix_handle_exc: {0}").format())
+            
+            # TRANSLATORS: do not translate {unit};  "Exc is equivalent to "Error"/"Exception"
+            return _("[EXC] {unit}").format(unit=suffix)
+    
 def unit_format_voltage(value, precision=2):
     """Print given value as a voltage.  Precision option specifies how many significant digits to display."""
     # TRANSLATORS: Unit is 'voltage'
