@@ -1,3 +1,3 @@
-import ZynqScope
+import ZynqScope.ZynqScope as zs
 
-zs = ZynqScope.ZynqScope()
+zsobj = zs.ZynqScope()
