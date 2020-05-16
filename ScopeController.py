@@ -8,7 +8,6 @@ gettext.textdomain('yaosapp')
 _ = gettext.gettext
 
 import colorsys, math, json
-
 import Utils
 
 # Supported run states
@@ -43,11 +42,6 @@ auto_long_names = [
 # Supported attenuation levels in V (at 1X probe setting)
 attenuation_options = [0.002, 0.005, 0.01, 0.02, 0.05, 0.1, 0.2, 0.5, 1, 2, 5]
 
-# Supported timebases
-timebase_options = [1e-9, 2e-9, 5e-9, 10e-9, 20e-9, 50e-9, 100e-9, 200e-9, 500e-9, 
-                    1e-6, 2e-6, 5e-6, 10e-6, 20e-6, 50e-6, 100e-6, 200e-6, 500e-6, 
-                    1e-3, 2e-3, 5e-3, 10e-3, 20e-3, 50e-3, 100e-3, 200e-3, 500e-3, 
-                    1,    2,    5,    10,    20,    50,    100]
 
 # Maximum V/div and minimum V/div.  TODO:  Load from oscilloscope configuration.
 MAX_V_DIV = 5
@@ -55,11 +49,6 @@ MIN_V_DIV = 0.002
 
 # Amount to increase/decrease in Coarse Offset mode
 COARSE_OFFSET = 0.1
-
-# Maximum supported offsets  (In reality this would vary depending on range, so this
-# will need to change)
-MAX_OFFSET = +8
-MIN_OFFSET = -8
 
 # Maximum supported timebase range
 MAX_TIMEBASE_SHIFT_NEG = -100

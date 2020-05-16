@@ -1,0 +1,57 @@
+"""
+This file is part of YAOS and is licenced under the MIT licence.
+
+Listing of all SPI commands with associated command bytes.  This
+is kept as a module for documentation purposes.  
+
+Don't change any values in this list without also adjusting the 
+Zynq software!
+"""
+
+_NOP0 = 0x00
+_HELLO = 0x01
+_VERSION = 0x02
+_POWER_STATE = 0x03
+_FPGA_HEALTH = 0x04
+_DEVICE_STATISTICS = 0x05
+
+_WAIT_CMD_QUEUE = 0x08
+_CLEAR_CMD_QUEUE = 0x09
+
+_ACQ_SETUP_TRIGGERED = 0x10
+_ACQ_START = 0x11
+_ACQ_STOP = 0x12
+_ACQ_REWIND = 0x13
+_ACQ_STATUS = 0x14
+_ACQ_FORCE_TRAIN = 0x15
+_ACQ_STATUS_TRAIN = 0x16
+
+_TRIG_CONFIGURE_HOLDOFF = 0x30
+_TRIG_CONFIGURE_SETTINGS = 0x31
+_TRIG_CONFIGURE_EDGE = 0x32
+_TRIG_CONFIGURE_ALWAYS = 0x33
+
+_TRIG_WRITE_TIMER = 0x3c
+_TRIG_FORCE = 0x3d
+_TRIG_ARM = 0x3e
+_TRIG_DISARM = 0x3f
+
+_CSI_SETUP_ADDR_RANGE = 0x60
+_CSI_SETUP_WAVE_RANGE = 0x61
+_CSI_SETUP_WAVE_ALL = 0x62
+_CSI_SETUP_TRIGPOS_RANGE = 0x63
+_CSI_SETUP_TRIGPOS_ALL = 0x64
+_CSI_SETUP_TESTPATT = 0x65
+_CSI_SETUP_BITPACK_WAVE = 0x66
+
+_CSI_STREAM_CLEAR_QUEUE = 0x6d
+_CSI_STREAM_START = 0x6e
+_CSI_STREAM_STOP = 0x6f
+_CSI_STATUS = 0x70
+_CSI_SET_PARAMS_QUEUE = 0x71
+_CSI_STREAM_START_ALL = 0x72
+
+_COMP0 = 0xc0
+
+_NOP_MARK = 0xfe
+_NOP1 = 0xff

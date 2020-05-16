@@ -155,6 +155,7 @@ def unit_format_voltage(value, precision=2):
     return unit_format_suffix(value, _("V"), precision)
 
 def value_20_log_db(ratio, precision=0):
+    # TRANSLATORS: Unitless - decibels.  Check engineering terminology carefully.
     return _("{ratio:.{prec}f} dB").format(ratio=(20 * math.log10(ratio)), prec=precision)
 
 def pack_dict_json(obj, vars_):
