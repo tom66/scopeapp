@@ -150,19 +150,21 @@ class ZynqScope(object):
             new_tb.timebase_span_actual = new_tb.timebase_span
             new_tb.sample_rate_auto = self.samprate_mdl.rates[0]
             new_tb.sample_rate_max = self.samprate_mdl.rates[0]
-            new_tb.interp = 1
             
             # Assume medium acquistion: sample at the fastest possible rate, memory depth equals 
             # acquisition length in this mode
             new_tb.memory_auto = self.samprate_mdl.rates[0] * new_tb.timebase_span
-            print("mem_auto:", new_tb.memory_auto, "max:", self.mem_depth_maximum)
+            new_tb.memory_max = self.mem_depth_maximum
+            new_tb.interp = self.display_samples_target / (new_tb.timebase_span_actual * self.samprate_mdl.rates[0])
+            
+            if new_tb.interp < 1:
+                new_tb.interp = 1
             
             # Short acquisition: we capture a larger span and display only a reduced portion of it
             if new_tb.memory_auto < self.mem_depth_minimum:
                 #print("minimum", self.mem_depth_minimum)
                 new_tb.memory_auto = self.mem_depth_minimum
                 new_tb.timebase_span_actual = new_tb.memory_auto * (1.0 / self.samprate_mdl.rates[0])
-                new_tb.interp = self.display_samples_target / (new_tb.timebase_span_actual * self.samprate_mdl.rates[0])
             else:
                 # Long acquisition: if the number of acquired samples would exceed the maximum memory length
                 # in non-split mode, we must reduce the actual sample rate to fit this in DDR3!
