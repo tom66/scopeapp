@@ -49,8 +49,8 @@ class ZynqScopeSampleRateBehaviourModel(object):
     min_freq = 0
     
     def update(self):
-        self.rates_list = []
-        self.rates = []
+        rates_list = []
+        rates = []
         
         for div in self.adc_divider:
             for freq in self.pll_frequency:
@@ -62,17 +62,18 @@ class ZynqScopeSampleRateBehaviourModel(object):
                 
                 dupe = False
                 
-                for r in self.rates:
+                for r in rates:
                     if (abs(out_freq - r)) < 10:
                         dupe = True
                         break
                 
                 if not dupe:
-                    self.rates_lut.append((out_freq * 1e6, freq, div))
-                    #self.rates.append(out_freq * 1e6)
+                    rates_list.append((out_freq * 1e6, freq, div))
+                    rates.append(out_freq * 1e6)
         
-        self.rates_lut.sort(reverse=True, key=operator.itemgetter(0))
-        self.rates = map(lambda x: x[0], self.rates_lut)
+        rates_list.sort(reverse=True, key=operator.itemgetter(0))
+        self.rates = map(lambda x: x[0], rates_list)
+        self.rates_lut = rates_list
         print(self.rates_lut)
    
     def calculate_clock_for_index(self, freq, div):
