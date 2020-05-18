@@ -127,9 +127,9 @@ def unit_format_suffix(value, suffix, precision=2):
     elif abs(value) >= .99e6 and abs(value) < .99e9:
         return _("{value} M{unit}").format(value=float_trail_free(round_sig_figs(value * 1e-6, precision)), unit=suffix)
     elif abs(value) >= .99e9 and abs(value) < .99e12:
-        return _("{value} G{unit}").format(value=float_trail_free(round_sig_figs(value * 1e-12, precision)), unit=suffix)
+        return _("{value} G{unit}").format(value=float_trail_free(round_sig_figs(value * 1e-9, precision)), unit=suffix)
     elif abs(value) >= .99e12:
-        return _("{value} T{unit}").format(value=float_trail_free(round_sig_figs(value * 1e-15, precision)), unit=suffix)
+        return _("{value} T{unit}").format(value=float_trail_free(round_sig_figs(value * 1e-12, precision)), unit=suffix)
 
 def unit_format_atten(value, suffix):
     """Print given value (e.g. V) as a uV/div, mV/div, V/div or kV/div setting.  Input is floating point."""
