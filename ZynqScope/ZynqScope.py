@@ -158,6 +158,7 @@ class ZynqScope(object):
                 if new_tb.memory_auto >= self.mem_depth_maximum:
                     # Find the best sample rate that does not exceed the maximum memory depth (start 
                     # from the highest sample rate and work down)
+                    found = False
                     for rate in self.samprate_mdl.rates:
                         mem_depth = int(math.ceil(new_tb.timebase_span * rate))
                         print("rate (MSa/s):", rate / 1e6, "mem_depth (MB):", mem_depth / 1e6, "ratio:", mem_depth / self.mem_depth_maximum)
@@ -167,6 +168,11 @@ class ZynqScope(object):
                             new_tb.timebase_span_actual = self.mem_depth_maximum / rate
                             new_tb.sample_rate_auto = rate
                             new_tb.sample_rate_max = rate
+                            found = True
+                            break
+                    
+                    if not found:
+                        raise ValueError("Unable to solve for timebase %r" % new_tb)
                     
                     new_tb.memory_max = new_tb.memory_auto
             
