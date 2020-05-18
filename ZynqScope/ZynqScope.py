@@ -20,7 +20,7 @@ timebase_options = [1e-9, 2e-9, 5e-9, 10e-9, 20e-9, 50e-9, 100e-9, 200e-9, 500e-
 # Timebase options reduced until we have a variable sample discarder on the Zynq                
 timebase_options = [1e-9, 2e-9, 5e-9, 10e-9, 20e-9, 50e-9, 100e-9, 200e-9, 500e-9, 
                     1e-6, 2e-6, 5e-6, 10e-6, 20e-6, 50e-6, 100e-6, 200e-6, 500e-6, 
-                    1e-3, 2e-3, 5e-3, 10e-3, 20e-3, 50e-3, 100e-3, 200e-3]
+                    1e-3, 2e-3, 5e-3, 10e-3, 20e-3, 50e-3, 100e-3]
 
 class ZynqScopeTimebaseOption(object):
     timebase_div = 0
@@ -113,6 +113,10 @@ class ZynqScope(object):
     mem_depth_minimum = 128                 # 128 samples
     mem_depth_maximum = 209715200           # 200MB
     mem_depth_maximum_split = 100663296     # 96MB in split mode
+    
+    # Split transition point: below this point, two buffers are maintained to improve update rate.
+    # Nominally set to 2.5us/div so anything below 2us/div is included
+    split_transition_tb = 2.5e-6
     
     # Target display samples.  This is filled from the GL frontend.
     # Our acquisition must always target this in the fastest mode to get the best performance.
