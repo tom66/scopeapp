@@ -54,7 +54,7 @@ class ZynqScopeSampleRateBehaviourModel(object):
         
         for div in self.adc_divider:
             for freq in self.pll_frequency:
-                # Don't add entry if it already exists (within 1MHz)
+                # Don't add entry if it already exists (within 1kHz)
                 out_freq = self.calculate_clock_for_index(freq, div)
                 
                 if out_freq == None:
@@ -63,7 +63,7 @@ class ZynqScopeSampleRateBehaviourModel(object):
                 dupe = False
                 
                 for r in rates:
-                    if (abs(out_freq - r)) < 1e6:
+                    if (abs(out_freq - r)) < 1e3:
                         dupe = True
                         break
                 
@@ -86,7 +86,7 @@ class ZynqScopeSampleRateBehaviourModel(object):
 
 class ZynqScopeSampleRateBehaviourModel_8Bit(ZynqScopeSampleRateBehaviourModel): 
     adc_divider   = [8, 4, 2, 1]
-    pll_frequency = [1000, 900, 850, 800, 750, 700, 666.7, 600, 550, 500, 450, 333.3, 250, 125, 62.5, 40] # in MHz
+    pll_frequency = [1000, 900, 850, 800, 750, 700, 650, 600, 550, 500, 450, 333.33333333, 250, 125, 62.5, 40] # in MHz
     min_freq = 40
 
 class ZynqScope(object):
