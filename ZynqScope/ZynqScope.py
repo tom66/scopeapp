@@ -72,7 +72,7 @@ class ZynqScopeSampleRateBehaviourModel(object):
                     rates.append(out_freq * 1e6)
         
         rates_list.sort(reverse=True, key=operator.itemgetter(0))
-        self.rates = map(lambda x: x[0], rates_list)
+        self.rates = list(map(lambda x: x[0], rates_list))
         self.rates_lut = rates_list
         print(self.rates_lut)
    
@@ -85,7 +85,7 @@ class ZynqScopeSampleRateBehaviourModel(object):
             return f
 
 class ZynqScopeSampleRateBehaviourModel_8Bit(ZynqScopeSampleRateBehaviourModel): 
-    adc_divider   = [8, 4, 2, 1]
+    adc_divider   = [1, 2, 4, 8]
     pll_frequency = [1000, 900, 850, 800, 750, 700, 650, 600, 550, 500, 450, 333.33333333, 250, 125, 62.5, 40] # in MHz
     min_freq = 40
 
@@ -128,7 +128,7 @@ class ZynqScope(object):
     
     def init_timebases(self):
         self.timebase_settings = []
-        print(list(self.samprate_mdl.rates))
+        print(self.samprate_mdl.rates)
         
         for tb in timebase_options:
             new_tb = ZynqScopeTimebaseOption()
