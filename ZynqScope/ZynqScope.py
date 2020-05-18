@@ -2,7 +2,7 @@
 This file is part of YAOS and is licenced under the MIT Licence.
 """
 
-import sys, operator
+import sys, operator, math
 sys.path.append('..')
 import Utils # from parent directory
 
@@ -157,7 +157,7 @@ class ZynqScope(object):
                     # Find the best sample rate that does not exceed the maximum memory depth (start 
                     # from the highest sample rate and work down)
                     for rate in self.samprate_mdl.rates:
-                        mem_depth = new_tb.timebase_span * rate
+                        mem_depth = int(math.ceil(new_tb.timebase_span * rate))
                         print(rate, mem_depth)
                         if mem_depth < self.mem_depth_maximum:
                             new_tb.memory_auto = mem_depth
