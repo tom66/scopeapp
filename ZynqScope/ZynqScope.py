@@ -86,7 +86,7 @@ class ZynqScopeSampleRateBehaviourModel(object):
             return (f * 1e6)
 
 class ZynqScopeSampleRateBehaviourModel_8Bit(ZynqScopeSampleRateBehaviourModel): 
-    adc_divider   = [1, 2, 4, 8]
+    adc_divider   = [8, 4, 2, 1]
     pll_frequency = [1000, 900, 850, 800, 750, 700, 650, 600, 550, 500, 450, 333.33333333, 250, 125, 62.5, 40] # in MHz
     min_freq = 40
 
