@@ -2,7 +2,7 @@
 This file is part of YAOS and is licenced under the MIT Licence.
 """
 
-import sys 
+import sys, operator
 sys.path.append('..')
 import Utils # from parent directory
 
@@ -29,38 +29,65 @@ class ZynqScopeTimebaseOption(object):
         pass
     
     def __repr__(self):
+        #print("interp", self.interp, self.timebase_div, self.timebase_span, self.timebase_span_actual, self.memory_auto, self.memory_max, self.sample_rate_auto, self.sample_rate_max)
         return "<ZynqScopeTimebaseOption div=%s span=%s actual_span=%s memory_auto=%s memory_max=%s " \
-               "sample_rate_auto=%s interp=%d>" % \
-            (Utils.unit_format_suffix_handle_exc(self.timebase_div, 's'), Utils.unit_format_suffix_handle_exc(self.timebase_span, 's'), \
-             Utils.unit_format_suffix_handle_exc(self.timebase_span_actual, 's'), \
-             Utils.unit_format_suffix_handle_exc(self.memory_auto, 's'), Utils.unit_format_suffix_handle_exc(self.memory_max, 's'), \
-             Utils.unit_format_suffix_handle_exc(self.sample_rate_auto, 's'), Utils.unit_format_suffix_handle_exc(self.sample_rate_max, 's'), 
+               "sample_rate_auto=%s sample_rate_max=%s interp=%d>" % \
+            (Utils.unit_format_suffix_handle_exc(self.timebase_div, 's', precision=3), Utils.unit_format_suffix_handle_exc(self.timebase_span, 's', precision=3), \
+             Utils.unit_format_suffix_handle_exc(self.timebase_span_actual, 's', precision=3), \
+             Utils.unit_format_suffix_handle_exc(self.memory_auto, 'samp', precision=6), Utils.unit_format_suffix_handle_exc(self.memory_max, 'samp', precision=6), \
+             Utils.unit_format_suffix_handle_exc(self.sample_rate_auto, 'samp s^-1', precision=3), Utils.unit_format_suffix_handle_exc(self.sample_rate_max, 'samp s^-1', precision=3), 
              self.interp)
         
 class ZynqScopeSampleRateBehaviourModel(object): 
     """Encapsulating class for divider/PLL behaviour model.  The rates,
     dividers and frequency lists must be in descending order of resulting
     output frequency."""
-    rates = []  
+    rates_lut = []
+    rates = []
     adc_divider = []
     pll_frequency = []
+    min_freq = 0
     
     def update(self):
+        self.rates_list = []
         self.rates = []
-        length = len(self.adc_divider)
-        for idx in range(length):
-            self.rates.append(self.calculate_clock_for_index(idx))
-    
-    def calculate_clock_for_index(self, index):
+        
+        for div in self.adc_divider:
+            for freq in self.pll_frequency:
+                # Don't add entry if it already exists (within 10Hz)
+                out_freq = self.calculate_clock_for_index(freq, div)
+                
+                if out_freq == None:
+                    continue
+                
+                dupe = False
+                
+                for r in self.rates:
+                    if (abs(out_freq - r)) < 10:
+                        dupe = True
+                        break
+                
+                if not dupe:
+                    self.rates_lut.append((out_freq, freq, div))
+                    self.rates.append(out_freq)
+        
+        self.rates_lut.sort(reverse=True, key=operator.itemgetter(0))
+        #self.rates = map(lambda x: x[0], self.rates_lut)
+        print(self.rates_lut)
+   
+    def calculate_clock_for_index(self, freq, div):
         """Returns clock in MHz"""
-        divider = self.adc_divider[index]
-        freq = self.pll_frequency[index] * 1e6
-        return freq / divider
+        f = freq / div
+        if (f < self.min_freq):
+            return None
+        else:
+            return f
 
 class ZynqScopeSampleRateBehaviourModel_8Bit(ZynqScopeSampleRateBehaviourModel): 
-    adc_divider   = [1,    1,   1,   2,   4,   8,   8,   8]
-    pll_frequency = [1000, 500, 250, 250, 250, 250, 125, 62.5] # in MHz
-                    
+    adc_divider   = [8, 4, 2, 1]
+    pll_frequency = [1000, 900, 850, 800, 750, 700, 666.7, 600, 550, 500, 450, 333.3, 250, 125, 62.5, 40] # in MHz
+    min_freq = 40
+
 class ZynqScope(object):
     """
     The base ZynqScope object which handles the command and control interface
@@ -69,7 +96,7 @@ class ZynqScope(object):
     """
     # A list of ZynqTimebaseOption entries filled from timebase_options
     timebase_settings = []
-                    
+
     # Memory depth range.  In future, we would retrieve the amount of DDR3 connected to the Zynq
     # to automatically infer these parameters.  In addition precision mode must also be considered,
     # when it is implemented.
@@ -100,6 +127,7 @@ class ZynqScope(object):
     
     def init_timebases(self):
         self.timebase_settings = []
+        print(self.samprate_mdl.rates)
         
         for tb in timebase_options:
             new_tb = ZynqScopeTimebaseOption()
@@ -111,9 +139,11 @@ class ZynqScope(object):
             # Assume medium acquistion: sample at the fastest possible rate, memory depth equals 
             # acquisition length in this mode
             new_tb.memory_auto = self.samprate_mdl.rates[0] * new_tb.timebase_span
+            print("mem_auto:", new_tb.memory_auto, "max:", self.mem_depth_maximum)
             
             # Short acquisition: we capture a larger span and display only a reduced portion of it
             if new_tb.memory_auto < self.mem_depth_minimum:
+                #print("minimum", self.mem_depth_minimum)
                 new_tb.memory_auto = self.mem_depth_minimum
                 new_tb.timebase_span_actual = new_tb.memory_auto * (1.0 / self.samprate_mdl.rates[0])
                 new_tb.interp = self.display_samples_target / (new_tb.timebase_span_actual * self.samprate_mdl.rates[0])
@@ -121,16 +151,18 @@ class ZynqScope(object):
                 # Long acquisition: if the number of acquired samples would exceed the maximum memory length
                 # in non-split mode, we must reduce the actual sample rate to fit this in DDR3!
                 if new_tb.memory_auto >= self.mem_depth_maximum:
+                    #print("overflow")
                     # Find the best sample rate that does not exceed the maximum memory depth (start 
                     # from the highest sample rate and work down)
                     for rate in self.samprate_mdl.rates:
-                        mem_depth = new_tb.memory_auto * (1.0 / rate)
+                        mem_depth = new_tb.timebase_span * rate
+                        print(rate, mem_depth)
                         if mem_depth < self.mem_depth_maximum:
                             new_tb.memory_auto = mem_depth
-                            break
+                            #break
                     
                     new_tb.memory_max = new_tb.memory_auto
             
-            print(tb)
+            #print(tb)
             print(new_tb)
             self.timebase_settings.append(new_tb)
