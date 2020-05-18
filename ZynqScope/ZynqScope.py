@@ -88,7 +88,7 @@ class ZynqScopeSampleRateBehaviourModel(object):
 class ZynqScopeSampleRateBehaviourModel_8Bit(ZynqScopeSampleRateBehaviourModel): 
     adc_divider   = [1, 2, 4, 8]
     #pll_frequency = [1000, 900, 850, 800, 750, 700, 650, 600, 550, 500, 450, 400, 333.33333333, 250, 125, 62.5, 40] # in MHz
-    pll_frequency = [1000, 750, 500, 250, 125, 62.5] # in MHz
+    pll_frequency = [1000, 750, 500, 400, 250, 200, 125, 100, 62.5, 50] # in MHz
     min_freq = 120
 
 class ZynqScope(object):
@@ -159,7 +159,7 @@ class ZynqScope(object):
                     # from the highest sample rate and work down)
                     for rate in self.samprate_mdl.rates:
                         mem_depth = int(math.ceil(new_tb.timebase_span * rate))
-                        print(rate, mem_depth, mem_depth / self.mem_depth_maximum)
+                        print("rate (MSa/s):", rate / 1e6, "mem_depth (MB):", mem_depth / 1e6, "ratio:", mem_depth / self.mem_depth_maximum
                         if mem_depth < self.mem_depth_maximum:
                             new_tb.memory_auto = mem_depth
                             #break
