@@ -137,6 +137,8 @@ class ZynqScope(object):
             new_tb.timebase_div = tb
             new_tb.timebase_span = self.default_hdiv_span * tb
             new_tb.timebase_span_actual = new_tb.timebase_span
+            new_tb.sample_rate_auto = self.samprate_mdl.rates[0]
+            new_tb.sample_rate_max = self.samprate_mdl.rates[0]
             new_tb.interp = 1
             
             # Assume medium acquistion: sample at the fastest possible rate, memory depth equals 
@@ -154,15 +156,17 @@ class ZynqScope(object):
                 # Long acquisition: if the number of acquired samples would exceed the maximum memory length
                 # in non-split mode, we must reduce the actual sample rate to fit this in DDR3!
                 if new_tb.memory_auto >= self.mem_depth_maximum:
-                    #print("overflow")
                     # Find the best sample rate that does not exceed the maximum memory depth (start 
                     # from the highest sample rate and work down)
                     for rate in self.samprate_mdl.rates:
                         mem_depth = int(math.ceil(new_tb.timebase_span * rate))
                         print("rate (MSa/s):", rate / 1e6, "mem_depth (MB):", mem_depth / 1e6, "ratio:", mem_depth / self.mem_depth_maximum)
                         if mem_depth < self.mem_depth_maximum:
-                            new_tb.memory_auto = mem_depth
-                            #break
+                            # Adjust this memory depth to fill the whole memory (no point throwing data away!)
+                            new_tb.memory_auto = self.mem_depth_maximum
+                            new_tb.timebase_span_actual = self.mem_depth_maximum / rate
+                            new_tb.sample_rate_auto = rate
+                            new_tb.sample_rate_max = rate
                     
                     new_tb.memory_max = new_tb.memory_auto
             
