@@ -52,8 +52,8 @@ class ZynqScopeSampleRateBehaviourModel(object):
         rates_list = []
         rates = []
         
-        for div in self.adc_divider:
-            for freq in self.pll_frequency:
+        for freq in self.pll_frequency:
+            for div in self.adc_divider:
                 # Don't add entry if it already exists (within 1kHz)
                 out_freq = self.calculate_clock_for_index(freq, div)
                 
