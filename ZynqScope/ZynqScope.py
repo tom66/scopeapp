@@ -64,6 +64,7 @@ class ZynqScopeSampleRateBehaviourModel(object):
                 
                 for r in rates:
                     if (abs(out_freq - r)) < 1e3:
+                        print(out_freq, r, "Duplicate!")
                         dupe = True
                         break
                 
