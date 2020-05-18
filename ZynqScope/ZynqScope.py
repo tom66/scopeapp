@@ -7,7 +7,7 @@ sys.path.append('..')
 import Utils # from parent directory
 
 # For now, we import the standard 4ch AFE as the only supported AFE
-import Standard4chAFE as AFE
+import ZynqScope.Standard4chAFE as AFE
 
 # Supported timebases
 timebase_options = [1e-9, 2e-9, 5e-9, 10e-9, 20e-9, 50e-9, 100e-9, 200e-9, 500e-9, 
