@@ -69,7 +69,7 @@ class ZynqScopeSampleRateBehaviourModel(object):
                 
                 if not dupe:
                     rates_list.append((out_freq * 1e6, freq, div))
-                    rates.append(out_freq * 1e6)
+                    rates.append(out_freq)
         
         rates_list.sort(reverse=True, key=operator.itemgetter(0))
         self.rates = list(map(lambda x: x[0], rates_list))
