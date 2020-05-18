@@ -159,7 +159,7 @@ class ZynqScope(object):
                     # from the highest sample rate and work down)
                     for rate in self.samprate_mdl.rates:
                         mem_depth = int(math.ceil(new_tb.timebase_span * rate))
-                        print("rate (MSa/s):", rate / 1e6, "mem_depth (MB):", mem_depth / 1e6, "ratio:", mem_depth / self.mem_depth_maximum
+                        print("rate (MSa/s):", rate / 1e6, "mem_depth (MB):", mem_depth / 1e6, "ratio:", mem_depth / self.mem_depth_maximum)
                         if mem_depth < self.mem_depth_maximum:
                             new_tb.memory_auto = mem_depth
                             #break
