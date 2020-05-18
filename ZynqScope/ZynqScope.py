@@ -128,7 +128,7 @@ class ZynqScope(object):
     
     def init_timebases(self):
         self.timebase_settings = []
-        print(self.samprate_mdl.rates)
+        print(list(self.samprate_mdl.rates))
         
         for tb in timebase_options:
             new_tb = ZynqScopeTimebaseOption()
