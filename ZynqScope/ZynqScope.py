@@ -69,7 +69,7 @@ class ZynqScopeSampleRateBehaviourModel(object):
                         break
                 
                 if not dupe:
-                    rates_list.append((out_freq * 1e6, freq, div))
+                    rates_list.append(out_freq, freq, div))
                     rates.append(out_freq)
         
         rates_list.sort(reverse=True, key=operator.itemgetter(0))
@@ -78,12 +78,12 @@ class ZynqScopeSampleRateBehaviourModel(object):
         print(self.rates_lut)
    
     def calculate_clock_for_index(self, freq, div):
-        """Returns clock in MHz"""
+        """Returns clock in Hz"""
         f = freq / div
         if (f < self.min_freq):
             return None
         else:
-            return f
+            return (f * 1e6)
 
 class ZynqScopeSampleRateBehaviourModel_8Bit(ZynqScopeSampleRateBehaviourModel): 
     adc_divider   = [1, 2, 4, 8]
