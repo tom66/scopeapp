@@ -10,9 +10,6 @@ import Utils # from parent directory
 import ZynqScope.Standard4chAFE as AFE # For now, we import the standard 4ch AFE as the only supported AFE
 import ZynqScope.ZynqSPI, ZynqScope.ZynqCommands as zc
 
-STATE_ZYNQ_NOT_READY = 0
-STATE_ZYNQ_IDLE = 1
-
 ZYNQ_SAMPLE_WORD_SIZE = 8
 ZYNQ_SAMPLE_WORD_CACHE_DIVISIBLE = 32
 

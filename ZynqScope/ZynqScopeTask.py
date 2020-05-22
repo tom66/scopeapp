@@ -10,6 +10,9 @@ import ZynqScope.ZynqScope as zs
 DEFAULT_ZYNQ_TASK_RATE = 10000      # Run internal task at 10kHz
 DEFAULT_ZYNQ_PING_MULT = 200        # Ping Zynq every 200 ticks for new data (~50Hz)
 
+STATE_ZYNQ_NOT_READY = 0
+STATE_ZYNQ_IDLE = 1
+
 class ZynqScopeSimpleCommand(object):
     def __init__(self, cmd_name, flush, *args, **kwargs):
         assert(type(self.cmd_name) == str)
