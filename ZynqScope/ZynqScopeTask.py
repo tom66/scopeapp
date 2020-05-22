@@ -100,7 +100,6 @@ class ZynqScopeSubprocess(multiprocessing.Process):
     def queue_process(self):
         """See what work there is to do."""
         msg = self.evq.get()
-        print(msg)
         
         if not isinstance(msg, ZynqScopeTaskQueueCommand):
             raise RuntimeError("Queue message not subclass of ZynqScopeTaskQueueCommand")
@@ -116,8 +115,8 @@ class ZynqScopeSubprocess(multiprocessing.Process):
         elif type(msg) is ZynqScopeSimpleCommand:
             # This is a simple command: we call the relevant method on the ZynqScope interface.
             # A Null response is generated.  This is used, e.g. to set acquisition parameters.  
-            print("ZynqScopeSimpleCommand: ", msg.args, msg.kwargs)
-            getattr(self.zs.zcmd, msg.cmd_name)(*msg.args, **msg.kwargs)
+            print("ZynqScopeSimpleCommand:", msg, msg.args, msg.kwargs)
+            getattr(self.zs, msg.cmd_name)(*msg.args, **msg.kwargs)
             self.rsq.put(ZynqScopeNullResponse())
         elif type(msg) is ZynqScopeSyncAcquisitionSettings:
             self.zs.setup_for_timebase(0, None) # TODO: These parameters need to be filled in, too!
