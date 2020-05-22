@@ -300,8 +300,8 @@ class ZynqScope(object):
         
         # Correct all buffers to be a multiple of a cache line.  The total buffer need only
         # be divisible by 32, but ensuring both pre and post buffers are is easier.
-        pre_size += ZYNQ_SAMPLE_WORD_CACHE_DIVISIBLE // 2
-        post_size += ZYNQ_SAMPLE_WORD_CACHE_DIVISIBLE // 2
+        pre_size += ZYNQ_SAMPLE_WORD_CACHE_DIVISIBLE - 1
+        post_size += ZYNQ_SAMPLE_WORD_CACHE_DIVISIBLE - 1
         pre_size &= ~(ZYNQ_SAMPLE_WORD_CACHE_DIVISIBLE - 1)
         post_size &= ~(ZYNQ_SAMPLE_WORD_CACHE_DIVISIBLE - 1)
         
