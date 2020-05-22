@@ -173,7 +173,7 @@ class ZynqScopeTaskController():
         self.evq.put(ZynqScopeSimpleCommand("stop_acquisition", True,))
     
     def start_acquisition(self):
-        self.evq.put(ZynqScopeSimpleCommand("start_acquisition", True, (,), {'reset_fifo' : 1}))
+        self.evq.put(ZynqScopeSimpleCommand("start_acquisition", True, (), {'reset_fifo' : 1}))
     
     def sync_to_real_world(self):
         # Sync to the real world includes:  
