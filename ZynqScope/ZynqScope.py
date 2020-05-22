@@ -2,17 +2,13 @@
 This file is part of YAOS and is licenced under the MIT Licence.
 """
 
-import sys, operator, math, inspect, copy
+import sys, operator, math
 
 sys.path.append('..')
 import Utils # from parent directory
 
 import ZynqScope.Standard4chAFE as AFE # For now, we import the standard 4ch AFE as the only supported AFE
 import ZynqScope.ZynqSPI, ZynqScope.ZynqCommands as zc
-
-import multiprocessing
-
-DEFAULT_ZYNQ_PING_RATE = 50
 
 STATE_ZYNQ_NOT_READY = 0
 STATE_ZYNQ_IDLE = 1
@@ -34,18 +30,6 @@ timebase_options = [1e-9, 2e-9, 5e-9, 10e-9, 20e-9, 50e-9, 100e-9, 200e-9, 500e-
                     1e-3, 2e-3, 5e-3, 10e-3, 20e-3, 50e-3, 100e-3]
 
 class ZynqScopeParameterRangeError(ValueError): pass
-
-class ZynqScopeSimpleCommand(object):
-    def __init__(self, cmd_name, flush, *args, **kwargs):
-        assert(type(self.cmd_name) == str)
-        self.cmd_name = cmd_name
-        self.flush = flush
-        self.args = args
-        self.kwargs = kwargs
-
-class ZynqScopeGetStatus(object): pass
-class ZynqScopeSendCompAcqStreamCommand(object): pass
-class ZynqScopeAttributesResponse(object): pass
 
 class ZynqScopeCurrentParameters(object): 
     sample_depth = 8
@@ -150,7 +134,7 @@ class ZynqScope(object):
     # Memory depth range.  In future, we would retrieve the amount of DDR3 connected to the Zynq
     # to automatically infer these parameters.  In addition precision mode must also be considered,
     # when it is implemented.
-    mem_depth_minimum = 128                 # 128 samples in total for an acquisition
+    mem_depth_minimum = 120                 # 120 samples in total for an acquisition
     mem_depth_minimum_pp = 16               # Minimum size for pre/post buffers individually (16 samples: two words of 8 samples)
     mem_depth_maximum = 200000000           # 200Mpts
     mem_depth_maximum_split = 100000000     # 100Mpts in split mode
@@ -364,60 +348,4 @@ class ZynqScope(object):
         
         self.params.delay = delay
         print(self.params)
-            
-class ZynqScopeSubprocess(multiprocessing.Process):
-    """
-    This 'task' manages the interface with the Zynq via a multiprocessing interface.
-    It internally contains a ZynqScope interface and accepts commands via a command queue
-    and emits state messages via a separate queue. 
-    """
-    state = STATE_ZYNQ_NOT_READY
-    
-    def __init__(self, event_queue, response_queue):
-        self.evq = event_queue
-        self.rsq = response_queue
         
-        # we might want the capability to tune the period as time goes by
-        self.ping_period = 1000.0 / DEFAULT_ZYNQ_PING_RATE
-        self.ping_period_req = self.ping_period
-        
-    def run(self):
-        """Runs periodically to check the status of the Zynq.  Presently set to ping at 50Hz,
-        but this can be changed."""
-        if state == STATE_ZYNQ_NOT_READY:
-            # Well get ready then!
-            self.zs = ZynqScope()
-            self.zs.connect()
-        elif state == STATE_ZYNQ_IDLE:
-            # Process any commands in the queue
-            self.queue_process()
-        
-        time.sleep(self.ping_period)
-    
-    def queue_process(self):
-        """See what work there is to do."""
-        msg = self.evq.get()
-        
-        if type(msg) is ZynqScopeSimpleCommand:
-            # This is a simple command: we call the relevant method on the ZynqCommands interface
-            # No response is generated.  This is used, e.g. to set trigger parameters.  If 'flush' bit is
-            # set, then a flush command is also sent.
-            getattr(self.zs.zcmd, msg.cmd_name)(*msg.args, **msg.kwargs)
-            if msg.flush:
-                self.zs.zcmd.flush()
-        elif type(msg) is ZynqScopeGetAcqStatus:
-            # Enquire scope acquisition status.  Returns a ZynqAcqStatus object.
-            resp = self.zs.zcmd.acq_status()
-            self.rsq.put(resp)
-        elif type(msg) is ZynqScopeSendCompAcqStreamCommand:
-            # Send a composite acquisition status command and return the response data.
-            resp = self.zs.zcmd.comp_acq_control()
-            self.rsp.put(resp)
-        elif type(msg) is ZynqScopeGetAttributes:
-            # Return a safed object copy of all scope parameters which can be accessed
-            resp = ZynqScopeAttributesResponse()
-            attrs = inspect.getmembers(self.zs)
-            for attr, value in attrs:
-                setattr(resp, attr, copy.deepcopy(value))
-            self.rsp.put(resp)
-    

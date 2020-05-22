@@ -10,7 +10,7 @@ _ = gettext.gettext
 import colorsys, math, json
 import Utils
 
-import ZynqScope.ZynqScope as zs
+import ZynqScope.ZynqScopeTask as zst
 
 # Supported run states
 STATE_STOPPED = 0               # State when stopped
@@ -314,16 +314,23 @@ class ScopeChannelController(object):
         self.set_invert(not self.invert)
 
 class ScopeTimebaseController(object):
+    supported_timebases = []
     timebase_index = 0
     offset = 0
     
     pack_vars_types = {
         "timebase_index":       [(int,)],
         "offset":               [(float, int)],
-    } 
+    }
     
-    def __init__(self):
-        pass
+    zstc = None
+    
+    def __init__(self, zsth):
+        self.zstc = zstc
+        
+        # Get the list of supported timebases
+        self.supported_timebases = self.zstc.get_supported_timebases()
+        print("Supported timebases:", self.supported_timebases)
     
     def prepare_state(self):
         return Utils.pack_dict_json(self, self.pack_vars_types)
@@ -378,10 +385,6 @@ class ScopeController(object):
     # Currently selected tab for UI
     active_tab = 0
     
-    # Timebase
-    timebase = ScopeTimebaseController()
-    
-    # Zynq Interface
     def __init__(self):
         # TODO: We need to determine whether the instrument is 2ch or 4ch
         self.channels.append(ScopeChannelController(SCOPE_CH_1))
@@ -394,8 +397,9 @@ class ScopeController(object):
         self.channels[3].set_colour(270, 0.65)
         
         # Initialise Zynq interface
-        self.zs = ZS.ZynqScopeSubprocess()
-        
+        self.zstc = zstc.ZynqScopeTaskController()
+        self.zstc.start()
+        self.timebase = ScopeTimebaseController(self.zstc)
     
     def connect(self):
         self.sz.connect()
