@@ -566,6 +566,8 @@ class ScopeController(object):
             self.zst.sync_to_real_world()
     
     def acq_run(self):
+        print("acq_run() outer")
+        
         if self.run_state == ACQ_IS_STOPPED:
             # Sync all changes to the acquisition side
             self.zst.sync_to_real_world()
@@ -576,6 +578,8 @@ class ScopeController(object):
             raise RuntimeError("Oscilloscope is not stopped")
     
     def acq_stop(self):
+        print("acq_stop() outer")
+        
         if self.run_state == ACQ_IS_RUNNING:
             # Stop the instrument
             self.zst.stop_acquisition()
