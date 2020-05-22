@@ -352,7 +352,7 @@ class ScopeTimebaseController(object):
         if self.timebase_index >= len(self.supported_timebases):
             self.timebase_index = len(self.supported_timebases) - 1
         
-        return timebase_options[self.timebase_index]
+        return self.supported_timebases[self.timebase_index]
     
     def timebase_up(self):
         print("timebase_up", self.timebase_index)
