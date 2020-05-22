@@ -534,8 +534,33 @@ class ScopeController(object):
         else:
             print("No sync, we are stopped")
     
+    def get_memory_depth(self):
+        return 0
+    
+    def get_run_state_str(self):
+        if self.run_state == ACQ_IS_STOPPED:
+            return "STOP"
+        else:
+            return "RUN"
+    
+    def get_overall_state_str(self):
+        if self.run_state == ACQ_IS_STOPPED:
+            return "STOP"
+        else:
+            if self.acq_state == STATE_RUNNING_AUTO:
+                return "AUTO"
+            elif self.acq_state == STATE_RUNNING_WAIT_TRIG:
+                return "WAIT"
+            elif self.acq_state == STATE_RUNNING_TRIGD:
+                return "TRIGD"
+            else:
+                return "STOP"
+    
     def change_notifier(self, param):
         print("change_notifier:", param)
+        
+        if self.run_state == ACQ_IS_RUNNING:
+            self.sync_to_real_world()
     
     def acq_run(self):
         if self.run_state == ACQ_IS_STOPPED:
