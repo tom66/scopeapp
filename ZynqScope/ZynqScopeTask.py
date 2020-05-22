@@ -41,7 +41,7 @@ def compress_class_attrs_for_response(resp, clas_):
             continue
         if not callable(value):
             print(attr, value)
-            setattr(resp, attr, copy.deepcopy(value))
+            setattr(resp, attr, copy.copy(value))
 
 class ZynqScopeSubprocess(multiprocessing.Process):
     """
