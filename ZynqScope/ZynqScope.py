@@ -300,8 +300,8 @@ class ZynqScope(object):
         # Correct all buffers to be a multiple of the sample word
         pre_size += ZYNQ_SAMPLE_WORD_SIZE // 2
         post_size += ZYNQ_SAMPLE_WORD_SIZE // 2
-        pre_size &= ZYNQ_SAMPLE_WORD_SIZE
-        post_size &= ZYNQ_SAMPLE_WORD_SIZE
+        pre_size &= ~(ZYNQ_SAMPLE_WORD_SIZE - 1)
+        post_size &= ~(ZYNQ_SAMPLE_WORD_SIZE - 1)
         
         # Compute the number of waves we want to acquire for each frame
         print("params?:", pre_size + post_size, sample_rate)
