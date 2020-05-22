@@ -461,7 +461,7 @@ class ScopeController(object):
         self.timebase.set_change_notifier(self.change_notifier)
         
         # for testing
-        self.zst.acq_run()
+        self.zst.start_acquisition()
     
     def save_settings_temp(self):
         self.save_settings(TEMP_SETTING_FILE)
