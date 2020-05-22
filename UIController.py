@@ -104,7 +104,7 @@ class MainApplication(object):
         self.ctrl = SC.ScopeController()
         
         # Here we'd display a splash screen while setting everything up...
-        
+        self.window.show_all()
         
         # Connect the ScopeController to hardware.
         self.ctrl.set_render_parameters(int(self.cfgmgr['Render']['DisplaySamples']), int(self.cfgmgr['Render']['DisplayHDivisionsYT']))
@@ -521,6 +521,6 @@ class MainApplication(object):
         """
         Start the MainApplication.  This launches all required threads and shows the user interface.
         """
-        self.window.show_all()
+        #self.window.show_all()
         GLib.timeout_add(UI_REFRESH_MS, self.ui_tick, None, priority=GLib.PRIORITY_DEFAULT)
         Gtk.main()
