@@ -138,7 +138,7 @@ class ScopeChannelController(object):
         self.coupling = AFE_module.get_default_coupling()
         
         # Set default change notifier (does nothing)
-        self.change_notifier = lambda x: pass
+        self.change_notifier = lambda x: None
 
     def prepare_state(self):
         return Utils.pack_dict_json(self, self.pack_vars_types)
@@ -367,7 +367,7 @@ class ScopeTimebaseController(object):
         print("Supported timebases:", self.supported_timebases)
         
         # Set default change notifier (does nothing)
-        self.change_notifier = lambda x: pass
+        self.change_notifier = lambda x: None
     
     def prepare_state(self):
         return Utils.pack_dict_json(self, self.pack_vars_types)
