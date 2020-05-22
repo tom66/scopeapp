@@ -349,16 +349,16 @@ class ScopeTimebaseController(object):
         if self.timebase_index < 0: 
             self.timebase_index = 0
         
-        if self.timebase_index >= len(timebase_options):
-            self.timebase_index = len(timebase_options) - 1
+        if self.timebase_index >= len(self.supported_timebases):
+            self.timebase_index = len(self.supported_timebases) - 1
         
         return timebase_options[self.timebase_index]
     
     def timebase_up(self):
         print("timebase_up", self.timebase_index)
         self.timebase_index += 1
-        if self.timebase_index >= len(timebase_options):
-            self.timebase_index = len(timebase_options) - 1
+        if self.timebase_index >= len(self.supported_timebases):
+            self.timebase_index = len(self.supported_timebases) - 1
             raise Utils.UserRequestOutOfRange(_("Timebase at maximum"))
     
     def timebase_down(self):
