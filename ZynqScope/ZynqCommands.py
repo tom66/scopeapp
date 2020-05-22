@@ -140,7 +140,7 @@ class ZynqCommands(object):
         """
         assert data_mode in ACQ_DATA_MODES
         
-        print("setup_triggered_acquisition(pre=%d, post=%d, n=%d, mode=0x%02x)", pre_size, post_size, number_acq, data_mode)
+        print("setup_triggered_acquisition(pre=%d, post=%d, n=%d, mode=0x%02x)"% (pre_size, post_size, number_acq, data_mode))
         
         self.zspi.send_command_ignore_response(zcmd._ACQ_STOP)
         self.zspi.send_command_ignore_response(zcmd._ACQ_SETUP_TRIGGERED, \
