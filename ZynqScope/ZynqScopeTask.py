@@ -79,6 +79,7 @@ class ZynqScopeSubprocess(multiprocessing.Process):
     def queue_process(self):
         """See what work there is to do."""
         msg = self.evq.get()
+        print(msg)
         
         if type(msg) is ZynqScopeSimpleCommand:
             # This is a simple command: we call the relevant method on the ZynqCommands interface.
