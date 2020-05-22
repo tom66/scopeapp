@@ -7,6 +7,8 @@ import multiprocessing
 
 import ZynqScope.ZynqScope as zs
 
+AFE = zs.AFE
+
 DEFAULT_ZYNQ_TASK_RATE = 10000      # Run internal task at 10kHz
 DEFAULT_ZYNQ_PING_MULT = 200        # Ping Zynq every 200 ticks for new data (~50Hz)
 

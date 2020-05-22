@@ -11,6 +11,10 @@ import colorsys, math, json
 import Utils
 
 import ZynqScope.ZynqScopeTask as zst
+import ZynqScope.ZynqScopeGlobals as zsgl
+
+# Force 4ch AFE module for now
+AFE_module = zst.AFE
 
 # Supported run states
 STATE_STOPPED = 0               # State when stopped
@@ -41,25 +45,12 @@ auto_long_names = [
     _("External Input")
 ]
 
-# Supported attenuation levels in V (at 1X probe setting)
-attenuation_options = [0.002, 0.005, 0.01, 0.02, 0.05, 0.1, 0.2, 0.5, 1, 2, 5]
-
-
-# Maximum V/div and minimum V/div.  TODO:  Load from oscilloscope configuration.
-MAX_V_DIV = 5
-MIN_V_DIV = 0.002
-
 # Amount to increase/decrease in Coarse Offset mode
 COARSE_OFFSET = 0.1
 
 # Maximum supported timebase range
 MAX_TIMEBASE_SHIFT_NEG = -100
 MAX_TIMEBASE_SHIFT_POS = +100
-
-# Coupling modes supported
-COUP_AC = 1
-COUP_DC = 2
-COUP_GND = 3
 
 # Settings files
 TEMP_SETTING_FILE = "user/temp.stg"
@@ -82,13 +73,17 @@ class ScopeChannelController(object):
     hue = 0
     sat = 0
     
+    # Limits/supported settings
+    atten_supported = []
+    coupling_supported = []
+    
     # Channel settings
-    atten_div = attenuation_options[5]
+    atten_div = 0
     atten_raw = 0
     probe_multiplier = 1
     vernier = False
     offset = 0.0
-    coupling = COUP_DC
+    coupling = None
     invert = False
     bandwidth_20M = False
     termination_50R = False
@@ -112,7 +107,7 @@ class ScopeChannelController(object):
         "atten_raw":            [(float, int)], # validated later
         "probe_multiplier":     [(float, int)], # validated later
         "vernier":              [(bool,)], 
-        "offset":               [(float, int), MIN_OFFSET, MAX_OFFSET], 
+        "offset":               [(float, int)], # validated later
         "coupling":             [(int,), COUP_AC, COUP_GND], 
         "invert":               [(bool,)], 
         "bandwidth_20M":        [(bool,)], 
@@ -129,6 +124,12 @@ class ScopeChannelController(object):
             self.set_channel_name_defaults()
         else:
             self.set_channel_name_global(short_name, long_name)
+        
+        # Setup default settings according to AFE limitations
+        self.atten_supported = AFE_module.get_attenuation_modes_supported()
+        self.atten_div = AFE_module.get_default_attenuation()
+        self.coupling_supported = AFE_module.get_coupling_modes_supported()
+        self.coupling = AFE_module.get_default_coupling()
 
     def prepare_state(self):
         return Utils.pack_dict_json(self, self.pack_vars_types)
@@ -229,6 +230,10 @@ class ScopeChannelController(object):
             raise Utils.UserRequestOutOfRange(_("Attenuation requested at limit"))
         
         self.atten_div = attenuation_options[new_atten]
+        
+        # If attenuation change causes offset limits to change we need to adjust those too; 
+        # to account for this we adjust the offset by 0V
+        self.adjust_offset(0)
     
     def adjust_offset(self, adj, snap_zero=False):
         self.set_offset(self.offset + adj, snap_zero)
@@ -237,12 +242,14 @@ class ScopeChannelController(object):
         old_offset = self.offset
         self.offset = new
         
-        if self.offset > MAX_OFFSET:
-            self.offset = MAX_OFFSET
+        limits = AFE_module.get_max_supported_offset(self.atten_div)
+        
+        if self.offset > limits[1]:
+            self.offset = limits[1]
             raise Utils.UserRequestOutOfRange(_("Offset requested at limit"))
         
-        if self.offset < MIN_OFFSET:
-            self.offset = MIN_OFFSET
+        if self.offset < limits[0]:
+            self.offset = limits[0]
             raise Utils.UserRequestOutOfRange(_("Offset requested at limit"))
     
         sign = math.copysign(1, old_offset)
@@ -251,7 +258,7 @@ class ScopeChannelController(object):
         if snap_zero and sign != new_sign and abs(old_offset) > 1e-12:
             print("Channel: Snap offset to zero")
             self.offset = 0
-            
+    
     def atten_up_coarse(self):
         nearest_atten = self._get_nearest_atten_index()
         self.set_atten_index(nearest_atten + 1)
@@ -270,8 +277,11 @@ class ScopeChannelController(object):
     def offset_zero(self):
         self.set_offset(0)
     
+    def get_supports_coupling(self, coup):
+        return coup in self.coupling_supported
+    
     def set_coupling(self, coup):
-        if coup in [COUP_AC, COUP_DC, COUP_GND]:
+        if self.get_supports_coupling(coup):
             self.coupling = coup
         else:
             raise ValueError("Unsupported coupling type")
@@ -386,15 +396,17 @@ class ScopeController(object):
     active_tab = 0
     
     def __init__(self):
-        # TODO: We need to determine whether the instrument is 2ch or 4ch
-        self.channels.append(ScopeChannelController(SCOPE_CH_1))
-        self.channels.append(ScopeChannelController(SCOPE_CH_2))
-        self.channels.append(ScopeChannelController(SCOPE_CH_3))
-        self.channels.append(ScopeChannelController(SCOPE_CH_4))
-        self.channels[0].set_colour(0, 0.85)
-        self.channels[1].set_colour(60, 0.85)
-        self.channels[2].set_colour(160, 0.85)
-        self.channels[3].set_colour(270, 0.65)
+        if AFE.get_channel_count() == 4:
+            self.channels.append(ScopeChannelController(SCOPE_CH_1))
+            self.channels.append(ScopeChannelController(SCOPE_CH_2))
+            self.channels.append(ScopeChannelController(SCOPE_CH_3))
+            self.channels.append(ScopeChannelController(SCOPE_CH_4))
+            self.channels[0].set_colour(0, 0.85)
+            self.channels[1].set_colour(60, 0.85)
+            self.channels[2].set_colour(160, 0.85)
+            self.channels[3].set_colour(270, 0.65)
+        else:
+            raise NotImplementedError("Unsupported configuration")
         
         # Initialise Zynq interface
         self.zstc = zstc.ZynqScopeTaskController()
@@ -442,7 +454,7 @@ class ScopeController(object):
                 self.channels[ch].restore_state(json_obj['channel%d' % ch])
                 #print("unpack_json_state", self.channels[ch].termination_50R, self.channels[ch].termination_50R_applied)
                 #self.channels[ch].termination_50R_applied = False
-                             
+            
             self.run_state = STATE_STOPPED              # Default to stopped
             self.active_tab = json_obj['active_tab']    # Recall tab
             
