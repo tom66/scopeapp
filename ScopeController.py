@@ -409,9 +409,9 @@ class ScopeController(object):
             raise NotImplementedError("Unsupported configuration")
         
         # Initialise Zynq interface
-        self.zstc = zstc.ZynqScopeTaskController()
-        self.zstc.start()
-        self.timebase = ScopeTimebaseController(self.zstc)
+        self.zst = zstc.ZynqScopeTaskController()
+        self.zst.start()
+        self.timebase = ScopeTimebaseController(self.zst)
     
     def connect(self):
         self.sz.connect()
