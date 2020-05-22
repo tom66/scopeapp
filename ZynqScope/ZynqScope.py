@@ -200,7 +200,7 @@ class ZynqScope(object):
                 new_tb.interp = 1
             
             # Short acquisition: we capture a larger span and display only a reduced portion of it
-            if new_tb.memory_auto < self.mem_depth_minimum:
+            if new_tb.memory_auto < (self.mem_depth_minimum * 2):
                 #print("minimum", self.mem_depth_minimum)
                 new_tb.memory_auto = self.mem_depth_minimum * 2 # Double as we have a split pre/post buffer
                 new_tb.timebase_span_actual = new_tb.memory_auto * (1.0 / self.samprate_mdl.rates[0])
