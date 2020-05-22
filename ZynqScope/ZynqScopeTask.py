@@ -40,6 +40,7 @@ def compress_class_attrs_for_response(resp, clas_, exclude=[]):
         if attr.startswith("__"):
             continue
         if not callable(value):
+            print("type:", type(value))
             if not type(value) in exclude:
                 print(attr, value)
                 setattr(resp, attr, copy.copy(value))
