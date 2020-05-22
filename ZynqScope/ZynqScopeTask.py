@@ -109,7 +109,6 @@ class ZynqScopeSubprocess(multiprocessing.Process):
             # This is a simple command: we call the relevant method on the ZynqCommands interface.
             # A Null response is generated.  This is used, e.g. to set trigger parameters.  If 'flush' bit is
             # set, then a flush command is also sent.
-            print(msg.args, msg.kwargs)
             getattr(self.zs.zcmd, msg.cmd_name)(*msg.args, **msg.kwargs)
             if msg.flush:
                 self.zs.zcmd.flush()
@@ -117,6 +116,7 @@ class ZynqScopeSubprocess(multiprocessing.Process):
         elif type(msg) is ZynqScopeSimpleCommand:
             # This is a simple command: we call the relevant method on the ZynqScope interface.
             # A Null response is generated.  This is used, e.g. to set acquisition parameters.  
+            print("ZynqScopeSimpleCommand: ", msg.args, msg.kwargs)
             getattr(self.zs.zcmd, msg.cmd_name)(*msg.args, **msg.kwargs)
             self.rsq.put(ZynqScopeNullResponse())
         elif type(msg) is ZynqScopeSyncAcquisitionSettings:
