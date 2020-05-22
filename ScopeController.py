@@ -410,7 +410,7 @@ class ScopeController(object):
         
         # Initialise Zynq interface
         self.zst = zst.ZynqScopeTaskController()
-        self.zst.start()
+        self.zst.start_task()
         self.timebase = ScopeTimebaseController(self.zst)
     
     def connect(self):

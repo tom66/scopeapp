@@ -53,11 +53,11 @@ class ZynqScopeSubprocess(multiprocessing.Process):
         """Runs periodically to check the status of the Zynq.  Presently set to ping at 50Hz,
         but this can be changed."""
         while True:
-            if state == STATE_ZYNQ_NOT_READY:
+            if self.state == STATE_ZYNQ_NOT_READY:
                 # Well get ready then!
                 self.zs = zs.ZynqScope()
                 self.zs.connect()
-            elif state == STATE_ZYNQ_IDLE:
+            elif self.state == STATE_ZYNQ_IDLE:
                 # Process any commands in the queue
                 self.queue_process()
             
@@ -110,6 +110,8 @@ class ZynqScopeTaskController():
         self.evq = multiprocessing.Queue()
         self.rsq = multiprocessing.Queue()
         self.zstask = ZynqScopeSubprocess(self.evq, self.rsq)
+    
+    def start_task(self):
         self.zstask.start()
         
     def stop_task(self):
