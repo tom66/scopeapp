@@ -127,7 +127,6 @@ class MainApplication(object):
         self.window = Gtk.Window()
         self.window.set_size_request(1280, 800)
         self.window.add(self.overlay_main)
-        self.window.show_all()
         self.lbl_status_time = self.builder.get_object("lbl_status_time")
         self.lbl_status_run = self.builder.get_object("lbl_status_run")
         self.lbl_status_run_ctx = self.lbl_status_run.get_style_context()
