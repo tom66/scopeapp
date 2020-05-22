@@ -2,7 +2,7 @@
 This file is part of YAOS and is licenced under the MIT Licence.
 """
 
-import sys, operator, math, inspect, copy, time
+import sys, operator, math, inspect, copy, time, spidev
 import multiprocessing
 
 import ZynqScope.ZynqScope as zs
@@ -34,14 +34,17 @@ class ZynqScopeDieTask(ZynqScopeTaskQueueCommand): pass
 class ZynqScopeAttributesResponse(object): pass
 class ZynqScopeNullResponse(object): pass
 
-def compress_class_attrs_for_response(resp, clas_):
+def compress_class_attrs_for_response(resp, clas_, exclude=[]):
     attrs = inspect.getmembers(clas_)
     for attr, value in attrs:
         if attr.startswith("__"):
             continue
         if not callable(value):
-            print(attr, value)
-            setattr(resp, attr, copy.copy(value))
+            if not type(value) in exclude:
+                print(attr, value)
+                setattr(resp, attr, copy.copy(value))
+            else:
+                print("excluding %s %r" % (attr, value))
 
 class ZynqScopeSubprocess(multiprocessing.Process):
     """
@@ -105,7 +108,7 @@ class ZynqScopeSubprocess(multiprocessing.Process):
         elif type(msg) is ZynqScopeGetAttributes:
             # Return a safed object copy of all scope parameters which can be accessed
             resp = ZynqScopeAttributesResponse()
-            compress_class_attrs_for_response(resp, self.zs)
+            compress_class_attrs_for_response(resp, self.zs, exclude=[spidev.SpiDev])
             print(resp)
             self.rsq.put(resp)
         elif type(msg) is ZynqScopeSendCompAcqStreamCommand:
