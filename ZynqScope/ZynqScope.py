@@ -49,10 +49,17 @@ class ZynqScopeAttributesResponse(object): pass
 
 class ZynqScopeCurrentParameters(object): 
     sample_depth = 8
-    memory_depth = None
-    sample_rate = None
+    memory_depth = 0
+    sample_rate = 0
     trigger_point = 0.5
-    delay = None
+    delay = 0
+    
+    def __repr__(self):
+        return "<ZynqScopeCurrentParameters sample_depth=%d memory_depth=%d sample_rate=%s trigger_point=%2.2f delay=%s>" % \
+            self.sample_depth, Utils.unit_format_suffix_handle_exc(self.memory_depth, 'pts', precision=3), \
+            Utils.unit_format_suffix_handle_exc(self.memory_depth, 'pts', precision=0), \
+            Utils.unit_format_suffix_handle_exc(self.sample_rate, 'Sa/s', precision=1), self.trigger_point, \
+            Utils.unit_format_suffix_handle_exc(self.delay, 's', precision=5))
  
 class ZynqScopeTimebaseOption(object):
     timebase_div = 0
@@ -72,8 +79,8 @@ class ZynqScopeTimebaseOption(object):
                "sample_rate_auto=%s, sample_rate_max=%s, interp=%d>" % \
             (Utils.unit_format_suffix_handle_exc(self.timebase_div, 's/div', precision=3), Utils.unit_format_suffix_handle_exc(self.timebase_span, 's', precision=3), \
              Utils.unit_format_suffix_handle_exc(self.timebase_span_actual, 's', precision=3), \
-             Utils.unit_format_suffix_handle_exc(self.memory_auto, 'samp', precision=6), \
-             Utils.unit_format_suffix_handle_exc(self.sample_rate_auto, 'samp s^-1', precision=3), Utils.unit_format_suffix_handle_exc(self.sample_rate_max, 'samp s^-1', precision=3), 
+             Utils.unit_format_suffix_handle_exc(self.memory_auto, 'pts', precision=6), \
+             Utils.unit_format_suffix_handle_exc(self.sample_rate_auto, 'Sa/s', precision=3), Utils.unit_format_suffix_handle_exc(self.sample_rate_max, 'Sa/s', precision=3), 
              self.interp)
         
 class ZynqScopeSampleRateBehaviourModel(object): 
@@ -357,6 +364,7 @@ class ZynqScope(object):
             self.params.trigger_point = 1.0
         
         self.params.delay = delay
+        print(self.params)
             
 class ZynqScopeSubprocess(multiprocessing.Process):
     """
