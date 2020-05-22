@@ -102,6 +102,9 @@ class ZynqScopeSubprocess(multiprocessing.Process):
         msg = self.evq.get()
         print(msg)
         
+        if not isinstance(msg, ZynqScopeTaskQueueCommand):
+            raise RuntimeError("Queue message not subclass of ZynqScopeTaskQueueCommand")
+        
         if type(msg) is ZynqScopeCmdsIfcSimpleCommand:
             # This is a simple command: we call the relevant method on the ZynqCommands interface.
             # A Null response is generated.  This is used, e.g. to set trigger parameters.  If 'flush' bit is
