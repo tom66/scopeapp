@@ -4,8 +4,8 @@ This file is part of YAOS and is licenced under the MIT licence.
 
 import time, random, struct
 
-import ZynqCommandSet as zcmd
-import ZynqSPI
+import ZynqScope.ZynqCommandSet as zcmd
+import ZynqScope.ZynqSPI as zspi
 
 class ZynqCommandException(Exception): pass
 class ZynqCommandResponseParseError(ZynqCommandException): pass
@@ -98,7 +98,7 @@ def _pack_8b_int_arg(arg):
     
 class ZynqCommands(object):
     def __init__(self):
-        self.zspi = ZynqSPI.ZynqSPI()
+        self.zspi = zspi.ZynqSPI()
         self.self_test()
     
     def self_test(self):
@@ -108,7 +108,7 @@ class ZynqCommands(object):
         """
         r0 = random.randint(0, 255)
         r1 = random.randint(0, 255)
-        resp = ZynqSPI.str2ordlist(self.zspi.send_command_read_response(zcmd._HELLO, [r0, r1]))
+        resp = zspi.str2ordlist(self.zspi.send_command_read_response(zcmd._HELLO, [r0, r1]))
         
         print(resp)
         
