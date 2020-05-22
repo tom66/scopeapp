@@ -173,6 +173,9 @@ class ZynqScope(object):
     
     def connect(self):
         self.zcmd = zc.ZynqCommands()
+        
+        # Instead of blindly returning True we should check that the hardware is ready first...
+        return True
     
     def calc_real_sample_rate_for_index(self, index):
         """Only supports 8-bit mode for now"""

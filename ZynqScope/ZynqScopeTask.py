@@ -58,7 +58,10 @@ class ZynqScopeSubprocess(multiprocessing.Process):
             if self.state == STATE_ZYNQ_NOT_READY:
                 # Well get ready then!
                 self.zs = zs.ZynqScope(*self.zs_init_args)
-                self.zs.connect()
+                if self.zs.connect():
+                    self.state = STATE_ZYNQ_IDLE
+                else:
+                    raise RuntimeError("Unable to connect hardware resources")
             elif self.state == STATE_ZYNQ_IDLE:
                 # Process any commands in the queue
                 self.queue_process()
