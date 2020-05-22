@@ -1,6 +1,7 @@
 import ZynqScope.ZynqScope as zs
 
 zsobj = zs.ZynqScope(2048, 12)
+zsobj.connect()
 
 print("")
 print("*** Supported Timebases ***")
