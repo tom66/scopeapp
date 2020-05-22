@@ -2,7 +2,7 @@
 This file is part of YAOS and is licenced under the MIT Licence.
 """
 
-import sys, operator, math, inspect, copy
+import sys, operator, math, inspect, copy, time
 import multiprocessing
 
 import ZynqScope.ZynqScope as zs
