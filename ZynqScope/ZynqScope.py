@@ -291,6 +291,9 @@ class ZynqScope(object):
             pre_size += pre_time
             post_size -= pre_time
         
+        pre_size = int(pre_size)
+        post_size = int(post_size)
+        
         print("pre/post:", pre_size, post_size)
         assert(post_size >= self.mem_depth_minimum)
         
