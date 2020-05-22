@@ -34,6 +34,15 @@ class ZynqScopeDieTask(ZynqScopeTaskQueueCommand): pass
 class ZynqScopeAttributesResponse(object): pass
 class ZynqScopeNullResponse(object): pass
 
+def compress_class_attrs_for_response(resp, clas_):
+    attrs = inspect.getmembers(clas_)
+    for attr, value in attrs:
+        if attr.startswith("__"):
+            continue
+        if not callable(value):
+            print(attr, value)
+            setattr(resp, attr, copy.deepcopy(value))
+
 class ZynqScopeSubprocess(multiprocessing.Process):
     """
     This 'task' manages the interface with the Zynq via a multiprocessing interface.
@@ -96,11 +105,8 @@ class ZynqScopeSubprocess(multiprocessing.Process):
         elif type(msg) is ZynqScopeGetAttributes:
             # Return a safed object copy of all scope parameters which can be accessed
             resp = ZynqScopeAttributesResponse()
-            attrs = inspect.getmembers(self.zs)
-            for attr, value in attrs:
-                print(attr, value)
-                if not callable(value):
-                    setattr(resp, attr, copy.deepcopy(value))
+            compress_class_attrs_for_response(resp)
+            print(resp)
             self.rsq.put(resp)
         elif type(msg) is ZynqScopeSendCompAcqStreamCommand:
             # Send a composite acquisition status command and return the response data.
