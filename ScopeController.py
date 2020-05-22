@@ -335,7 +335,7 @@ class ScopeTimebaseController(object):
     
     zstc = None
     
-    def __init__(self, zsth):
+    def __init__(self, zstc):
         self.zstc = zstc
         
         # Get the list of supported timebases
@@ -409,7 +409,7 @@ class ScopeController(object):
             raise NotImplementedError("Unsupported configuration")
         
         # Initialise Zynq interface
-        self.zst = zstc.ZynqScopeTaskController()
+        self.zst = zst.ZynqScopeTaskController()
         self.zst.start()
         self.timebase = ScopeTimebaseController(self.zst)
     
