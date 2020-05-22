@@ -10,6 +10,8 @@ _ = gettext.gettext
 import colorsys, math, json
 import Utils
 
+import ZynqScope.ZynqScope as zs
+
 # Supported run states
 STATE_STOPPED = 0               # State when stopped
 STATE_RUNNING_AUTO = 1          # State when running on auto trigger without a trigger source
@@ -379,6 +381,7 @@ class ScopeController(object):
     # Timebase
     timebase = ScopeTimebaseController()
     
+    # Zynq Interface
     def __init__(self):
         # TODO: We need to determine whether the instrument is 2ch or 4ch
         self.channels.append(ScopeChannelController(SCOPE_CH_1))
@@ -389,6 +392,13 @@ class ScopeController(object):
         self.channels[1].set_colour(60, 0.85)
         self.channels[2].set_colour(160, 0.85)
         self.channels[3].set_colour(270, 0.65)
+        
+        # Initialise Zynq interface
+        self.zs = ZS.ZynqScopeSubprocess()
+        
+    
+    def connect(self):
+        self.sz.connect()
     
     def save_settings_temp(self):
         self.save_settings(TEMP_SETTING_FILE)
@@ -450,4 +460,10 @@ class ScopeController(object):
         f = open(fname, "r")
         self.unpack_json_state(f.read())
         f.close()
+       
+    def system_tick(self):
+        """
+        This should be called on a regular basis inside the main system control loop.
+        It controls acquisition and monitor tasks.
+        """
         

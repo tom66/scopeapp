@@ -6,8 +6,17 @@ import sys, operator, math
 sys.path.append('..')
 import Utils # from parent directory
 
-# For now, we import the standard 4ch AFE as the only supported AFE
-import ZynqScope.Standard4chAFE as AFE
+import ZynqScope.Standard4chAFE as AFE # For now, we import the standard 4ch AFE as the only supported AFE
+import ZynqScope.ZynqSPI, ZynqScope.ZynqCommands
+
+import multiprocessing
+
+DEFAULT_ZYNQ_PING_RATE = 50
+
+STATE_ZYNQ_NOT_READY = 0
+STATE_ZYNQ_IDLE = 1
+
+ZYNQ_SAMPLE_WORD_SIZE = 8
 
 # Supported timebases
 """
@@ -22,12 +31,23 @@ timebase_options = [1e-9, 2e-9, 5e-9, 10e-9, 20e-9, 50e-9, 100e-9, 200e-9, 500e-
                     1e-6, 2e-6, 5e-6, 10e-6, 20e-6, 50e-6, 100e-6, 200e-6, 500e-6, 
                     1e-3, 2e-3, 5e-3, 10e-3, 20e-3, 50e-3, 100e-3]
 
+class ZynqScopeParameterRangeError(ValueError): pass
+
+class ZynqScopeSimpleCommand(object):
+    def __init__(self, cmd_name, flush, *args, **kwargs):
+        assert(type(self.cmd_name) == str)
+        self.cmd_name = cmd_name
+        self.flush = flush
+        self.args = args
+        self.kwargs = kwargs
+
+class ZynqScopeGetStatus(object): pass
+ 
 class ZynqScopeTimebaseOption(object):
     timebase_div = 0
     timebase_span = 0
     timebase_span_actual = 0
     memory_auto = 0
-    memory_max = 0
     sample_rate_auto = None
     sample_rate_max = None
     interp = 0
@@ -103,6 +123,9 @@ class ZynqScope(object):
     The base ZynqScope object which handles the command and control interface
     with the Zynq SoC on the Scopy board.  This class also stores limits and 
     acquisition parameters, such as timebase settings.
+    
+    This does not handle any interfacing with the analog front end or specifics
+    relating to the gain/attenuation/ADC multiplexing settings.
     """
     # A list of ZynqTimebaseOption entries filled from timebase_options
     timebase_settings = []
@@ -125,8 +148,19 @@ class ZynqScope(object):
     # Number of horizontal divisions.  Affects the length of any given acquisition at a timebase.
     default_hdiv_span = 12
     
+    # Desired acquisition framerate with trigger
+    acq_framerate = 50
+    
+    # Desired acquisition proportion for the frame time.  This should be tweaked to determine
+    # the maximum performance possible.  0.1 = 10% of the frame used for acquisition
+    acq_frametime_frac = 0.1
+    
     # Sample rate model.  Defines the dividers and clock rates available to the ADC and PLL.
     samprate_mdl = None
+    
+    # Next timebase and current timebase
+    next_tb = None
+    curr_tb = None
     
     def __init__(self, display_samples_target, default_hdiv_span):
         self.display_samples_target = display_samples_target
@@ -134,6 +168,9 @@ class ZynqScope(object):
         self.samprate_mdl = ZynqScopeSampleRateBehaviourModel_8Bit()
         self.samprate_mdl.update()
         self.init_timebases()
+    
+    def connect(self):
+        self.zcmd = ZynqCommands.ZynqCommands()
     
     def calc_real_sample_rate_for_index(self, index):
         """Only supports 8-bit mode for now"""
@@ -154,7 +191,6 @@ class ZynqScope(object):
             # Assume medium acquistion: sample at the fastest possible rate, memory depth equals 
             # acquisition length in this mode
             new_tb.memory_auto = self.samprate_mdl.rates[0] * new_tb.timebase_span
-            new_tb.memory_max = self.mem_depth_maximum
             new_tb.interp = self.display_samples_target / (new_tb.timebase_span_actual * self.samprate_mdl.rates[0])
             
             if new_tb.interp < 1:
@@ -174,7 +210,7 @@ class ZynqScope(object):
                     found = False
                     for rate in self.samprate_mdl.rates:
                         mem_depth = int(math.ceil(new_tb.timebase_span * rate))
-                        print("rate (MSa/s):", rate / 1e6, "mem_depth (MB):", mem_depth / 1e6, "ratio:", mem_depth / self.mem_depth_maximum)
+                        #print("rate (MSa/s):", rate / 1e6, "mem_depth (MB):", mem_depth / 1e6, "ratio:", mem_depth / self.mem_depth_maximum, "n_waves:", self.calculate_nwaves())
                         if mem_depth < self.mem_depth_maximum:
                             # Adjust this memory depth to fill the whole memory (no point throwing data away!)
                             new_tb.memory_auto = self.mem_depth_maximum
@@ -186,9 +222,125 @@ class ZynqScope(object):
                     
                     if not found:
                         raise ValueError("Unable to solve for timebase %r" % new_tb)
-                    
-                    new_tb.memory_max = new_tb.memory_auto
             
             #print(tb)
-            print(new_tb)
+            print(new_tb, "nwaves:", self.calculate_nwaves(new_tb.timebase_span_actual))
             self.timebase_settings.append(new_tb)
+
+    def get_supported_timebases(self):
+        pass
+    
+    def set_next_timebase(self, timebase_index):
+        pass
+    
+	def get_max_pre_trigger_time(self, buffer_size, sample_rate):
+		"""Return the maximum pre-trigger time for the given total memory 
+		buffer size and sample rate."""
+		return ((buffer_size - self.mem_depth_minimum) / sample_rate) * 0.5
+	
+    def calculate_nwaves(self, acq_time):
+        """nwaves is the number of waveforms to be captured in one frame.  It is
+        set to a maximum of 255, a minimum of 1, or X% of the frame time."""
+        nwaves = ((1.0 / self.acq_framerate) * self.acq_frametime_frac) / acq_time
+        return max(1, max(255, nwaves))
+    
+    def setup_for_timebase(self, pre_time=0, memory_depth=None):
+        """
+        Setup timebase parameters on the Zynq's acquisition controller for the
+        currently set timebase parameters.
+        
+        A memory_depth of None will configure the instrument to use the fastest
+        memory depth available.
+        
+        Increasing pre_time will extend the pre-trigger buffer for browsing past
+        events.  Set to zero, it retains the default configuration.
+        """
+        tb = self.next_tb
+		sample_rate = tb.sample_rate_auto
+            
+        if memory_depth == None:
+            depth = tb.memory_auto
+        else:
+            raise NotImplementedError("non auto memory size unsupported") # handle this case too
+        
+		# Adjusting pre-trigger increases the size of the pre buffer and decreases the
+		# size of the post buffer.  The post buffer reduces to nearly zero (but not exactly zero,
+		# as that is unsupported) 
+		max_pre_time = self.get_max_pre_trigger_time(depth, sample_rate)
+		if max_pre_time < pre_time:
+			raise ZynqScopeParameterRangeError("Pre-trigger 'delay' exceeds limits")
+		
+        # Default settings
+		pre_size = depth / 2
+		post_size = depth / 2
+        
+        if pre_size > 0:
+            pre_memory = pre_time * sample_rate
+            pre_size += pre_time
+            post_size -= pre_time
+        
+        assert(post_size >= self.mem_depth_minimum)
+        
+        # Correct all buffers to be a multiple of the sample word
+        pre_size += ZYNQ_SAMPLE_WORD_SIZE / 2
+        post_size += ZYNQ_SAMPLE_WORD_SIZE / 2
+        pre_size &= ZYNQ_SAMPLE_WORD_SIZE - 1
+        post_size &= ZYNQ_SAMPLE_WORD_SIZE - 1
+        
+        # Compute the number of waves we want to acquire for each frame
+        nwaves = self.calculate_nwaves((pre_size + post_size) * sample_rate)
+        print(pre_size, post_size, nwaves)
+        
+        # Stop the current acquisition and set up a new acquisition.
+        self.zcmd.stop_acquisition()
+        self.zcmd.setup_triggered_acquisition(pre_size, post_size, nwaves, ZynqCommands.ACQ_MODE_8B_1CH)
+            
+class ZynqScopeSubprocess(multiprocessing.Process):
+    """
+    This 'task' manages the interface with the Zynq via a multiprocessing interface.
+    It internally contains a ZynqScope interface and accepts commands via a command queue
+    and emits state messages via a separate queue. 
+    """
+    state = STATE_ZYNQ_NOT_READY
+    
+    def __init__(self, event_queue, response_queue):
+        self.evq = event_queue
+        self.rsq = response_queue
+        
+        # we might want the capability to tune the period as time goes by
+        self.ping_period = 1000.0 / DEFAULT_ZYNQ_PING_RATE
+        self.ping_period_req = self.ping_period
+        
+    def run(self):
+        """Runs periodically to check the status of the Zynq.  Presently set to ping at 50Hz,
+        but this can be changed."""
+        if state == STATE_ZYNQ_NOT_READY:
+            # Well get ready then!
+            self.zs = ZynqScope()
+            self.zs.connect()
+        elif state == STATE_ZYNQ_IDLE:
+            # Process any commands in the queue
+            self.queue_process()
+        
+        time.sleep(self.ping_period)
+    
+    def queue_process(self):
+        """See what work there is to do."""
+        msg = self.evq.get()
+        
+        if type(msg) is ZynqScopeSimpleCommand:
+            # This is a simple command: we call the relevant method on the ZynqCommands interface
+            # No response is generated.  This is used, e.g. to set trigger parameters.  If 'flush' bit is
+            # set, then a flush command is also sent.
+            getattr(self.zs.zcmd, msg.cmd_name)(*msg.args, **msg.kwargs)
+            if msg.flush:
+                self.zs.zcmd.flush()
+        elif type(msg) is ZynqScopeGetAcqStatus:
+            # Enquire scope acquisition status.  Returns a ZynqAcqStatus object.
+            resp = self.zs.zcmd.acq_status()
+            self.rsq.put(resp)
+        elif type(msg) is ZynqScopeSendCompAcqStreamCommand:
+            # Send a composite acquisition status command and return the response data.
+            resp = self.zs.zcmd.comp_acq_control()
+            self.rsp.put(resp)
+    

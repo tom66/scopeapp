@@ -275,7 +275,7 @@ class ZynqCommands(object):
 			print("Exception reading Zynq acquistion status, ignored and returning None: %r" % e)
 			return None
 		
-		#print(resp)
+        return resp
 
 	def csi_setup_params(self, wordcount, data_type):
 		self.zspi.queue_command_ignore_response(zcmd._CSI_SET_PARAMS_QUEUE, \

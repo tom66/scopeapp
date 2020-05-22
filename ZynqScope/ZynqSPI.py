@@ -17,6 +17,7 @@ STATE_RESP_READ_SIZE_2 = 3
 STATE_RESP_READ_DATA = 4
 STATE_RESP_DONE = 5
 
+# TODO: These might need to be configurable
 SPI_DEVICE_ID = 0
 SPI_DEVICE_CS = 1
 SPI_MODE = 1
