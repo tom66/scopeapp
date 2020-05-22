@@ -26,6 +26,8 @@ timebase_options = [1e-9, 2e-9, 5e-9, 10e-9, 20e-9, 50e-9, 100e-9, 200e-9, 500e-
                     1e-6, 2e-6, 5e-6, 10e-6, 20e-6, 50e-6, 100e-6, 200e-6, 500e-6, 
                     1e-3, 2e-3, 5e-3, 10e-3, 20e-3, 50e-3, 100e-3]
 
+default_timebase = 12
+                    
 class ZynqScopeParameterRangeError(ValueError): pass
 
 class ZynqScopeCurrentParameters(object): 
@@ -173,6 +175,9 @@ class ZynqScope(object):
         self.samprate_mdl = ZynqScopeSampleRateBehaviourModel_8Bit()
         self.samprate_mdl.update()
         self.init_timebases()
+        
+        # set default timebase
+        self.next_tb = self.timebase_settings[default_timebase]
     
     def connect(self):
         self.zcmd = zc.ZynqCommands()
@@ -350,5 +355,6 @@ class ZynqScope(object):
             self.params.trigger_point = 1.0
         
         self.params.delay = self.next_delay
+        self.curr_tb = self.next_tb
         print(self.params)
         
