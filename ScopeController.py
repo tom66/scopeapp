@@ -396,7 +396,7 @@ class ScopeController(object):
     active_tab = 0
     
     def __init__(self):
-        if AFE.get_channel_count() == 4:
+        if AFE_module.get_channel_count() == 4:
             self.channels.append(ScopeChannelController(SCOPE_CH_1))
             self.channels.append(ScopeChannelController(SCOPE_CH_2))
             self.channels.append(ScopeChannelController(SCOPE_CH_3))
