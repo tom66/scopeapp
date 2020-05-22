@@ -107,7 +107,7 @@ class MainApplication(object):
         
         
         # Connect the ScopeController to hardware.
-        self.ctrl.set_render_parameters(self.cfgmgr['Render']['DisplaySamples'], self.cfgmgr['Render']['DisplayHDivisionsYT'])
+        self.ctrl.set_render_parameters(int(self.cfgmgr['Render']['DisplaySamples']), int(self.cfgmgr['Render']['DisplayHDivisionsYT']))
         self.ctrl.connect()
         
         # Load CSS file as specified in config file and apply it to everything
