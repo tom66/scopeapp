@@ -348,9 +348,9 @@ class ZynqScope(object):
         self.params.sample_rate = tb.sample_rate_auto
         self.params.memory_depth = pre_size + post_size
         
-        if delay < 0:
+        if self.next_delay < 0:
             self.params.trigger_point = 1 - ((pre_size) / (pre_size + post_size))
-        elif delay == 0:
+        elif self.next_delay == 0:
             self.params.trigger_point = 0.5
         else:
             # positive delay not yet implemented
