@@ -300,6 +300,7 @@ class ZynqScope(object):
         post_size &= ZYNQ_SAMPLE_WORD_SIZE - 1
         
         # Compute the number of waves we want to acquire for each frame
+        print("params?:", pre_size + post_size, sample_rate)
         nwaves = self.calculate_nwaves((pre_size + post_size) * sample_rate)
         
         # Reduce nwaves if the allocation would exceed split or total memory limits (depending on which
