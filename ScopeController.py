@@ -455,6 +455,8 @@ class ScopeController(object):
         self.default_hdiv_span = default_hdiv_span
     
     def connect(self):
+        print("ScopeController.connect() - connecting to ZynqScopeTaskController and ScopeTimebaseController")
+
         self.zst = zst.ZynqScopeTaskController((self.display_samples_target, self.default_hdiv_span))
         self.zst.start_task()
         self.timebase = ScopeTimebaseController(self.zst)
