@@ -497,7 +497,7 @@ class MainApplication(object):
     
     def ui_update_timebase_labels(self):
         print(self.ctrl.timebase.get_timebase())
-        self.lbl_status_timebase.set_markup(Utils.unit_format_atten(self.ctrl.timebase.get_timebase(), "s"))
+        self.lbl_status_timebase.set_markup(Utils.unit_format_atten(self.ctrl.timebase.get_timebase().get_div_value(), "s"))
     
     def ui_update_tabs(self):
         for tab in self.ui_tabs:

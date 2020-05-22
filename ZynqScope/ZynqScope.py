@@ -53,6 +53,9 @@ class ZynqScopeTimebaseOption(object):
     def __init__(self):
         pass
     
+    def get_div_value(self):
+        return float(self.timebase_div)
+    
     def __repr__(self):
         #print("interp", self.interp, self.timebase_div, self.timebase_span, self.timebase_span_actual, self.memory_auto, self.memory_max, self.sample_rate_auto, self.sample_rate_max)
         return "<ZynqScopeTimebaseOption div=%s, span=%s, actual_span=%s, memory_auto=%s, " \
