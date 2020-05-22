@@ -6,6 +6,7 @@ import sys, operator, math, inspect, copy, time, spidev
 import multiprocessing
 
 import ZynqScope.ZynqScope as zs
+import ZynqScope.ZynqCommands as zc
 
 AFE = zs.AFE
 
@@ -40,7 +41,6 @@ def compress_class_attrs_for_response(resp, clas_, exclude=[]):
         if attr.startswith("__"):
             continue
         if not callable(value):
-            print("type:", type(value))
             if not type(value) in exclude:
                 print(attr, value)
                 setattr(resp, attr, copy.copy(value))
@@ -109,7 +109,7 @@ class ZynqScopeSubprocess(multiprocessing.Process):
         elif type(msg) is ZynqScopeGetAttributes:
             # Return a safed object copy of all scope parameters which can be accessed
             resp = ZynqScopeAttributesResponse()
-            compress_class_attrs_for_response(resp, self.zs, exclude=[spidev.SpiDev])
+            compress_class_attrs_for_response(resp, self.zs, exclude=[zc.ZynqCommands])
             print(resp)
             self.rsq.put(resp)
         elif type(msg) is ZynqScopeSendCompAcqStreamCommand:
