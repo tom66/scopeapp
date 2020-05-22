@@ -98,6 +98,7 @@ class ZynqScopeSubprocess(multiprocessing.Process):
             resp = ZynqScopeAttributesResponse()
             attrs = inspect.getmembers(self.zs)
             for attr, value in attrs:
+                print(attr, value)
                 if not callable(value):
                     setattr(resp, attr, copy.deepcopy(value))
             self.rsq.put(resp)
