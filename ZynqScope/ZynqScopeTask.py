@@ -112,32 +112,39 @@ class ZynqScopeSubprocess(multiprocessing.Process):
             if msg.flush:
                 self.zs.zcmd.flush()
             self.rsq.put(ZynqScopeNullResponse())
+            
         elif type(msg) is ZynqScopeSimpleCommand:
             # This is a simple command: we call the relevant method on the ZynqScope interface.
             # A Null response is generated.  This is used, e.g. to set acquisition parameters.  
             print("ZynqScopeSimpleCommand:", msg, msg.args, msg.kwargs)
             getattr(self.zs, msg.cmd_name)(*msg.args, **msg.kwargs)
             self.rsq.put(ZynqScopeNullResponse())
+            
         elif type(msg) is ZynqScopeSyncAcquisitionSettings:
             self.zs.setup_for_timebase(0, None) # TODO: These parameters need to be filled in, too!
+            
         elif type(msg) is ZynqScopeGetAcqStatus:
             # Enquire scope acquisition status.  Returns a ZynqAcqStatus object.
             resp = self.zs.zcmd.acq_status()
             self.rsq.put(resp)
+            
         elif type(msg) is ZynqScopeGetAttributes:
             # Return a safed object copy of all scope parameters which can be accessed
             resp = ZynqScopeAttributesResponse()
             compress_class_attrs_for_response(resp, self.zs, exclude=[zc.ZynqCommands])
             print(resp)
             self.rsq.put(resp)
+            
         elif type(msg) is ZynqScopeSendCompAcqStreamCommand:
             # Send a composite acquisition status command and return the response data.
             resp = self.zs.zcmd.comp_acq_control()
             self.rsq.put(resp)
+            
         elif type(msg) is ZynqScopeDieTask:
             print("ZynqScopeSubprocess: DieTask received")
             self.die_req = True
             self.rsq.put(ZynqScopeNullResponse())
+            
         else:
             self.rsq.put(ZynqScopeNullResponse())
 
@@ -170,7 +177,7 @@ class ZynqScopeTaskController():
         return attrs.timebase_settings
     
     def set_next_timebase_index(self, tb):
-        self.evq.put(ZynqScopeSimpleCommand("set_next_timebase", (int(tb))))
+        self.evq.put(ZynqScopeSimpleCommand("set_next_timebase", (int(tb),)))
     
     def stop_acquisition(self):
         self.evq.put(ZynqScopeCmdsIfcSimpleCommand("stop_acquisition", True,))
