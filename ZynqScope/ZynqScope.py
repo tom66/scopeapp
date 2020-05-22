@@ -57,9 +57,9 @@ class ZynqScopeTimebaseOption(object):
     
     def __repr__(self):
         #print("interp", self.interp, self.timebase_div, self.timebase_span, self.timebase_span_actual, self.memory_auto, self.memory_max, self.sample_rate_auto, self.sample_rate_max)
-        return "<ZynqScopeTimebaseOption div=%s span=%s actual_span=%s memory_auto=%s " \
-               "sample_rate_auto=%s sample_rate_max=%s interp=%d>" % \
-            (Utils.unit_format_suffix_handle_exc(self.timebase_div, 's', precision=3), Utils.unit_format_suffix_handle_exc(self.timebase_span, 's', precision=3), \
+        return "<ZynqScopeTimebaseOption div=%s, span=%s, actual_span=%s, memory_auto=%s, " \
+               "sample_rate_auto=%s, sample_rate_max=%s, interp=%d>" % \
+            (Utils.unit_format_suffix_handle_exc(self.timebase_div, 's/div', precision=3), Utils.unit_format_suffix_handle_exc(self.timebase_span, 's', precision=3), \
              Utils.unit_format_suffix_handle_exc(self.timebase_span_actual, 's', precision=3), \
              Utils.unit_format_suffix_handle_exc(self.memory_auto, 'samp', precision=6), \
              Utils.unit_format_suffix_handle_exc(self.sample_rate_auto, 'samp s^-1', precision=3), Utils.unit_format_suffix_handle_exc(self.sample_rate_max, 'samp s^-1', precision=3), 
@@ -241,8 +241,8 @@ class ZynqScope(object):
     def calculate_nwaves(self, acq_time):
         """nwaves is the number of waveforms to be captured in one frame.  It is
         set to a maximum of 255, a minimum of 1, or X% of the frame time."""
-        nwaves = ((1.0 / self.acq_framerate) * self.acq_frametime_frac) / acq_time
-        return max(1, min(255, nwaves))
+        nwaves = math.floor(((1.0 / self.acq_framerate) * self.acq_frametime_frac) / acq_time)
+        return int(max(1, min(255, nwaves)))
     
     def setup_for_timebase(self, pre_time=0, memory_depth=None):
         """
