@@ -8,7 +8,7 @@ sys.path.append('..')
 import Utils # from parent directory
 
 import ZynqScope.Standard4chAFE as AFE # For now, we import the standard 4ch AFE as the only supported AFE
-import ZynqScope.ZynqSPI, ZynqScope.ZynqCommands
+import ZynqScope.ZynqSPI, ZynqScope.ZynqCommands as zc
 
 import multiprocessing
 
@@ -173,7 +173,7 @@ class ZynqScope(object):
         self.init_timebases()
     
     def connect(self):
-        self.zcmd = ZynqCommands.ZynqCommands()
+        self.zcmd = zc.ZynqCommands()
     
     def calc_real_sample_rate_for_index(self, index):
         """Only supports 8-bit mode for now"""
