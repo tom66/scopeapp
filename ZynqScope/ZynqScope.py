@@ -202,7 +202,7 @@ class ZynqScope(object):
             # Short acquisition: we capture a larger span and display only a reduced portion of it
             if new_tb.memory_auto < self.mem_depth_minimum:
                 #print("minimum", self.mem_depth_minimum)
-                new_tb.memory_auto = self.mem_depth_minimum
+                new_tb.memory_auto = self.mem_depth_minimum * 2 # Double as we have a split pre/post buffer
                 new_tb.timebase_span_actual = new_tb.memory_auto * (1.0 / self.samprate_mdl.rates[0])
             else:
                 # Long acquisition: if the number of acquired samples would exceed the maximum memory length
