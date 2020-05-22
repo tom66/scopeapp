@@ -1,5 +1,6 @@
 import ZynqScope.ZynqScope as zs
 
+# Test base zsobj
 zsobj = zs.ZynqScope(2048, 12)
 zsobj.connect()
 
@@ -14,3 +15,5 @@ for idx, item in enumerate(tb_list):
     zsobj.set_next_timebase(idx)
     zsobj.setup_for_timebase(0)
     print("")
+
+    

@@ -18,15 +18,16 @@ class ZynqAcqStatus(object):
         return "<ZynqAcqStatus flags=0x%04x num_acq=%d>" % (self.flags, self.num_acq)
 
 # Not all of these modes are currently implemented;  use only the 8-bit 1 channel mode for now
-ACQ_MODE_8B_1CH  = 0x21
-ACQ_MODE_8B_2CH  = 0x41
-ACQ_MODE_8B_4CH  = 0x81
-ACQ_MODE_12B_1CH = 0x22
-ACQ_MODE_12B_2CH = 0x42
-ACQ_MODE_12B_4CH = 0x82
-ACQ_MODE_14B_1CH = 0x24
-ACQ_MODE_14B_2CH = 0x44
-ACQ_MODE_14B_4CH = 0x84
+ACQ_MODE_8B_1CH  = 0x0021
+ACQ_MODE_8B_2CH  = 0x0041
+ACQ_MODE_8B_4CH  = 0x0081
+ACQ_MODE_12B_1CH = 0x0022
+ACQ_MODE_12B_2CH = 0x0042
+ACQ_MODE_12B_4CH = 0x0082
+ACQ_MODE_14B_1CH = 0x0024
+ACQ_MODE_14B_2CH = 0x0044
+ACQ_MODE_14B_4CH = 0x0084
+ACQ_MODE_DOUBLE_BUFFER = 0x0800
 
 ACQ_DATA_MODES = [ACQ_MODE_8B_1CH,  ACQ_MODE_8B_2CH,  ACQ_MODE_8B_4CH, 
                   ACQ_MODE_12B_1CH, ACQ_MODE_12B_2CH, ACQ_MODE_12B_4CH, 
@@ -138,7 +139,7 @@ class ZynqCommands(object):
         Setup a triggered acquisition.  Current acquisition is stopped, and new
         settings for the acquisition are configured.
         """
-        assert data_mode in ACQ_DATA_MODES
+        assert (data_mode & ~ACQ_MODE_DOUBLE_BUFFER) in ACQ_DATA_MODES
         
         print("setup_triggered_acquisition(pre=%d, post=%d, n=%d, mode=0x%02x)"% (pre_size, post_size, number_acq, data_mode))
         
@@ -147,7 +148,7 @@ class ZynqCommands(object):
             _pack_32b_int_arg(pre_size) + \
             _pack_32b_int_arg(post_size) + \
             _pack_32b_int_arg(number_acq) + \
-            _pack_8b_int_arg(data_mode))
+            _pack_16b_int_arg(data_mode))
     
     def start_acquisition(self, reset_fifo=1):
         """Start the acquisition.  The acquisition should have already been configured, 

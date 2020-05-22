@@ -2,7 +2,7 @@
 This file is part of YAOS and is licenced under the MIT Licence.
 """
 
-import sys, operator, math, inspect
+import sys, operator, math, inspect, copy
 
 sys.path.append('..')
 import Utils # from parent directory
@@ -49,9 +49,10 @@ class ZynqScopeAttributesResponse(object): pass
 
 class ZynqScopeCurrentParameters(object): 
     sample_depth = 8
-    memory_depth = 0
+    memory_depth = None
+    sample_rate = None
     trigger_point = 0.5
-    delay = 0
+    delay = None
  
 class ZynqScopeTimebaseOption(object):
     timebase_div = 0
@@ -280,6 +281,7 @@ class ZynqScope(object):
         """
         tb = self.next_tb
         sample_rate = tb.sample_rate_auto
+        flags = 0x0000
             
         if memory_depth == None:
             depth = tb.memory_auto
@@ -325,9 +327,10 @@ class ZynqScope(object):
         nwaves = self.calculate_nwaves((pre_size + post_size) * (1.0 / sample_rate))
         
         # Reduce nwaves if the allocation would exceed split or total memory limits (depending on which
-        # is in effect)
+        # is in effect).  Set split flag if we are in this mode.
         if tb.timebase_div <= self.split_transition_tb:
             max_memory = self.mem_depth_maximum_split
+            flags |= zc.ACQ_MODE_DOUBLE_BUFFER
         else:
             max_memory = self.mem_depth_maximum
         
@@ -338,10 +341,11 @@ class ZynqScope(object):
         
         # Stop the current acquisition and set up a new acquisition.
         self.zcmd.stop_acquisition()
-        self.zcmd.setup_triggered_acquisition(pre_size, post_size, nwaves, zc.ACQ_MODE_8B_1CH)
+        self.zcmd.setup_triggered_acquisition(pre_size, post_size, nwaves, flags | zc.ACQ_MODE_8B_1CH)
         
         # Update the parameter set for user interface and the rest of the application.
         self.params.sample_depth = 8  # Fixed to 8-bit for now
+        self.params.sample_rate = tb.sample_rate_auto
         self.params.memory_depth = pre_size + post_size
         
         if delay < 0:
@@ -406,5 +410,7 @@ class ZynqScopeSubprocess(multiprocessing.Process):
             # Return a safed object copy of all scope parameters which can be accessed
             resp = ZynqScopeAttributesResponse()
             attrs = inspect.getmembers(self.zs)
-            
+            for attr, value in attrs:
+                setattr(resp, attr, copy.deepcopy(value))
+            self.rsp.put(resp)
     
