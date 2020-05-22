@@ -46,6 +46,12 @@ class ZynqScopeSimpleCommand(object):
 class ZynqScopeGetStatus(object): pass
 class ZynqScopeSendCompAcqStreamCommand(object): pass
 class ZynqScopeAttributesResponse(object): pass
+
+class ZynqScopeCurrentParameters(object): 
+    sample_depth = 8
+    memory_depth = 0
+    trigger_point = 0.5
+    delay = 0
  
 class ZynqScopeTimebaseOption(object):
     timebase_div = 0
@@ -137,7 +143,8 @@ class ZynqScope(object):
     # Memory depth range.  In future, we would retrieve the amount of DDR3 connected to the Zynq
     # to automatically infer these parameters.  In addition precision mode must also be considered,
     # when it is implemented.
-    mem_depth_minimum = 128                 # 128 samples
+    mem_depth_minimum = 128                 # 128 samples in total for an acquisition
+    mem_depth_minimum_pp = 16               # Minimum size for pre/post buffers individually (16 samples: two words of 8 samples)
     mem_depth_maximum = 200000000           # 200Mpts
     mem_depth_maximum_split = 100000000     # 100Mpts in split mode
     
@@ -161,6 +168,9 @@ class ZynqScope(object):
     
     # Sample rate model.  Defines the dividers and clock rates available to the ADC and PLL.
     samprate_mdl = None
+    
+    # Current parameters data set.  Can be passed back to the host process for UI purposes.
+    params = ZynqScopeCurrentParameters()
     
     # Next timebase and current timebase
     next_tb = None
@@ -248,7 +258,7 @@ class ZynqScope(object):
     def get_max_pre_trigger_time(self, buffer_size, sample_rate):
         """Return the maximum pre-trigger time for the given total memory 
         buffer size and sample rate."""
-        return ((buffer_size - self.mem_depth_minimum) / sample_rate) * 0.5
+        return ((buffer_size - self.mem_depth_minimum_pp) / sample_rate) * 0.5
     
     def calculate_nwaves(self, acq_time):
         """nwaves is the number of waveforms to be captured in one frame.  It is
@@ -257,7 +267,7 @@ class ZynqScope(object):
         nwaves = math.floor(((1.0 / self.acq_framerate) * self.acq_frametime_frac) / acq_time)
         return int(max(1, min(255, nwaves)))
     
-    def setup_for_timebase(self, pre_time=0, memory_depth=None):
+    def setup_for_timebase(self, delay=0, memory_depth=None):
         """
         Setup timebase parameters on the Zynq's acquisition controller for the
         currently set timebase parameters.
@@ -265,8 +275,8 @@ class ZynqScope(object):
         A memory_depth of None will configure the instrument to use the fastest
         memory depth available.
         
-        Increasing pre_time will extend the pre-trigger buffer for browsing past
-        events.  Set to zero, it retains the default configuration.
+        Negative delay is implemented as a shift in the pre_trigger point.  Positive
+        delay 
         """
         tb = self.next_tb
         sample_rate = tb.sample_rate_auto
@@ -278,7 +288,12 @@ class ZynqScope(object):
         
         # Adjusting pre-trigger increases the size of the pre buffer and decreases the
         # size of the post buffer.  The post buffer reduces to nearly zero (but not exactly zero,
-        # as that is unsupported) 
+        # as that is unsupported).  Positive delay is not yet implemented. 
+        if delay < 0:
+            pre_time = -delay
+        else:
+            pre_time = 0
+            
         max_pre_time = self.get_max_pre_trigger_time(depth, sample_rate)
         if max_pre_time < pre_time:
             raise ZynqScopeParameterRangeError("Pre-trigger 'delay' exceeds limits")
@@ -296,7 +311,7 @@ class ZynqScope(object):
         post_size = int(post_size)
         
         print("pre/post:", pre_size, post_size)
-        assert(post_size >= self.mem_depth_minimum)
+        assert(post_size >= self.mem_depth_minimum_pp)
         
         # Correct all buffers to be a multiple of a cache line.  The total buffer need only
         # be divisible by 32, but ensuring both pre and post buffers are is easier.
@@ -324,6 +339,20 @@ class ZynqScope(object):
         # Stop the current acquisition and set up a new acquisition.
         self.zcmd.stop_acquisition()
         self.zcmd.setup_triggered_acquisition(pre_size, post_size, nwaves, zc.ACQ_MODE_8B_1CH)
+        
+        # Update the parameter set for user interface and the rest of the application.
+        params.sample_depth = 8  # Fixed to 8-bit for now
+        params.memory_depth = pre_size + post_size
+        
+        if delay < 0:
+            params.trigger_point = 1 - ((pre_size) / (pre_size + post_size))
+        elif delay == 0:
+            params.trigger_point = 0.5
+        else:
+            # positive delay not yet implemented
+            params.trigger_point = 1.0
+        
+        params.delay = delay
             
 class ZynqScopeSubprocess(multiprocessing.Process):
     """
