@@ -18,11 +18,15 @@ COUP_AC, COUP_DC, COUP_GND = zsgl.COUP_AC, zsgl.COUP_DC, zsgl.COUP_GND
 # Force 4ch AFE module for now
 AFE_module = zst.AFE
 
-# Supported run states
+# Supported run states of acquisition
 STATE_STOPPED = 0               # State when stopped
 STATE_RUNNING_AUTO = 1          # State when running on auto trigger without a trigger source
 STATE_RUNNING_WAIT_TRIG = 2     # State when waiting for a trigger
 STATE_RUNNING_TRIGD = 3         # State when running on normal trigger / single trigger and have a trigger
+
+# Supported run/stop states
+ACQ_IS_STOPPED = 0
+ACQ_IS_RUNNING = 1
 
 # Supported channels
 SCOPE_CH_1 = 0 
@@ -388,8 +392,9 @@ class ScopeController(object):
     configuration.
     """
     
-    # Current running state of the instrument
-    run_state = STATE_RUNNING_AUTO
+    # Current acquisition state of the instrument
+    acq_state = STATE_STOPPED
+    run_state = ACQ_IS_STOPPED
     
     # Set of channels
     channels = []
@@ -479,10 +484,11 @@ class ScopeController(object):
         f = open(fname, "r")
         self.unpack_json_state(f.read())
         f.close()
-       
-    def system_tick(self):
-        """
-        This should be called on a regular basis inside the main system control loop.
-        It controls acquisition and monitor tasks.
-        """
-        
+    
+    def acq_run(self):
+        if self.run_state == ACQ_IS_STOPPED:
+            # Sync all changes to the acquisition side
+            self.zst.sync_to_real_world()
+        else:
+            raise RuntimeError("Oscilloscope is not stopped")
+    

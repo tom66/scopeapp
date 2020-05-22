@@ -249,6 +249,12 @@ class ZynqScope(object):
         except IndexError:
             raise ZynqScopeParameterRangeError("Unsupported timebase setting %d" % index)
     
+    def set_next_delay(self, delay):
+        self.next_delay = delay
+    
+    def set_next_memory_depth(self, memory_depth):
+        self.next_memory_depth = memory_depth
+    
     def get_max_pre_trigger_time(self, buffer_size, sample_rate):
         """Return the maximum pre-trigger time for the given total memory 
         buffer size and sample rate."""
@@ -261,31 +267,25 @@ class ZynqScope(object):
         nwaves = math.floor(((1.0 / self.acq_framerate) * self.acq_frametime_frac) / acq_time)
         return int(max(1, min(255, nwaves)))
     
-    def setup_for_timebase(self, delay=0, memory_depth=None):
+    def setup_for_timebase(self):
         """
         Setup timebase parameters on the Zynq's acquisition controller for the
         currently set timebase parameters.
-        
-        A memory_depth of None will configure the instrument to use the fastest
-        memory depth available.
-        
-        Negative delay is implemented as a shift in the pre_trigger point.  Positive
-        delay 
         """
         tb = self.next_tb
         sample_rate = tb.sample_rate_auto
         flags = 0x0000
             
-        if memory_depth == None:
+        if self.next_memory_depth == None:
             depth = tb.memory_auto
         else:
-            raise NotImplementedError("non auto memory size unsupported") # handle this case too
+            raise NotImplementedError("non auto memory size unsupported") # handle this case too at some point
         
         # Adjusting pre-trigger increases the size of the pre buffer and decreases the
         # size of the post buffer.  The post buffer reduces to nearly zero (but not exactly zero,
         # as that is unsupported).  Positive delay is not yet implemented. 
-        if delay < 0:
-            pre_time = -delay
+        if self.next_delay < 0:
+            pre_time = -self.next_delay
         else:
             pre_time = 0
             
@@ -349,6 +349,6 @@ class ZynqScope(object):
             # positive delay not yet implemented
             self.params.trigger_point = 1.0
         
-        self.params.delay = delay
+        self.params.delay = self.next_delay
         print(self.params)
         

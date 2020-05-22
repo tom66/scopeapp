@@ -18,11 +18,18 @@ STATE_ZYNQ_IDLE = 1
 
 class ZynqScopeTaskQueueCommand(object): pass
 
-class ZynqScopeSimpleCommand(ZynqScopeTaskQueueCommand):
+class ZynqScopeCmdsIfcSimpleCommand(ZynqScopeTaskQueueCommand):
     def __init__(self, cmd_name, flush, *args, **kwargs):
         assert(type(self.cmd_name) == str)
         self.cmd_name = cmd_name
         self.flush = flush
+        self.args = args
+        self.kwargs = kwargs
+
+class ZynqScopeSimpleCommand(ZynqScopeTaskQueueCommand):
+    def __init__(self, cmd_name, *args, **kwargs):
+        assert(type(self.cmd_name) == str)
+        self.cmd_name = cmd_name
         self.args = args
         self.kwargs = kwargs
 
@@ -94,7 +101,7 @@ class ZynqScopeSubprocess(multiprocessing.Process):
         msg = self.evq.get()
         print(msg)
         
-        if type(msg) is ZynqScopeSimpleCommand:
+        if type(msg) is ZynqScopeCmdsIfcSimpleCommand:
             # This is a simple command: we call the relevant method on the ZynqCommands interface.
             # A Null response is generated.  This is used, e.g. to set trigger parameters.  If 'flush' bit is
             # set, then a flush command is also sent.
@@ -102,6 +109,13 @@ class ZynqScopeSubprocess(multiprocessing.Process):
             if msg.flush:
                 self.zs.zcmd.flush()
             self.rsq.put(ZynqScopeNullResponse())
+        elif type(msg) is ZynqScopeSimpleCommand:
+            # This is a simple command: we call the relevant method on the ZynqScope interface.
+            # A Null response is generated.  This is used, e.g. to set acquisition parameters.  
+            getattr(self.zs.zcmd, msg.cmd_name)(*msg.args, **msg.kwargs)
+            self.rsq.put(ZynqScopeNullResponse())
+        elif type(msg) is ZynqScopeSyncAcquisitionSettings:
+            self.zs.setup_for_timebase(0, None) # TODO: These parameters need to be filled in, too!
         elif type(msg) is ZynqScopeGetAcqStatus:
             # Enquire scope acquisition status.  Returns a ZynqAcqStatus object.
             resp = self.zs.zcmd.acq_status()
@@ -138,7 +152,7 @@ class ZynqScopeTaskController():
         
     def stop_task(self):
         # Send kill request, wait 200ms then force termination
-        self.zstask.evq.put(ZynqScopeDieTask())
+        self.evq.put(ZynqScopeDieTask())
         time.sleep(0.2)
         self.zstask.kill()
     
@@ -150,3 +164,12 @@ class ZynqScopeTaskController():
     def get_supported_timebases(self):
         attrs = self.get_attributes()
         return attrs.timebase_settings
+        
+    def sync_to_real_world(self):
+        # Sync to the real world includes:  
+        #  - Sending timebase change.  
+        #  - Clearing acquisition memory.  
+        #  - Sending any relay/attenuation unit changes.
+        #  - Sending any ADC configuration changes.
+        self.evq.put(ZynqScopeSimpleCommand("setup_for_timebase", True, ))
+        
