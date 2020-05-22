@@ -55,10 +55,9 @@ class ZynqScopeCurrentParameters(object):
     delay = 0
     
     def __repr__(self):
-        return "<ZynqScopeCurrentParameters sample_depth=%d memory_depth=%d sample_rate=%s trigger_point=%2.2f delay=%s>" % \
-            self.sample_depth, Utils.unit_format_suffix_handle_exc(self.memory_depth, 'pts', precision=3), \
-            Utils.unit_format_suffix_handle_exc(self.memory_depth, 'pts', precision=0), \
-            Utils.unit_format_suffix_handle_exc(self.sample_rate, 'Sa/s', precision=1), self.trigger_point, \
+        return "<ZynqScopeCurrentParameters sample_depth=%d memory_depth=%d sample_rate=%s trigger_point=%2.1f%% delay=%s>" % \
+            self.sample_depth, Utils.unit_format_suffix_handle_exc(self.memory_depth, 'pts', precision=0), \
+            Utils.unit_format_suffix_handle_exc(self.sample_rate, 'Sa/s', precision=1), self.trigger_point * 100, \
             Utils.unit_format_suffix_handle_exc(self.delay, 's', precision=5)
  
 class ZynqScopeTimebaseOption(object):
