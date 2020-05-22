@@ -291,6 +291,7 @@ class ZynqScope(object):
             pre_size += pre_time
             post_size -= pre_time
         
+        print("pre/post:", pre_size, post_size)
         assert(post_size >= self.mem_depth_minimum)
         
         # Correct all buffers to be a multiple of the sample word
