@@ -167,6 +167,8 @@ class ZynqScope(object):
     
     # Next timebase and current timebase
     next_tb = None
+    next_memory_depth = None
+    next_delay = 0
     curr_tb = None
     
     def __init__(self, display_samples_target, default_hdiv_span):
