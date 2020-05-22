@@ -136,6 +136,9 @@ class ScopeChannelController(object):
         self.atten_div = AFE_module.get_default_attenuation()
         self.coupling_supported = AFE_module.get_coupling_modes_supported()
         self.coupling = AFE_module.get_default_coupling()
+        
+        # Set default change notifier (does nothing)
+        self.change_notifier = lambda x: pass
 
     def prepare_state(self):
         return Utils.pack_dict_json(self, self.pack_vars_types)
@@ -168,12 +171,15 @@ class ScopeChannelController(object):
 
     def enable_channel(self):
         self.enabled = True
+        self.change_notifier('enable-state')
         
     def disable_channel(self):
         self.enabled = False
+        self.change_notifier('enable-state')
     
     def toggle_channel(self):
         self.enabled = not self.enabled
+        self.change_notifier('enable-state')
 
     def is_enabled(self):
         return self.enabled
@@ -240,6 +246,8 @@ class ScopeChannelController(object):
         # If attenuation change causes offset limits to change we need to adjust those too; 
         # to account for this we adjust the offset by 0V
         self.adjust_offset(0)
+        
+        self.change_notifier('atten')
     
     def adjust_offset(self, adj, snap_zero=False):
         self.set_offset(self.offset + adj, snap_zero)
@@ -264,6 +272,8 @@ class ScopeChannelController(object):
         if snap_zero and sign != new_sign and abs(old_offset) > 1e-12:
             print("Channel: Snap offset to zero")
             self.offset = 0
+        
+        self.change_notifier('offset')
     
     def atten_up_coarse(self):
         nearest_atten = self._get_nearest_atten_index()
@@ -289,6 +299,7 @@ class ScopeChannelController(object):
     def set_coupling(self, coup):
         if self.get_supports_coupling(coup):
             self.coupling = coup
+            self.change_notifier('coupling')
         else:
             raise ValueError("Unsupported coupling type")
 
@@ -299,14 +310,17 @@ class ScopeChannelController(object):
         assert isinstance(state, bool)
         self.termination_50R = state
         self.termination_50R_applied = state
+        self.change_notifier('fifty-ohm')
     
     def set_bandwidth_20M(self, state):
         assert isinstance(state, bool)
         self.bandwidth_20M = state
+        self.change_notifier('bw-limit')
     
     def set_invert(self, state):
         assert isinstance(state, bool)
         self.invert = state
+        self.change_notifier('invert')
     
     def get_50_ohm_termination(self):
         return self.termination_50R 
@@ -329,6 +343,10 @@ class ScopeChannelController(object):
     def toggle_invert(self):
         self.set_invert(not self.invert)
 
+    def set_change_notifier(self, notify):
+        assert(callable(notify))
+        self.change_notifier = notify
+        
 class ScopeTimebaseController(object):
     supported_timebases = []
     timebase_index = 0
@@ -347,6 +365,9 @@ class ScopeTimebaseController(object):
         # Get the list of supported timebases
         self.supported_timebases = self.zstc.get_supported_timebases()
         print("Supported timebases:", self.supported_timebases)
+        
+        # Set default change notifier (does nothing)
+        self.change_notifier = lambda x: pass
     
     def prepare_state(self):
         return Utils.pack_dict_json(self, self.pack_vars_types)
@@ -366,6 +387,8 @@ class ScopeTimebaseController(object):
         if self.timebase_index >= len(self.supported_timebases):
             self.timebase_index = len(self.supported_timebases) - 1
             raise Utils.UserRequestOutOfRange(_("Timebase at maximum"))
+            
+        self.change_notifier('timebase-div')
     
     def timebase_down(self):
         print("timebase_down")
@@ -373,17 +396,26 @@ class ScopeTimebaseController(object):
         if self.timebase_index < 0:
             self.timebase_index = 0
             raise Utils.UserRequestOutOfRange(_("Timebase at minimum"))
+            
+        self.change_notifier('timebase-div')
     
     def adjust_offset(self, adj):
+        # This function needs to be completely reworked
         max_limit = (MAX_TIMEBASE_SHIFT_POS * self.get_timebase_value())
         min_limit = (MAX_TIMEBASE_SHIFT_NEG * self.get_timebase_value())
         
         self.offset += adj
         self.offset = min(max_limit, self.offset)
         self.offset = max(min_limit, self.offset)
+            
+        self.change_notifier('timebase-offset')
     
     def get_offset(self):
         return self.offset
+
+    def set_change_notifier(self, notify):
+        assert(callable(notify))
+        self.change_notifier = notify
             
 class ScopeController(object):
     """
@@ -412,6 +444,9 @@ class ScopeController(object):
             self.channels[1].set_colour(60, 0.85)
             self.channels[2].set_colour(160, 0.85)
             self.channels[3].set_colour(270, 0.65)
+            
+            for ch in self.channels:
+                ch.set_change_notifier(self.change_notifier)
         else:
             raise NotImplementedError("Unsupported configuration")
     
@@ -423,6 +458,10 @@ class ScopeController(object):
         self.zst = zst.ZynqScopeTaskController((self.display_samples_target, self.default_hdiv_span))
         self.zst.start_task()
         self.timebase = ScopeTimebaseController(self.zst)
+        self.timebase.set_change_notifier(self.change_notifier)
+        
+        # for testing
+        self.zst.acq_run()
     
     def save_settings_temp(self):
         self.save_settings(TEMP_SETTING_FILE)
@@ -463,7 +502,8 @@ class ScopeController(object):
                 #print("unpack_json_state", self.channels[ch].termination_50R, self.channels[ch].termination_50R_applied)
                 #self.channels[ch].termination_50R_applied = False
             
-            self.run_state = STATE_STOPPED              # Default to stopped
+            self.acq_state = STATE_STOPPED              # Default to stopped
+            self.run_state = ACQ_IS_STOPPED
             self.active_tab = json_obj['active_tab']    # Recall tab
             
             print("actTab?", self.active_tab)
@@ -471,7 +511,8 @@ class ScopeController(object):
         except Utils.StateSaveFileCorrupted as e:
             raise e
         except Exception as e:
-            raise Utils.StateSaveFileCorrupted(_("Unable to restore configuration file: General load error"))
+            # TRANSLATORS: {0} is a Python exception string which may or may not be translated into user's locale. 
+            raise Utils.StateSaveFileCorrupted(_("Unable to restore configuration file: General load error: {0}".format(repr(e))))
 
     def save_settings(self, fname):
         """Save settings file, overwriting any existing file with this name."""
@@ -485,10 +526,31 @@ class ScopeController(object):
         self.unpack_json_state(f.read())
         f.close()
     
+    def sync_if_needed(self):
+        """Syncs changes to real world if needed.  If the oscilloscope is stopped changes are
+        queued until the instrument resumes running."""
+        if self.run_state == ACQ_IS_RUNNING:
+            self.zst.sync_to_real_world()
+        else:
+            print("No sync, we are stopped")
+    
+    def change_notifier(self, param):
+        print("change_notifier:", param)
+    
     def acq_run(self):
         if self.run_state == ACQ_IS_STOPPED:
             # Sync all changes to the acquisition side
             self.zst.sync_to_real_world()
+            self.zst.start_acquisition()
+            self.run_state = ACQ_IS_RUNNING
         else:
             raise RuntimeError("Oscilloscope is not stopped")
+    
+    def acq_stop(self):
+        if self.run_state == ACQ_IS_RUNNING:
+            # Stop the instrument
+            self.zst.stop_acquisition()
+            self.run_state = ACQ_IS_STOPPED
+        else:
+            raise RuntimeError("Oscilloscope is not running")
     

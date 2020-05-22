@@ -168,12 +168,18 @@ class ZynqScopeTaskController():
     def get_supported_timebases(self):
         attrs = self.get_attributes()
         return attrs.timebase_settings
-        
+    
+    def stop_acquisition(self):
+        self.evq.put(ZynqScopeSimpleCommand("stop_acquisition", True,))
+    
+    def start_acquisition(self):
+        self.evq.put(ZynqScopeSimpleCommand("start_acquisition", True, (,), {'reset_fifo' : 1}))
+    
     def sync_to_real_world(self):
         # Sync to the real world includes:  
         #  - Sending timebase change.  
         #  - Clearing acquisition memory.  
         #  - Sending any relay/attenuation unit changes.
         #  - Sending any ADC configuration changes.
-        self.evq.put(ZynqScopeSimpleCommand("setup_for_timebase", True, ))
+        self.evq.put(ZynqScopeSimpleCommand("setup_for_timebase", True,))
         
