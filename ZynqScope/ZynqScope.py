@@ -298,8 +298,8 @@ class ZynqScope(object):
         assert(post_size >= self.mem_depth_minimum)
         
         # Correct all buffers to be a multiple of the sample word
-        pre_size += ZYNQ_SAMPLE_WORD_SIZE / 2
-        post_size += ZYNQ_SAMPLE_WORD_SIZE / 2
+        pre_size += ZYNQ_SAMPLE_WORD_SIZE // 2
+        post_size += ZYNQ_SAMPLE_WORD_SIZE // 2
         pre_size &= ZYNQ_SAMPLE_WORD_SIZE - 1
         post_size &= ZYNQ_SAMPLE_WORD_SIZE - 1
         
