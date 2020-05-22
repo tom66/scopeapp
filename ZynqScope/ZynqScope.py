@@ -321,7 +321,7 @@ class ZynqScope(object):
         
         # Stop the current acquisition and set up a new acquisition.
         self.zcmd.stop_acquisition()
-        self.zcmd.setup_triggered_acquisition(pre_size, post_size, nwaves, ZynqCommands.ACQ_MODE_8B_1CH)
+        self.zcmd.setup_triggered_acquisition(pre_size, post_size, nwaves, zc.ACQ_MODE_8B_1CH)
             
 class ZynqScopeSubprocess(multiprocessing.Process):
     """
