@@ -169,6 +169,9 @@ class ZynqScopeTaskController():
         attrs = self.get_attributes()
         return attrs.timebase_settings
     
+    def set_next_timebase_index(self, tb):
+        self.evq.put(ZynqScopeSimpleCommand("set_next_timebase", (int(tb))))
+    
     def stop_acquisition(self):
         self.evq.put(ZynqScopeCmdsIfcSimpleCommand("stop_acquisition", True,))
     

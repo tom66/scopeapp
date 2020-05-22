@@ -561,6 +561,9 @@ class ScopeController(object):
     def change_notifier(self, param):
         print("change_notifier:", param)
         
+        if param == "timebase-div":
+            self.zst.set_next_timebase_index(self.timebase.timebase_index)
+        
         if self.run_state == ACQ_IS_RUNNING:
             print("sync_to_real_world")
             self.zst.sync_to_real_world()
