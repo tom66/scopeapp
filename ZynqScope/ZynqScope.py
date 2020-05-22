@@ -59,7 +59,7 @@ class ZynqScopeCurrentParameters(object):
             self.sample_depth, Utils.unit_format_suffix_handle_exc(self.memory_depth, 'pts', precision=3), \
             Utils.unit_format_suffix_handle_exc(self.memory_depth, 'pts', precision=0), \
             Utils.unit_format_suffix_handle_exc(self.sample_rate, 'Sa/s', precision=1), self.trigger_point, \
-            Utils.unit_format_suffix_handle_exc(self.delay, 's', precision=5))
+            Utils.unit_format_suffix_handle_exc(self.delay, 's', precision=5)
  
 class ZynqScopeTimebaseOption(object):
     timebase_div = 0
