@@ -242,7 +242,7 @@ class ZynqScope(object):
         """nwaves is the number of waveforms to be captured in one frame.  It is
         set to a maximum of 255, a minimum of 1, or X% of the frame time."""
         nwaves = ((1.0 / self.acq_framerate) * self.acq_frametime_frac) / acq_time
-        return max(1, max(255, nwaves))
+        return max(1, min(255, nwaves))
     
     def setup_for_timebase(self, pre_time=0, memory_depth=None):
         """
