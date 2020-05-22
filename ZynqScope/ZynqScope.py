@@ -233,11 +233,11 @@ class ZynqScope(object):
     def set_next_timebase(self, timebase_index):
         pass
     
-	def get_max_pre_trigger_time(self, buffer_size, sample_rate):
-		"""Return the maximum pre-trigger time for the given total memory 
-		buffer size and sample rate."""
-		return ((buffer_size - self.mem_depth_minimum) / sample_rate) * 0.5
-	
+    def get_max_pre_trigger_time(self, buffer_size, sample_rate):
+        """Return the maximum pre-trigger time for the given total memory 
+        buffer size and sample rate."""
+        return ((buffer_size - self.mem_depth_minimum) / sample_rate) * 0.5
+    
     def calculate_nwaves(self, acq_time):
         """nwaves is the number of waveforms to be captured in one frame.  It is
         set to a maximum of 255, a minimum of 1, or X% of the frame time."""
@@ -256,23 +256,23 @@ class ZynqScope(object):
         events.  Set to zero, it retains the default configuration.
         """
         tb = self.next_tb
-		sample_rate = tb.sample_rate_auto
+        sample_rate = tb.sample_rate_auto
             
         if memory_depth == None:
             depth = tb.memory_auto
         else:
             raise NotImplementedError("non auto memory size unsupported") # handle this case too
         
-		# Adjusting pre-trigger increases the size of the pre buffer and decreases the
-		# size of the post buffer.  The post buffer reduces to nearly zero (but not exactly zero,
-		# as that is unsupported) 
-		max_pre_time = self.get_max_pre_trigger_time(depth, sample_rate)
-		if max_pre_time < pre_time:
-			raise ZynqScopeParameterRangeError("Pre-trigger 'delay' exceeds limits")
-		
+        # Adjusting pre-trigger increases the size of the pre buffer and decreases the
+        # size of the post buffer.  The post buffer reduces to nearly zero (but not exactly zero,
+        # as that is unsupported) 
+        max_pre_time = self.get_max_pre_trigger_time(depth, sample_rate)
+        if max_pre_time < pre_time:
+            raise ZynqScopeParameterRangeError("Pre-trigger 'delay' exceeds limits")
+        
         # Default settings
-		pre_size = depth / 2
-		post_size = depth / 2
+        pre_size = depth / 2
+        post_size = depth / 2
         
         if pre_size > 0:
             pre_memory = pre_time * sample_rate
