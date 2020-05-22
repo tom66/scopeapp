@@ -33,6 +33,7 @@ class ZynqScopeSimpleCommand(ZynqScopeTaskQueueCommand):
         self.args = args
         self.kwargs = kwargs
 
+class ZynqScopeSyncAcquisitionSettings(ZynqScopeTaskQueueCommand): pass
 class ZynqScopeGetStatus(ZynqScopeTaskQueueCommand): pass
 class ZynqScopeGetAcqStatus(ZynqScopeTaskQueueCommand): pass
 class ZynqScopeGetAttributes(ZynqScopeTaskQueueCommand): pass
