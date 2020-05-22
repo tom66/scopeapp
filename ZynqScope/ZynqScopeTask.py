@@ -15,7 +15,9 @@ DEFAULT_ZYNQ_PING_MULT = 200        # Ping Zynq every 200 ticks for new data (~5
 STATE_ZYNQ_NOT_READY = 0
 STATE_ZYNQ_IDLE = 1
 
-class ZynqScopeSimpleCommand(object):
+class ZynqScopeTaskQueueCommand(object): pass
+
+class ZynqScopeSimpleCommand(ZynqScopeTaskQueueCommand):
     def __init__(self, cmd_name, flush, *args, **kwargs):
         assert(type(self.cmd_name) == str)
         self.cmd_name = cmd_name
@@ -23,9 +25,11 @@ class ZynqScopeSimpleCommand(object):
         self.args = args
         self.kwargs = kwargs
 
-class ZynqScopeGetStatus(object): pass
-class ZynqScopeSendCompAcqStreamCommand(object): pass
-class ZynqScopeDieTask(object): pass
+class ZynqScopeGetStatus(ZynqScopeTaskQueueCommand): pass
+class ZynqScopeGetAcqStatus(ZynqScopeTaskQueueCommand): pass
+class ZynqScopeGetAttributes(ZynqScopeTaskQueueCommand): pass
+class ZynqScopeSendCompAcqStreamCommand(ZynqScopeTaskQueueCommand): pass
+class ZynqScopeDieTask(ZynqScopeTaskQueueCommand): pass
 
 class ZynqScopeAttributesResponse(object): pass
 class ZynqScopeNullResponse(object): pass
@@ -88,10 +92,6 @@ class ZynqScopeSubprocess(multiprocessing.Process):
             # Enquire scope acquisition status.  Returns a ZynqAcqStatus object.
             resp = self.zs.zcmd.acq_status()
             self.rsq.put(resp)
-        elif type(msg) is ZynqScopeSendCompAcqStreamCommand:
-            # Send a composite acquisition status command and return the response data.
-            resp = self.zs.zcmd.comp_acq_control()
-            self.rsp.put(resp)
         elif type(msg) is ZynqScopeGetAttributes:
             # Return a safed object copy of all scope parameters which can be accessed
             resp = ZynqScopeAttributesResponse()
@@ -99,6 +99,10 @@ class ZynqScopeSubprocess(multiprocessing.Process):
             for attr, value in attrs:
                 if not callable(value):
                     setattr(resp, attr, copy.deepcopy(value))
+            self.rsp.put(resp)
+        elif type(msg) is ZynqScopeSendCompAcqStreamCommand:
+            # Send a composite acquisition status command and return the response data.
+            resp = self.zs.zcmd.comp_acq_control()
             self.rsp.put(resp)
         elif type(msg) is ZynqScopeDieTask:
             self.die_req = True
