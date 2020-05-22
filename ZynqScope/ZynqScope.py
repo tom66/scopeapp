@@ -57,7 +57,7 @@ class ZynqScopeTimebaseOption(object):
     
     def __repr__(self):
         #print("interp", self.interp, self.timebase_div, self.timebase_span, self.timebase_span_actual, self.memory_auto, self.memory_max, self.sample_rate_auto, self.sample_rate_max)
-        return "<ZynqScopeTimebaseOption div=%s span=%s actual_span=%s memory_auto=%s memory_max=%s " \
+        return "<ZynqScopeTimebaseOption div=%s span=%s actual_span=%s memory_auto=%s " \
                "sample_rate_auto=%s sample_rate_max=%s interp=%d>" % \
             (Utils.unit_format_suffix_handle_exc(self.timebase_div, 's', precision=3), Utils.unit_format_suffix_handle_exc(self.timebase_span, 's', precision=3), \
              Utils.unit_format_suffix_handle_exc(self.timebase_span_actual, 's', precision=3), \
