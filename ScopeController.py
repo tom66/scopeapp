@@ -560,7 +560,8 @@ class ScopeController(object):
         print("change_notifier:", param)
         
         if self.run_state == ACQ_IS_RUNNING:
-            self.sync_to_real_world()
+            print("sync_to_real_world")
+            self.zst.sync_to_real_world()
     
     def acq_run(self):
         if self.run_state == ACQ_IS_STOPPED:
