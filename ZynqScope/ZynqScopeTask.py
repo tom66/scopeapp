@@ -87,7 +87,7 @@ class ZynqScopeSubprocess(multiprocessing.Process):
             getattr(self.zs.zcmd, msg.cmd_name)(*msg.args, **msg.kwargs)
             if msg.flush:
                 self.zs.zcmd.flush()
-            self.rsp.put(ZynqScopeNullResponse())
+            self.rsq.put(ZynqScopeNullResponse())
         elif type(msg) is ZynqScopeGetAcqStatus:
             # Enquire scope acquisition status.  Returns a ZynqAcqStatus object.
             resp = self.zs.zcmd.acq_status()
@@ -99,16 +99,16 @@ class ZynqScopeSubprocess(multiprocessing.Process):
             for attr, value in attrs:
                 if not callable(value):
                     setattr(resp, attr, copy.deepcopy(value))
-            self.rsp.put(resp)
+            self.rsq.put(resp)
         elif type(msg) is ZynqScopeSendCompAcqStreamCommand:
             # Send a composite acquisition status command and return the response data.
             resp = self.zs.zcmd.comp_acq_control()
-            self.rsp.put(resp)
+            self.rsq.put(resp)
         elif type(msg) is ZynqScopeDieTask:
             self.die_req = True
-            self.rsp.put(ZynqScopeNullResponse())
+            self.rsq.put(ZynqScopeNullResponse())
         else:
-            self.rsp.put(ZynqScopeNullResponse())
+            self.rsq.put(ZynqScopeNullResponse())
 
 class ZynqScopeTaskController():
     """
