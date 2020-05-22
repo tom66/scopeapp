@@ -215,7 +215,7 @@ class ScopeChannelController(object):
         To do this, the function iterates through the list, and at the soonest value
         equal or greater than the current attenuation, it will break and return that
         value.  If no value is found, the first index is returned instead - failing safe."""
-        for index, atten in enumerate(attenuation_options):
+        for index, atten in enumerate(self.atten_supported):
             if atten >= self.atten_div:
                 return index
         
@@ -225,13 +225,13 @@ class ScopeChannelController(object):
     def set_atten_index(self, new_atten):
         # If out of range, then raise an UserRequestOutOfRange exception, which is
         # generally passed out as a warning
-        if new_atten > (len(attenuation_options) - 1):
+        if new_atten > (len(self.atten_supported) - 1):
             raise Utils.UserRequestOutOfRange(_("Attenuation requested at limit"))
         
         if new_atten < 0:
             raise Utils.UserRequestOutOfRange(_("Attenuation requested at limit"))
         
-        self.atten_div = attenuation_options[new_atten]
+        self.atten_div = self.atten_supported[new_atten]
         
         # If attenuation change causes offset limits to change we need to adjust those too; 
         # to account for this we adjust the offset by 0V
@@ -244,7 +244,7 @@ class ScopeChannelController(object):
         old_offset = self.offset
         self.offset = new
         
-        limits = AFE_module.get_max_supported_offset(self.atten_div)
+        limits = AFE_module.get_max_offset_supported(self.atten_div)
         
         if self.offset > limits[1]:
             self.offset = limits[1]
