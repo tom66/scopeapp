@@ -105,6 +105,11 @@ class MainApplication(object):
         
         # Here we'd display a splash screen while setting everything up...
         
+        
+        # Connect the ScopeController to hardware.
+        self.ctrl.set_render_parameters(self.cfgmgr['Render']['DisplaySamples'], self.cfgmgr['Render']['DisplayHDivisions'])
+        self.ctrl.connect()
+        
         # Load CSS file as specified in config file and apply it to everything
         self.css = Gtk.CssProvider()
         self.css.load_from_file(Gio.File.new_for_path(self.cfgmgr['Theme']['CSSFile']))
@@ -234,10 +239,7 @@ class MainApplication(object):
             self.flash_period = 1.0 / float(self.cfgmgr['UI']['FlashFreq'])
         except:
             self.flash_period = 0.4 # Default
-        
-        # Connect the ScopeController to hardware.
-        self.ctrl.connect()
-        
+    
     def __user_exception_handler(func):
         def wrapper(self, *args):
             try:
