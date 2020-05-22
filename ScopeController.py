@@ -13,6 +13,8 @@ import Utils
 import ZynqScope.ZynqScopeTask as zst
 import ZynqScope.ZynqScopeGlobals as zsgl
 
+COUP_AC, COUP_DC, COUP_GND = zsgl.COUP_AC, zsgl.COUP_DC, zsgl.COUP_GND
+
 # Force 4ch AFE module for now
 AFE_module = zst.AFE
 
