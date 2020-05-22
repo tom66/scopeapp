@@ -108,7 +108,7 @@ class ScopeChannelController(object):
         "probe_multiplier":     [(float, int)], # validated later
         "vernier":              [(bool,)], 
         "offset":               [(float, int)], # validated later
-        "coupling":             [(int,), COUP_AC, COUP_GND], 
+        "coupling":             [(int,)],       # validated later
         "invert":               [(bool,)], 
         "bandwidth_20M":        [(bool,)], 
         "termination_50R":      [(bool,)], 
