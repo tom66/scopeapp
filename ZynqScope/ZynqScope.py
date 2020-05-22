@@ -2,7 +2,8 @@
 This file is part of YAOS and is licenced under the MIT Licence.
 """
 
-import sys, operator, math
+import sys, operator, math, inspect
+
 sys.path.append('..')
 import Utils # from parent directory
 
@@ -42,6 +43,8 @@ class ZynqScopeSimpleCommand(object):
         self.kwargs = kwargs
 
 class ZynqScopeGetStatus(object): pass
+class ZynqScopeSendCompAcqStreamCommand(object): pass
+class ZynqScopeAttributesResponse(object): pass
  
 class ZynqScopeTimebaseOption(object):
     timebase_div = 0
@@ -134,8 +137,8 @@ class ZynqScope(object):
     # to automatically infer these parameters.  In addition precision mode must also be considered,
     # when it is implemented.
     mem_depth_minimum = 128                 # 128 samples
-    mem_depth_maximum = 209715200           # 200MB
-    mem_depth_maximum_split = 100663296     # 96MB in split mode
+    mem_depth_maximum = 200000000           # 200Mpts
+    mem_depth_maximum_split = 100000000     # 100Mpts in split mode
     
     # Split transition point: below this point, two buffers are maintained to improve update rate.
     # Nominally set to 2.5us/div so anything below 2us/div is included
@@ -227,11 +230,19 @@ class ZynqScope(object):
             print(new_tb, "nwaves:", self.calculate_nwaves(new_tb.timebase_span_actual))
             self.timebase_settings.append(new_tb)
 
-    def get_supported_timebases(self):
-        pass
+    def get_supported_timebases(self): 
+        """Returns a list of timebase settings in s/div units.  The index of each item
+        is used to select the desired timebase later."""
+        list_ = []
+        for tb in self.timebase_settings:
+            list_.append(tb.timebase_div)
+        return list_
     
-    def set_next_timebase(self, timebase_index):
-        pass
+    def set_next_timebase(self, index):
+        try:
+            self.next_tb = self.timebase_settings[index]
+        except IndexError:
+            raise ZynqScopeParameterRangeError("Unsupported timebase setting %d" % index)
     
     def get_max_pre_trigger_time(self, buffer_size, sample_rate):
         """Return the maximum pre-trigger time for the given total memory 
@@ -241,6 +252,7 @@ class ZynqScope(object):
     def calculate_nwaves(self, acq_time):
         """nwaves is the number of waveforms to be captured in one frame.  It is
         set to a maximum of 255, a minimum of 1, or X% of the frame time."""
+        print(acq_time)
         nwaves = math.floor(((1.0 / self.acq_framerate) * self.acq_frametime_frac) / acq_time)
         return int(max(1, min(255, nwaves)))
     
@@ -289,6 +301,17 @@ class ZynqScope(object):
         
         # Compute the number of waves we want to acquire for each frame
         nwaves = self.calculate_nwaves((pre_size + post_size) * sample_rate)
+        
+        # Reduce nwaves if the allocation would exceed split or total memory limits (depending on which
+        # is in effect)
+        if tb.timebase_div <= self.split_transition_tb:
+            max_memory = self.mem_depth_maximum_split
+        else:
+            max_memory = self.mem_depth_maximum
+        
+        if (nwaves * (pre_size + post_size)) > max_memory:
+            nwaves = max_memory / (pre_size + post_size)
+        
         print(pre_size, post_size, nwaves)
         
         # Stop the current acquisition and set up a new acquisition.
@@ -343,4 +366,9 @@ class ZynqScopeSubprocess(multiprocessing.Process):
             # Send a composite acquisition status command and return the response data.
             resp = self.zs.zcmd.comp_acq_control()
             self.rsp.put(resp)
+        elif type(msg) is ZynqScopeGetAttributes:
+            # Return a safed object copy of all scope parameters which can be accessed
+            resp = ZynqScopeAttributesResponse()
+            attrs = inspect.getmembers(self.zs)
+            
     
