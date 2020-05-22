@@ -38,12 +38,14 @@ class ZynqScopeSubprocess(multiprocessing.Process):
     """
     state = STATE_ZYNQ_NOT_READY
     die_req = False
+    zs_init_args = None
     
-    def __init__(self, event_queue, response_queue):
+    def __init__(self, event_queue, response_queue, zs_init_args):
         super(ZynqScopeSubprocess, self).__init__()
         
         self.evq = event_queue
         self.rsq = response_queue
+        self.zs_init_args = zs_init_args
         
         # we might want the capability to tune the period as time goes by
         self.task_period = 1000.0 / DEFAULT_ZYNQ_TASK_RATE
@@ -55,7 +57,7 @@ class ZynqScopeSubprocess(multiprocessing.Process):
         while True:
             if self.state == STATE_ZYNQ_NOT_READY:
                 # Well get ready then!
-                self.zs = zs.ZynqScope()
+                self.zs = zs.ZynqScope(*self.zs_init_args)
                 self.zs.connect()
             elif self.state == STATE_ZYNQ_IDLE:
                 # Process any commands in the queue
@@ -106,10 +108,10 @@ class ZynqScopeTaskController():
     Container class that wraps the ZynqScopeSubprocess module and provides a convenient
     interface.
     """
-    def __init__(self):
+    def __init__(self, zs_init_args):
         self.evq = multiprocessing.Queue()
         self.rsq = multiprocessing.Queue()
-        self.zstask = ZynqScopeSubprocess(self.evq, self.rsq)
+        self.zstask = ZynqScopeSubprocess(self.evq, self.rsq, zs_init_args)
     
     def start_task(self):
         self.zstask.start()

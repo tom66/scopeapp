@@ -407,14 +407,15 @@ class ScopeController(object):
             self.channels[3].set_colour(270, 0.65)
         else:
             raise NotImplementedError("Unsupported configuration")
-        
-        # Initialise Zynq interface
-        self.zst = zst.ZynqScopeTaskController()
-        self.zst.start_task()
-        self.timebase = ScopeTimebaseController(self.zst)
+    
+    def set_render_parameters(self, display_samples_target, default_hdiv_span):
+        self.display_samples_target = display_samples_target
+        self.default_hdiv_span = default_hdiv_span
     
     def connect(self):
-        self.sz.connect()
+        self.zst = zst.ZynqScopeTaskController((self.display_samples_target, self.default_hdiv_span))
+        self.zst.start_task()
+        self.timebase = ScopeTimebaseController(self.zst)
     
     def save_settings_temp(self):
         self.save_settings(TEMP_SETTING_FILE)
