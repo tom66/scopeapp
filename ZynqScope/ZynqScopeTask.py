@@ -20,7 +20,7 @@ class ZynqScopeTaskQueueCommand(object): pass
 
 class ZynqScopeCmdsIfcSimpleCommand(ZynqScopeTaskQueueCommand):
     def __init__(self, cmd_name, flush, *args, **kwargs):
-        assert(type(self.cmd_name) == str)
+        assert(type(cmd_name) == str)
         self.cmd_name = cmd_name
         self.flush = flush
         self.args = args
@@ -28,7 +28,7 @@ class ZynqScopeCmdsIfcSimpleCommand(ZynqScopeTaskQueueCommand):
 
 class ZynqScopeSimpleCommand(ZynqScopeTaskQueueCommand):
     def __init__(self, cmd_name, *args, **kwargs):
-        assert(type(self.cmd_name) == str)
+        assert(type(cmd_name) == str)
         self.cmd_name = cmd_name
         self.args = args
         self.kwargs = kwargs
