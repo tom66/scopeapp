@@ -106,6 +106,7 @@ class ZynqScopeSubprocess(multiprocessing.Process):
             resp = self.zs.zcmd.comp_acq_control()
             self.rsq.put(resp)
         elif type(msg) is ZynqScopeDieTask:
+            print("ZynqScopeSubprocess: DieTask received")
             self.die_req = True
             self.rsq.put(ZynqScopeNullResponse())
         else:
@@ -131,7 +132,7 @@ class ZynqScopeTaskController():
         self.zstask.kill()
     
     def get_attributes(self):
-        self.evq.put(ZynqScopeDieTask())
+        self.evq.put(ZynqScopeGetAttributes())
         resp = self.rsq.get()
         return resp
     
