@@ -40,6 +40,8 @@ class ZynqScopeSubprocess(multiprocessing.Process):
     die_req = False
     
     def __init__(self, event_queue, response_queue):
+        super(ZynqScopeSubprocess, self).__init__()
+        
         self.evq = event_queue
         self.rsq = response_queue
         
@@ -99,7 +101,7 @@ class ZynqScopeSubprocess(multiprocessing.Process):
         else:
             self.rsp.put(ZynqScopeNullResponse())
 
-class ZynqScopeTaskController(multiprocessing.Process):
+class ZynqScopeTaskController():
     """
     Container class that wraps the ZynqScopeSubprocess module and provides a convenient
     interface.
