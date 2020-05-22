@@ -341,18 +341,18 @@ class ZynqScope(object):
         self.zcmd.setup_triggered_acquisition(pre_size, post_size, nwaves, zc.ACQ_MODE_8B_1CH)
         
         # Update the parameter set for user interface and the rest of the application.
-        params.sample_depth = 8  # Fixed to 8-bit for now
-        params.memory_depth = pre_size + post_size
+        self.params.sample_depth = 8  # Fixed to 8-bit for now
+        self.params.memory_depth = pre_size + post_size
         
         if delay < 0:
-            params.trigger_point = 1 - ((pre_size) / (pre_size + post_size))
+            self.params.trigger_point = 1 - ((pre_size) / (pre_size + post_size))
         elif delay == 0:
-            params.trigger_point = 0.5
+            self.params.trigger_point = 0.5
         else:
             # positive delay not yet implemented
-            params.trigger_point = 1.0
+            self.params.trigger_point = 1.0
         
-        params.delay = delay
+        self.params.delay = delay
             
 class ZynqScopeSubprocess(multiprocessing.Process):
     """
