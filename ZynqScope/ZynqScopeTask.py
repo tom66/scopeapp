@@ -99,7 +99,7 @@ class ZynqScopeSubprocess(multiprocessing.Process):
         else:
             self.rsp.put(ZynqScopeNullResponse())
 
-class ZynqScopeTaskController(object):
+class ZynqScopeTaskController(multiprocessing.Process):
     """
     Container class that wraps the ZynqScopeSubprocess module and provides a convenient
     interface.
