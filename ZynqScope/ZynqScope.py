@@ -18,6 +18,7 @@ STATE_ZYNQ_NOT_READY = 0
 STATE_ZYNQ_IDLE = 1
 
 ZYNQ_SAMPLE_WORD_SIZE = 8
+ZYNQ_SAMPLE_WORD_CACHE_DIVISIBLE = 32
 
 # Supported timebases
 """
@@ -297,11 +298,12 @@ class ZynqScope(object):
         print("pre/post:", pre_size, post_size)
         assert(post_size >= self.mem_depth_minimum)
         
-        # Correct all buffers to be a multiple of the sample word
-        pre_size += ZYNQ_SAMPLE_WORD_SIZE // 2
-        post_size += ZYNQ_SAMPLE_WORD_SIZE // 2
-        pre_size &= ~(ZYNQ_SAMPLE_WORD_SIZE - 1)
-        post_size &= ~(ZYNQ_SAMPLE_WORD_SIZE - 1)
+        # Correct all buffers to be a multiple of a cache line.  The total buffer need only
+        # be divisible by 32, but ensuring both pre and post buffers are is easier.
+        pre_size += ZYNQ_SAMPLE_WORD_CACHE_DIVISIBLE // 2
+        post_size += ZYNQ_SAMPLE_WORD_CACHE_DIVISIBLE // 2
+        pre_size &= ~(ZYNQ_SAMPLE_WORD_CACHE_DIVISIBLE - 1)
+        post_size &= ~(ZYNQ_SAMPLE_WORD_CACHE_DIVISIBLE - 1)
         
         # Compute the number of waves we want to acquire for each frame
         print("params?:", pre_size + post_size, sample_rate)
