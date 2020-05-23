@@ -177,7 +177,7 @@ class ZynqScope(object):
     
     # Rawcam interface
     rc = None
-    rawcam_mod = None  # I can't help but think this is a horrible, horrible hack and we should do better.
+    rawcam_mod = None  
     
     def __init__(self, display_samples_target, default_hdiv_span):
         # Set default parameters
@@ -194,7 +194,6 @@ class ZynqScope(object):
         # Connect rawcam library.  TODO: These parameters might need to be configured by the 
         # hardware configuration, for instance the camera number in use.
         print("ZynqScope __init__(): setting up rawcam")
-        self.rawcam_mod = rawcam
         self.rc = rawcam.init()
         rawcam.set_data_lanes(2)
         rawcam.set_image_id(0x2a)
@@ -207,6 +206,9 @@ class ZynqScope(object):
         rawcam.set_encoding_fourcc(ord('G'), ord('R'), ord('B'), ord('G'))
         rawcam.set_zero_copy(1)
         rawcam.set_camera_num(1)
+        
+        # I can't help but think this is a horrible, horrible hack and we should do better. (Is it even needed?)
+        self.rawcam_mod = rawcam  
         
         print("ZynqScope __init__(): rawcam debug follows")
         rawcam.debug()
