@@ -238,7 +238,7 @@ class ZynqScopeTaskController():
     
     def acquisition_tick(self):
         """Ping Zynq to start acquisition and return buffers if available."""
-        self.zst.get_attributes()
+        self.get_attributes()
         
         self.evq.put(self.roc['ZynqScopeSendCompAcqStreamCommand'])
         print("buffer_count:", self.shared_dict['buffer_count'])
