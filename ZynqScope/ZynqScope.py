@@ -201,6 +201,11 @@ class ZynqScope(object):
         rawcam.set_encoding_fourcc(ord('G'), ord('R'), ord('B'), ord('G'))
         rawcam.set_zero_copy(1)
         rawcam.set_camera_num(1)
+        
+        print("ZynqScope __init__(): rawcam debug follows")
+        rawcam.debug()
+        
+        print("ZynqScope __init__(): done initialisation")
     
     def connect(self):
         self.zcmd = zc.ZynqCommands()
