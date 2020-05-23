@@ -39,7 +39,7 @@ class NotifyController(object):
         # but this is better. We only show the newest notification, except if that notification
         # has a lower priority than the current notification.  If so, it gets put into slot 1
         # of the notification queue. 
-        if notify.cls_ < self.notifiers[0]:
+        if self.notifiers[1] == None or notify.cls < self.notifiers[1].cls:
             print("Replacing secondary notification with %r" % notify)
             if self.notifiers[1] is not None:
                 self.notifiers[1].destroy()
