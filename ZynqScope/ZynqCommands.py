@@ -288,7 +288,7 @@ class ZynqCommands(object):
         """Composite acquisition control and CSI data transfer."""
         # The response takes time to generate, and varies according to the flags, so set the expected response size to None
         resp = self.zspi.send_command_read_response(zcmd._COMP0, args=_pack_16b_int_arg(flags), expected_resp_size=None) 
-        print(repr(resp))
+        print(len(resp), repr(resp))
     
     def nop_mark(self):
         """Emit 0xfe into the queue as a debugging NOP."""
