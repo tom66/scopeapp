@@ -46,6 +46,7 @@ class NotifyController(object):
         # If allocated_width is small, hide the widget for now; we'll show it on the next frame
         # (This is used to avoid the widget snapping into place after it is attached to the GtkFixed)
         if wdg.get_allocated_width() <= 1:
+            print("allocWidthSmall")
             wdg.set_opacity(0)
         
         computed_x = (screen_width / 2) - (wdg.get_allocated_width() / 2)
@@ -53,9 +54,11 @@ class NotifyController(object):
         if self.cur_wdg != wdg:
             if self.cur_wdg != None:
                 self.fixed.remove(self.cur_wdg)
+            print("putWdg")
             self.fixed.put(wdg, computed_x, NOTIFY_YPOS)
         else:
             if computed_x != self.last_computed_x:
+                print("moveWdg")
                 self.fixed.move(wdg, computed_x, NOTIFY_YPOS)
             self.last_computed_x = computed_x
         
