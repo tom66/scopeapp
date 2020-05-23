@@ -487,6 +487,7 @@ class ScopeController(object):
                   'active_tab'  : self.active_tab }
         
         for n in range(len(self.channels)):
+            print("Preparing channel %d" % n)
             state['channel%d' % n] = self.channels[n].prepare_state()
         
         return json.dumps(state)
