@@ -50,7 +50,7 @@ UI_REFRESH_MS = 25
 
 # Minimum delay between refreshes; as load in a tick increases the delay might reduce to keep the UI
 # responsive (& above rate consistent), but we don't want to steal all of GTK's time
-UI_MIN_DELAY_MS = 7.5
+UI_MIN_DELAY_MS = 5.0
 
 # How long to wait before syncing a last save state.
 STATE_SYNC_WAIT = 10

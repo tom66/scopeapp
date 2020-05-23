@@ -92,24 +92,6 @@ class NotifyController(object):
                 else:
                     return wdg
         
-        """
-        wdg = None
-        nsorted = sorted(self.notifiers)
-        
-        # process the first widget, only skipping onto the next one if it's a dud
-        for ntf in nsorted:
-            wdg = ntf.get_widget()
-            if wdg == False:
-                self.notifiers.remove(ntf)
-                continue
-            else:
-                #print(wdg, time.time() - ntf.t_created, time.time() - ntf.t_started)
-                break
-        
-        if wdg == False:
-            wdg = None
-        """
-        
         return None
 
 class NotifyMessage(object):
