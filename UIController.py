@@ -456,11 +456,11 @@ class MainApplication(object):
         else:
             delay = UI_REFRESH_MS
             actual_delay = (time.time() - self.last_tick) * 1000
-            print(delay, actual_delay)
+            print(delay, actual_delay, tick_start)
         
         # does this cause stack overflow?
         GLib.timeout_add(delay, self.ui_tick, None, priority=GLib.PRIORITY_DEFAULT)
-        self.last_tick = tick_start()
+        self.last_tick = tick_start
             
         return False
     
