@@ -158,10 +158,10 @@ class ZynqScopeTaskController():
     interface.
     """
     def __init__(self, zs_init_args):
+        # Create task queues and create task with these queues
         self.evq = multiprocessing.Queue()
         self.rsq = multiprocessing.Queue()
         self.zstask = ZynqScopeSubprocess(self.evq, self.rsq, zs_init_args)
-        self.attribs_cache = None
         
         # Fill common request objects cache
         self.roc = {
@@ -169,6 +169,9 @@ class ZynqScopeTaskController():
             'ZynqScopeDieTask' : ZynqScopeDieTask(),
             'ZynqScopeSimpleCommand_SetupForTimebase' : ZynqScopeSimpleCommand("setup_for_timebase"),
         }
+        
+        # Cache for last fetched attributes
+        self.attribs_cache = None
     
     def start_task(self):
         self.zstask.start()
