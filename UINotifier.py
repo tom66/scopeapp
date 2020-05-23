@@ -137,6 +137,7 @@ class NotifyMessage(object):
                 return False
         else:
             if self.last_opacity != 1.0:
+                print("setOpacity...")
                 self.label.set_opacity(1.0)
                 self.last_opacity = 1.0
         
