@@ -477,7 +477,7 @@ class MainApplication(object):
         """
         print("innerTick")
         #t0 = time.time()
-        time.sleep(0.1)
+        time.sleep(0.01)
         #t1 = time.time()
         #print(t1 - t0)
         #self.ctrl.tick()
