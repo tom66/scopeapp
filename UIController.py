@@ -476,7 +476,7 @@ class MainApplication(object):
         Sync instrument parameters.
         """
         print("innerTick")
-        time.sleep(0.5)
+        time.sleep(0.25)
         #self.ctrl.tick()
     
     def ui_update_clock(self):
