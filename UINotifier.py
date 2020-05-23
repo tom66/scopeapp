@@ -24,6 +24,9 @@ NOTIFY_INFO = 1
 NOTIFY_SHOW_AGE = 5
 NOTIFY_FADEOUT_TIME = 2
 
+# Small notify widget filter
+NOTIFY_SMALL_WIDGET = 16
+
 class NotifyController(object):
     def __init__(self):
         self.notifiers = []
@@ -46,7 +49,7 @@ class NotifyController(object):
         
         # If allocated_width is small, hide the widget for now; we'll show it on the next frame
         # (This is used to avoid the widget snapping into place after it is attached to the GtkFixed)
-        if wdg.get_allocated_width() <= 1:
+        if wdg.get_allocated_width() <= NOTIFY_SMALL_WIDGET:
             print("allocWidthSmall")
             wdg.set_opacity(0)
         
