@@ -198,12 +198,15 @@ class ZynqScopeTaskController():
     
     def set_next_timebase_index(self, tb):
         self.evq.put(ZynqScopeSimpleCommand("set_next_timebase", (int(tb),)))
+        self.evq.get() # discard response
     
     def stop_acquisition(self):
         self.evq.put(ZynqScopeCmdsIfcSimpleCommand("stop_acquisition", True,))
+        self.evq.get() # discard response
     
     def start_acquisition(self):
         self.evq.put(ZynqScopeCmdsIfcSimpleCommand("start_acquisition", True, (), {'reset_fifo' : 1}))
+        self.evq.get() # discard response
     
     def sync_to_real_world(self):
         # Sync to the real world includes:  
@@ -213,4 +216,5 @@ class ZynqScopeTaskController():
         #  - Sending any ADC configuration changes.
         print("sync_to_real_world")
         self.evq.put(self.roc['ZynqScopeSimpleCommand_SetupForTimebase'])
+        self.evq.get() # discard response
         
