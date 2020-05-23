@@ -543,7 +543,7 @@ class ScopeController(object):
         print("Tick!")
         print("")
         print(self.zst.get_attributes())
-        print(dir(self.zst.get_attributes()))
+        #print(dir(self.zst.get_attributes()))
     
     def get_memory_depth(self):
         # ZynqScopeCurrentParameters
