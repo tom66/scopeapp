@@ -40,6 +40,7 @@ class NotifyController(object):
     def update_overlay(self, screen_width):
         wdg = self.get_next_notify_widget()
         if wdg == None:
+            print("noWidgets")
             self.last_computed_x = None
             return
         
