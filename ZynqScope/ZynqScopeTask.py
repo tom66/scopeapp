@@ -253,7 +253,12 @@ class ZynqScopeTaskController():
         if self.acq_state == TSTATE_ACQ_RUNNING:
             cmd = self.roc['ZynqScopeSendCompAcqStreamCommand']
             cmd.flags = zc.COMP0_ACQ_STOP | zc.COMP0_ACQ_GET_STATUS | zc.COMP0_ACQ_REWIND | zc.COMP0_ACQ_START_RESET_FIFO | \
-                        zc.COMP0_ACQ_SWAP_ACQ_LISTS | zc.COMP0_CSI_TRANSFER_WAVES | zc.COMP0_SPI_RESP_CSI_SIZE
+                        zc.COMP0_CSI_TRANSFER_WAVES | zc.COMP0_SPI_RESP_CSI_SIZE
+            
+            # if double-buffer acquisition is set then we want to swap lists on each Comp0 command
+            if self.attribs_cache.params.flags & zc.ACQ_MODE_DOUBLE_BUFFER:
+                cmd.flags |= zc.COMP0_ACQ_SWAP_ACQ_LISTS
+            
             print("cmd.flags 0x%04x" % cmd.flags)
             self.evq.put(cmd)
             
