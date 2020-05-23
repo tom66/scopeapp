@@ -459,7 +459,7 @@ class MainApplication(object):
         if self.last_tick is None:
             self.delay_tick = UI_REFRESH_MS
         else:
-            actual_delay = (time.time() - self.last_tick) * 1000
+            actual_delay = (tick_start - self.last_tick) * 1000
             self.delay_tick -= (actual_delay - UI_REFRESH_MS)
             self.delay_tick = max(self.delay_tick, UI_MIN_DELAY_MS)
             
@@ -476,10 +476,10 @@ class MainApplication(object):
         Sync instrument parameters.
         """
         print("innerTick")
-        t0 = time.time()
+        #t0 = time.time()
         time.sleep(0.1)
-        t1 = time.time()
-        print(t1 - t0)
+        #t1 = time.time()
+        #print(t1 - t0)
         #self.ctrl.tick()
     
     def ui_update_clock(self):
