@@ -29,6 +29,7 @@ class NotifyController(object):
         self.notifiers = []
         self.fixed = None
         self.cur_wdg = None
+        self.last_computed_x = None
     
     def push_notification(self, notify):
         self.notifiers.append(notify)
@@ -39,7 +40,6 @@ class NotifyController(object):
     def update_overlay(self, screen_width):
         wdg = self.get_next_notify_widget()
         if wdg == None:
-            #print("No notifications to show")
             return
         
         # If allocated_width is small, hide the widget for now; we'll show it on the next frame
@@ -54,7 +54,9 @@ class NotifyController(object):
                 self.fixed.remove(self.cur_wdg)
             self.fixed.put(wdg, computed_x, NOTIFY_YPOS)
         else:
-            self.fixed.move(wdg, computed_x, NOTIFY_YPOS)
+            if computed_x != self.last_computed_x:
+                self.fixed.move(wdg, computed_x, NOTIFY_YPOS)
+            self.last_computed_x = computed_x
         
         self.cur_wdg = wdg
     
@@ -88,6 +90,7 @@ class NotifyMessage(object):
         self.label.set_yalign(0.5)  
         self.label.set_hexpand(False)
         self.label.set_vexpand(False)
+        self.last_opacity = None
         
         self.label_ctx = self.label.get_style_context()
         self.label_ctx.add_class("notify_global")
@@ -127,11 +130,14 @@ class NotifyMessage(object):
             age -= NOTIFY_SHOW_AGE
             fade = 1.0 - (age / NOTIFY_FADEOUT_TIME)
             self.label.set_opacity(fade)
+            self.last_opacity = fade
             
             if fade <= 0:
                 self.label.destroy()   # Kill the widget
                 return False
         else:
-            self.label.set_opacity(1.0)
+            if self.last_opacity != 1.0:
+                self.label.set_opacity(1.0)
+                self.last_opacity = 1.0
         
         return self.label
