@@ -108,8 +108,8 @@ class NotifyMessage(object):
         # Sort by priority first, then age
         #print("__lt__ %r %r" % (self, other))
         if self.cls == other.cls:
-            # newer age wins
-            return self.t_created > other.t_created
+            # older age wins?
+            return self.t_created < other.t_created
         else:
             return self.cls > other.cls
     
