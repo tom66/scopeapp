@@ -140,8 +140,13 @@ class MainApplication(object):
         self.lbl_status_time = self.builder.get_object("lbl_status_time")
         self.lbl_status_run = self.builder.get_object("lbl_status_run")
         self.lbl_status_run_ctx = self.lbl_status_run.get_style_context()
+        
+        # Since the contents of these labels can change, set their size to be at least 80 pixels wide each
+        # TODO: Do we need to make this configurable by the stylesheet/theme?
         self.lbl_status_bits_samplerate = self.builder.get_object("lbl_status_bits_samplerate")
         self.lbl_status_npoints_nwaves = self.builder.get_object("lbl_status_npoints_nwaves")
+        self.lbl_status_bits_samplerate.set_size_request((80, -1))
+        self.lbl_status_npoints_nwaves.set_size_request((80, -1))
         
         # Connect to the timebase labels
         self.evt_lbl_status_timebase = self.builder.get_object("evt_lbl_status_timebase")
