@@ -10,7 +10,7 @@ import ZynqScope.ZynqCommands as zc
 
 AFE = zs.AFE
 
-DEFAULT_ZYNQ_TASK_RATE = 10000      # Run internal task at 10kHz
+DEFAULT_ZYNQ_TASK_RATE = 100      # Run internal task at 10kHz
 DEFAULT_ZYNQ_PING_MULT = 200        # Ping Zynq every 200 ticks for new data (~50Hz)
 
 STATE_ZYNQ_NOT_READY = 0
@@ -92,7 +92,8 @@ class ZynqScopeSubprocess(multiprocessing.Process):
                     raise RuntimeError("Unable to connect hardware resources")
             elif self.state == STATE_ZYNQ_IDLE:
                 # Process any commands in the queue
-                self.queue_process()
+                while not self.evq.empty():
+                    self.queue_process()
             
             if self.die_req:
                 self.terminate()
@@ -115,14 +116,12 @@ class ZynqScopeSubprocess(multiprocessing.Process):
             getattr(self.zs.zcmd, msg.cmd_name)(*msg.args, **msg.kwargs)
             if msg.flush:
                 self.zs.zcmd.flush()
-            self.rsq.put(ZynqScopeNullResponse())
             
         elif type(msg) is ZynqScopeSimpleCommand:
             # This is a simple command: we call the relevant method on the ZynqScope interface.
             # A Null response is generated.  This is used, e.g. to set acquisition parameters.  
             print("ZynqScopeSimpleCommand:", msg, msg.args, msg.kwargs)
             getattr(self.zs, msg.cmd_name)(*msg.args, **msg.kwargs)
-            self.rsq.put(ZynqScopeNullResponse())
             
         elif type(msg) is ZynqScopeSyncAcquisitionSettings:
             self.zs.setup_for_timebase(0, None) # TODO: These parameters need to be filled in, too!
@@ -147,10 +146,9 @@ class ZynqScopeSubprocess(multiprocessing.Process):
         elif type(msg) is ZynqScopeDieTask:
             print("ZynqScopeSubprocess: DieTask received")
             self.die_req = True
-            self.rsq.put(ZynqScopeNullResponse())
             
         else:
-            self.rsq.put(ZynqScopeNullResponse())
+            raise RuntimeError("Unimplemented/unsupported task class")
 
 class ZynqScopeTaskController():
     """
@@ -198,15 +196,12 @@ class ZynqScopeTaskController():
     
     def set_next_timebase_index(self, tb):
         self.evq.put(ZynqScopeSimpleCommand("set_next_timebase", (int(tb),)))
-        self.evq.get() # discard response
     
     def stop_acquisition(self):
         self.evq.put(ZynqScopeCmdsIfcSimpleCommand("stop_acquisition", True,))
-        self.evq.get() # discard response
     
     def start_acquisition(self):
         self.evq.put(ZynqScopeCmdsIfcSimpleCommand("start_acquisition", True, (), {'reset_fifo' : 1}))
-        self.evq.get() # discard response
     
     def sync_to_real_world(self):
         # Sync to the real world includes:  
@@ -216,5 +211,4 @@ class ZynqScopeTaskController():
         #  - Sending any ADC configuration changes.
         print("sync_to_real_world")
         self.evq.put(self.roc['ZynqScopeSimpleCommand_SetupForTimebase'])
-        self.evq.get() # discard response
         
