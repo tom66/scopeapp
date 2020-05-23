@@ -212,7 +212,7 @@ def unpack_json(obj, json_dict, vars_):
         if typing[0] == False:
             continue
         
-        print(typing)
+        #print(typing)
         
         if not isinstance(value, tuple(typing[0])):
             raise StateSaveFileCorrupted(_("Unable to restore configuration file: Invalid type for '%s' (old version?)" % k))
@@ -235,7 +235,7 @@ def unpack_json(obj, json_dict, vars_):
             raise StateSaveFileCorrupted(_("Unable to restore configuration file: Not all configuration values present"))
     
     for key, value in safed.items():
-        print(obj, key, value)
+        #print(obj, key, value)
         setattr(obj, str(key), value)
 
         
