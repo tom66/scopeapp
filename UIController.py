@@ -478,7 +478,7 @@ class MainApplication(object):
                 self.fps_average_accu = 0
             elif (self.fps_average_count & 7) == 0:
                 self.fps_average = self.fps_average_accu / self.fps_average_count
-                print("set_tick: %2.5f ms, actual_delay: %3.3f ms, avg_frame_rate: %2.1f fps" % (self.delay_tick, actual_delay, self.fps_average))
+                print("set_tick: %3.3f ms, actual_delay: %3.3f ms, avg_frame_rate: %2.1f fps" % (self.delay_tick, actual_delay, self.fps_average))
         
         # does this cause stack overflow?
         GLib.timeout_add(self.delay_tick, self.ui_tick, None, priority=GLib.PRIORITY_DEFAULT)
