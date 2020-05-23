@@ -539,7 +539,7 @@ class ScopeController(object):
             print("No sync, we are stopped")
     
     def tick(self):
-        print(self.zst.get_attributes())
+        self.zst.get_attributes()
         #print(dir(self.zst.get_attributes()))
     
     def get_memory_depth(self):
