@@ -475,7 +475,7 @@ class MainApplication(object):
         """
         Sync instrument parameters.
         """
-        print("innerTick")
+        #print("innerTick")
         #t0 = time.time()
         time.sleep(0.01)
         #t1 = time.time()
