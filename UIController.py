@@ -11,7 +11,7 @@ import gi
 gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk, GLib, Gio, Gdk, GdkPixbuf
 
-import sys, time, random
+import sys, time, random, math
 from datetime import datetime
 
 import AppConfigManager
