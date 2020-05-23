@@ -527,7 +527,7 @@ class MainApplication(object):
         self.lbl_status_npoints_nwaves.set_markup(\
             "{points_string}\n{nwaves_string}".format(\
                 points_string=Utils.unit_format_suffix_handle_exc(sample_depth, _("pts"), precision=3), \
-                points_string=Utils.unit_format_suffix_handle_exc(waveforms_per_second, _("wfm/s"), precision=2) \
+                nwaves_string=Utils.unit_format_suffix_handle_exc(waveforms_per_second, _("wfm/s"), precision=2) \
             ))
     
     def ui_update_run_state(self):
