@@ -94,6 +94,7 @@ class NotifyMessage(object):
         self.label.set_yalign(0.5)  
         self.label.set_hexpand(False)
         self.label.set_vexpand(False)
+        self.label.set_opacity(1.0)
         self.last_opacity = None
         
         self.label_ctx = self.label.get_style_context()
@@ -116,7 +117,7 @@ class NotifyMessage(object):
             self.t_started = time.time()
         
         self.label.show_all()
-        self.label.set_markup(self.message)        
+        self.label.set_markup(self.message)
         
         self.label_ctx.remove_class("notify_info")
         self.label_ctx.remove_class("notify_warning")
