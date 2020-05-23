@@ -552,8 +552,7 @@ class ScopeController(object):
             print("No sync, we are stopped")
     
     def tick(self):
-        self.zst.get_attributes()
-        #print(dir(self.zst.get_attributes()))
+        self.zst.acquisition_tick()
     
     def get_memory_depth(self):
         # ZynqScopeCurrentParameters
