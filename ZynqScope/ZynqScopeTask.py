@@ -229,6 +229,9 @@ class ZynqScopeTaskController():
     def set_next_timebase_index(self, tb):
         self.evq.put(ZynqScopeSimpleCommand("set_next_timebase", (int(tb),)))
     
+    def setup_trigger_edge(self, ch, level, hyst, edge):
+        self.evq.put(ZynqScopeCmdsIfcSimpleCommand("setup_trigger_edge", True, (ch, level, hyst, edge)))
+    
     def stop_acquisition(self):
         self.evq.put(ZynqScopeCmdsIfcSimpleCommand("stop_acquisition", True,))
         self.acq_state = TSTATE_ACQ_NOT_RUNNING
@@ -236,6 +239,9 @@ class ZynqScopeTaskController():
     def start_acquisition(self):
         self.evq.put(ZynqScopeCmdsIfcSimpleCommand("start_acquisition", True, (), {'reset_fifo' : 1}))
         self.acq_state = TSTATE_ACQ_RUNNING
+        
+        # Default trigger
+        self.setup_trigger_edge(zc.TRIG_CH_ADCSRC1, 0x7f, 0x10, zc.TRIG_EDGE_RISING)
     
     def sync_to_real_world(self):
         # Sync to the real world includes:  

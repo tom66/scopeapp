@@ -176,6 +176,9 @@ class ZynqScope(object):
     next_delay = 0
     curr_tb = None
     
+    # Zynq command interface;  initialised by connect()
+    zcmd = None
+    
     # Rawcam interface
     rc = None
     rawcam_mod = None  
@@ -184,9 +187,14 @@ class ZynqScope(object):
         # Set default parameters
         self.display_samples_target = display_samples_target
         self.default_hdiv_span = default_hdiv_span
+    
+    def connect(self):
+        # Connect to the Zynq
+        print("ZynqScope connect(): connecting to hardware")
+        self.zcmd = zc.ZynqCommands()
         
         # Generate supported timebase configurations
-        print("ZynqScope __init__(): generating timebases")
+        print("ZynqScope connect(): generating timebases")
         self.samprate_mdl = ZynqScopeSampleRateBehaviourModel_8Bit()
         self.samprate_mdl.update()
         self.init_timebases()
@@ -194,7 +202,7 @@ class ZynqScope(object):
         
         # Connect rawcam library.  TODO: These parameters might need to be configured by the 
         # hardware configuration, for instance the camera number in use.
-        print("ZynqScope __init__(): setting up rawcam")
+        print("ZynqScope connect(): setting up rawcam")
         self.rc = rawcam.init()
         rawcam.set_data_lanes(2)
         rawcam.set_image_id(0x2a)
@@ -211,13 +219,10 @@ class ZynqScope(object):
         # I can't help but think this is a horrible, horrible hack and we should do better. (Is it even needed?)
         self.rawcam_mod = rawcam  
         
-        print("ZynqScope __init__(): rawcam debug follows")
+        print("ZynqScope connect(): rawcam debug follows")
         rawcam.debug()
         
-        print("ZynqScope __init__(): done initialisation")
-    
-    def connect(self):
-        self.zcmd = zc.ZynqCommands()
+        print("ZynqScope connect(): done initialisation")
         
         # Instead of blindly returning True we should check that the hardware is ready first...
         return True
@@ -397,4 +402,5 @@ class ZynqScope(object):
         self.params.delay = self.next_delay
         self.curr_tb = self.next_tb
         print(self.params)
+    
         
