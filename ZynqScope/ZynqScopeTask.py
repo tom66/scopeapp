@@ -4,6 +4,7 @@ This file is part of YAOS and is licenced under the MIT Licence.
 
 import sys, operator, math, inspect, copy, time, spidev
 import multiprocessing
+from types import ModuleType
 
 import ZynqScope.ZynqScope as zs
 import ZynqScope.ZynqCommands as zc
@@ -145,7 +146,7 @@ class ZynqScopeSubprocess(multiprocessing.Process):
         elif type(msg) is ZynqScopeGetAttributes:
             # Return a safed object copy of all scope parameters which can be accessed
             resp = ZynqScopeAttributesResponse()
-            compress_class_attrs_for_response(resp, self.zs, exclude=[zc.ZynqCommands, rawcam.interface, module])
+            compress_class_attrs_for_response(resp, self.zs, exclude=[zc.ZynqCommands, rawcam.interface, ModuleType])
             #print(resp)
             self.rsq.put(resp)
             

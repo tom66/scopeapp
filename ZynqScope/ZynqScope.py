@@ -177,7 +177,7 @@ class ZynqScope(object):
     
     # Rawcam interface
     rc = None
-    rawcam_mod = None
+    rawcam_mod = None  # I can't help but think this is a horrible, horrible hack and we should do better.
     
     def __init__(self, display_samples_target, default_hdiv_span):
         # Set default parameters
