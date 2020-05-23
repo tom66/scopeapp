@@ -236,10 +236,10 @@ class ScopeChannelController(object):
         # If out of range, then raise an UserRequestOutOfRange exception, which is
         # generally passed out as a warning
         if new_atten > (len(self.atten_supported) - 1):
-            raise Utils.UserRequestOutOfRange(_("Attenuation requested at limit"))
+            raise Utils.UserRequestOutOfRange(_("Attenuation requested at upper limit"))
         
         if new_atten < 0:
-            raise Utils.UserRequestOutOfRange(_("Attenuation requested at limit"))
+            raise Utils.UserRequestOutOfRange(_("Attenuation requested at lower limit"))
         
         self.atten_div = self.atten_supported[new_atten]
         
@@ -260,11 +260,11 @@ class ScopeChannelController(object):
         
         if self.offset > limits[1]:
             self.offset = limits[1]
-            raise Utils.UserRequestOutOfRange(_("Offset requested at limit"))
+            raise Utils.UserRequestOutOfRange(_("Offset requested at upper limit"))
         
         if self.offset < limits[0]:
             self.offset = limits[0]
-            raise Utils.UserRequestOutOfRange(_("Offset requested at limit"))
+            raise Utils.UserRequestOutOfRange(_("Offset requested at lower limit"))
     
         sign = math.copysign(1, old_offset)
         new_sign = math.copysign(1, self.offset)
