@@ -218,7 +218,7 @@ def unpack_json(obj, json_dict, vars_):
             raise StateSaveFileCorrupted(_("Unable to restore configuration file: Invalid type for '%s' (old version?)" % k))
         
         if typing[0] == (bool,):
-            print("bool value", key, value, bool(value))
+            #print("bool value", key, value, bool(value))
             value = bool(value)
         else:
             if typing[0] == (str,):
