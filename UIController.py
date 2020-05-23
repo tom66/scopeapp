@@ -476,7 +476,7 @@ class MainApplication(object):
             if self.fps_average_count > 200:
                 self.fps_average_count = 0
                 self.fps_average_accu = 0
-            else if (self.fps_average_count & 7) == 0:
+            elif (self.fps_average_count & 7) == 0:
                 self.fps_average = self.fps_average_accu / self.fps_average_count
             
             print("set_tick: %2.2f ms, actual_delay: %3.3f ms, avg_frame_rate: %2.1f fps" % (self.delay_tick, actual_delay, 1000.0 / actual_delay))
