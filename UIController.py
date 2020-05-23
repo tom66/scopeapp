@@ -463,7 +463,7 @@ class MainApplication(object):
             self.delay_tick -= (actual_delay - UI_REFRESH_MS)
             self.delay_tick = min(self.delay_tick, UI_MIN_DELAY_MS)
             
-            print(self.delay_tick, new_delay, actual_delay, tick_start)
+            print(self.delay_tick, actual_delay, tick_start)
         
         # does this cause stack overflow?
         GLib.timeout_add(self.delay_tick, self.ui_tick, None, priority=GLib.PRIORITY_DEFAULT)
