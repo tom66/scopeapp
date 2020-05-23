@@ -191,5 +191,6 @@ class ZynqScopeTaskController():
         #  - Clearing acquisition memory.  
         #  - Sending any relay/attenuation unit changes.
         #  - Sending any ADC configuration changes.
+        print("sync_to_real_world")
         self.evq.put(ZynqScopeSimpleCommand("setup_for_timebase",))
         
