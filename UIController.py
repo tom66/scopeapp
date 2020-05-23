@@ -411,6 +411,8 @@ class MainApplication(object):
         This is run several times per second.  It despatches the update tasks (updating measurements,
         the time, wifi/network status, etc.)
         """
+        tick_start = time.time()
+        
         # Update the flash state
         if self.last_ui_time == None:
             self.last_ui_time = time.time()
@@ -450,7 +452,6 @@ class MainApplication(object):
         # Stop this iteration and set a new iteration up with the correct delay to maintain
         # the desired tick rate
         if self.last_tick is None:
-            self.last_tick = time.time()
             delay = UI_REFRESH_MS
         else:
             delay = UI_REFRESH_MS
@@ -459,6 +460,8 @@ class MainApplication(object):
         
         # does this cause stack overflow?
         GLib.timeout_add(delay, self.ui_tick, None, priority=GLib.PRIORITY_DEFAULT)
+        self.last_tick = tick_start()
+            
         return False
     
     def ui_tick_scope(self):
