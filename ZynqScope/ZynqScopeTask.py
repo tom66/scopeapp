@@ -8,6 +8,9 @@ import multiprocessing
 import ZynqScope.ZynqScope as zs
 import ZynqScope.ZynqCommands as zc
 
+# Rawcam library
+import ZynqScope.pirawcam.rawcam as rawcam
+
 AFE = zs.AFE
 
 DEFAULT_ZYNQ_TASK_RATE = 100        # Run internal task at 100Hz
@@ -135,7 +138,7 @@ class ZynqScopeSubprocess(multiprocessing.Process):
         elif type(msg) is ZynqScopeGetAttributes:
             # Return a safed object copy of all scope parameters which can be accessed
             resp = ZynqScopeAttributesResponse()
-            compress_class_attrs_for_response(resp, self.zs, exclude=[zc.ZynqCommands])
+            compress_class_attrs_for_response(resp, self.zs, exclude=[zc.ZynqCommands, rawcam.interface])
             #print(resp)
             self.rsq.put(resp)
             
