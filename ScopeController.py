@@ -534,6 +534,7 @@ class ScopeController(object):
         queued until the instrument resumes running."""
         print("run_state:", self.run_state, "in sync_if_needed")
         if self.run_state == ACQ_IS_RUNNING:
+            print("Syncing to real world")
             self.zst.sync_to_real_world()
         else:
             print("No sync, we are stopped")
@@ -566,9 +567,7 @@ class ScopeController(object):
         if param == "timebase-div":
             self.zst.set_next_timebase_index(self.timebase.timebase_index)
         
-        if self.run_state == ACQ_IS_RUNNING:
-            print("sync_to_real_world")
-            self.zst.sync_to_real_world()
+        self.sync_if_needed()
     
     def acq_run(self):
         print("acq_run() outer")
