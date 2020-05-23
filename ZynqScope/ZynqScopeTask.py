@@ -44,6 +44,7 @@ class ZynqScopeAttributesResponse(object): pass
 class ZynqScopeNullResponse(object): pass
 
 def compress_class_attrs_for_response(resp, clas_, exclude=[]):
+    print("compress_class_attrs_for_response %r %r", resp, clas_)
     attrs = inspect.getmembers(clas_)
     for attr, value in attrs:
         if attr.startswith("__"):
@@ -75,6 +76,8 @@ class ZynqScopeSubprocess(multiprocessing.Process):
         # we might want the capability to tune the period as time goes by
         self.task_period = 1000.0 / DEFAULT_ZYNQ_TASK_RATE
         self.ping_multiple = DEFAULT_ZYNQ_PING_MULT
+        
+        print("ZynqScopeSubprocess __init__(): task_period=%2.2f, ping_multiple=%2.2f" % (self.task_period, self.ping_multiple))
         
     def run(self):
         """Runs periodically to check the status of the Zynq.  Presently set to ping at 50Hz,

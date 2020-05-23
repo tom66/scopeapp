@@ -476,6 +476,11 @@ class MainApplication(object):
         """
         print("innerTick")
         self.ctrl.tick()
+        
+        #t0 = time.time()
+        #time.sleep(1.0)
+        #t1 = time.time()
+        #print(t1 - t0)
     
     def ui_update_clock(self):
         """
