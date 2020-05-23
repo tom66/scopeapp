@@ -48,6 +48,10 @@ popdown_menu_options = [
 # How often to refresh UI data.  Lower number = more CPU, faster refresh.
 UI_REFRESH_MS = 25
 
+# Minimum delay between refreshes; as load in a tick increases the delay might reduce to keep the UI
+# responsive (& above rate consistent), but we don't want to steal all of GTK's time
+UI_MIN_DELAY_MS = 7.5
+
 # How long to wait before syncing a last save state.
 STATE_SYNC_WAIT = 10
 
@@ -455,9 +459,10 @@ class MainApplication(object):
         if self.last_tick is None:
             self.delay_tick = UI_REFRESH_MS
         else:
-            self.delay_tick = UI_REFRESH_MS
             actual_delay = (time.time() - self.last_tick) * 1000
-            new_delay = self.delay_tick - (actual_delay - UI_REFRESH_MS)
+            self.delay_tick -= (actual_delay - UI_REFRESH_MS)
+            self.delay_tick = min(self.delay_tick, UI_MIN_DELAY_MS)
+            
             print(self.delay_tick, new_delay, actual_delay, tick_start)
         
         # does this cause stack overflow?
