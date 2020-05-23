@@ -162,13 +162,20 @@ class ZynqScopeTaskController():
         self.rsq = multiprocessing.Queue()
         self.zstask = ZynqScopeSubprocess(self.evq, self.rsq, zs_init_args)
         self.attribs_cache = None
+        
+        # Fill common request objects cache
+        self.roc = {
+            'ZynqScopeGetAttributes': ZynqScopeGetAttributes(),
+            'ZynqScopeDieTask' : ZynqScopeDieTask(),
+            'ZynqScopeSimpleCommand_SetupForTimebase' : ZynqScopeSimpleCommand("setup_for_timebase"),
+        }
     
     def start_task(self):
         self.zstask.start()
         
     def stop_task(self):
         # Send kill request, wait 200ms then force termination
-        self.evq.put(ZynqScopeDieTask())
+        self.evq.put(self.roc['ZynqScopeDieTask'])
         time.sleep(0.2)
         self.zstask.kill()
     
@@ -176,7 +183,7 @@ class ZynqScopeTaskController():
         return self.attribs_cache
     
     def get_attributes(self):
-        self.evq.put(ZynqScopeGetAttributes())
+        self.evq.put(self.roc['ZynqScopeGetAttributes'])
         resp = self.rsq.get()
         self.attribs_cache = resp
         return resp
@@ -201,5 +208,5 @@ class ZynqScopeTaskController():
         #  - Sending any relay/attenuation unit changes.
         #  - Sending any ADC configuration changes.
         print("sync_to_real_world")
-        self.evq.put(ZynqScopeSimpleCommand("setup_for_timebase",))
+        self.evq.put(self.roc['ZynqScopeSimpleCommand_SetupForTimebase'])
         
