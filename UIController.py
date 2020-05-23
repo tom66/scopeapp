@@ -87,6 +87,8 @@ class MainApplication(object):
     ticks = 0
     last_window_size = (0, 0)
     
+    last_tick = 0
+    
     # Last time the state was synced and whether a new state needs to be synced
     last_state_sync_time = time.time()
     state_sync_pending = True
@@ -445,8 +447,19 @@ class MainApplication(object):
         # Sync scope controller functions
         self.ui_tick_scope()
         
-        # To keep iteration running, return True
-        return True
+        # Stop this iteration and set a new iteration up with the correct delay to maintain
+        # the desired tick rate
+        if self.last_tick is None:
+            self.last_tick = time.time()
+            delay = UI_REFRESH_MS / 1000
+        else:
+            delay = (UI_REFRESH_MS / 1000)
+            actual_delay = (time.time() - self.last_tick) * 1000
+            print(delay, actual_delay)
+        
+        # does this cause stack overflow?
+        GLib.timeout_add(delay, self.ui_tick, None, priority=GLib.PRIORITY_DEFAULT)
+        return False
     
     def ui_tick_scope(self):
         """
@@ -532,5 +545,6 @@ class MainApplication(object):
         Start the MainApplication.  This launches all required threads and shows the user interface.
         """
         self.window.show_all()
+        self.last_tick = None
         GLib.timeout_add(UI_REFRESH_MS, self.ui_tick, None, priority=GLib.PRIORITY_DEFAULT)
         Gtk.main()
