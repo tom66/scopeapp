@@ -465,7 +465,7 @@ class MainApplication(object):
             actual_delay = (tick_start - self.last_tick) * 1000
             self.delay_tick -= (actual_delay - UI_REFRESH_MS)
             self.delay_tick = max(self.delay_tick, UI_MIN_DELAY_MS)
-            print("set_tick: %2.2f ms, actual_delay: %3.3f ms, frame_rate: %2.1f fps" % (self.delay_tick, actual_delay, 1.0f / actual_delay))
+            print("set_tick: %2.2f ms, actual_delay: %3.3f ms, frame_rate: %2.1f fps" % (self.delay_tick, actual_delay, 1.0 / actual_delay))
         
         # does this cause stack overflow?
         GLib.timeout_add(self.delay_tick, self.ui_tick, None, priority=GLib.PRIORITY_DEFAULT)
