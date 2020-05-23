@@ -44,7 +44,7 @@ class ZynqScopeAttributesResponse(object): pass
 class ZynqScopeNullResponse(object): pass
 
 def compress_class_attrs_for_response(resp, clas_, exclude=[]):
-    print("compress_class_attrs_for_response %r %r", resp, clas_)
+    print("compress_class_attrs_for_response %r %r" % (resp, clas_))
     attrs = inspect.getmembers(clas_)
     for attr, value in attrs:
         if attr.startswith("__"):
@@ -103,6 +103,7 @@ class ZynqScopeSubprocess(multiprocessing.Process):
     def queue_process(self):
         """See what work there is to do."""
         msg = self.evq.get()
+        print("queue_process: %r" % msg)
         
         if not isinstance(msg, ZynqScopeTaskQueueCommand):
             raise RuntimeError("Queue message not subclass of ZynqScopeTaskQueueCommand")
