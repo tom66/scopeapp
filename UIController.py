@@ -505,7 +505,7 @@ class MainApplication(object):
         """
         Update acquisition parameters: memory depth, waves/sec, bit depth, etc.
         """
-        waveforms_per_second = self.ctrl.get_waves_per_second()
+        waveforms_per_second = math.round(self.ctrl.get_waves_per_second(), 2)
         memory_depth = self.ctrl.get_memory_depth()
         sample_rate = self.ctrl.get_sample_rate()
         bits = self.ctrl.get_sample_depth()
@@ -526,8 +526,8 @@ class MainApplication(object):
         # fields in your locale.
         self.lbl_status_npoints_nwaves.set_markup(\
             "{points_string}\n{nwaves_string}".format(\
-                points_string=Utils.unit_format_suffix_handle_exc(memory_depth, _("pts"), precision=3), \
-                nwaves_string=Utils.unit_format_suffix_handle_exc(waveforms_per_second, _("wfm/s"), precision=2) \
+                points_string=Utils.unit_format_suffix_handle_exc(memory_depth, _("pts"), precision=2), \
+                nwaves_string=Utils.unit_format_suffix_handle_exc(waveforms_per_second, _("wfm/s"), precision=1) \
             ))
     
     def ui_update_run_state(self):

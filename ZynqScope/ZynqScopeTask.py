@@ -10,13 +10,14 @@ import ZynqScope.ZynqCommands as zc
 
 AFE = zs.AFE
 
-DEFAULT_ZYNQ_TASK_RATE = 100      # Run internal task at 10kHz
-DEFAULT_ZYNQ_PING_MULT = 200        # Ping Zynq every 200 ticks for new data (~50Hz)
+DEFAULT_ZYNQ_TASK_RATE = 100        # Run internal task at 100Hz
+DEFAULT_ZYNQ_PING_MULT = 5          # Ping Zynq every 5 ticks for new data (~50Hz)
 
 STATE_ZYNQ_NOT_READY = 0
 STATE_ZYNQ_IDLE = 1
 
 class ZynqScopeTaskQueueCommand(object): pass
+class ZynqScopeTaskQueueResponse(object): pass
 
 class ZynqScopeCmdsIfcSimpleCommand(ZynqScopeTaskQueueCommand):
     def __init__(self, cmd_name, flush, args=(), kwargs={}):
@@ -40,8 +41,8 @@ class ZynqScopeGetAttributes(ZynqScopeTaskQueueCommand): pass
 class ZynqScopeSendCompAcqStreamCommand(ZynqScopeTaskQueueCommand): pass
 class ZynqScopeDieTask(ZynqScopeTaskQueueCommand): pass
 
-class ZynqScopeAttributesResponse(object): pass
-class ZynqScopeNullResponse(object): pass
+class ZynqScopeAttributesResponse(ZynqScopeTaskQueueResponse): pass
+class ZynqScopeNullResponse(ZynqScopeTaskQueueResponse): pass
 
 def compress_class_attrs_for_response(resp, clas_, exclude=[]):
     print("compress_class_attrs_for_response %r %r" % (resp, clas_))
