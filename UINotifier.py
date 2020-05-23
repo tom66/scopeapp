@@ -51,6 +51,7 @@ class NotifyController(object):
             wdg.set_opacity(0)
         
         computed_x = (screen_width / 2) - (wdg.get_allocated_width() / 2)
+        print("computed_x: %d  alloc_width: %d" % (computed_x, wdg.get_allocated_width()))
         
         if self.cur_wdg != wdg:
             if self.cur_wdg != None:
