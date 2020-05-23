@@ -505,7 +505,7 @@ class MainApplication(object):
         """
         Update acquisition parameters: memory depth, waves/sec, bit depth, etc.
         """
-        waveforms_per_second = math.round(self.ctrl.get_waves_per_second(), 2)
+        waveforms_per_second = round(self.ctrl.get_waves_per_second(), 2)
         memory_depth = self.ctrl.get_memory_depth()
         sample_rate = self.ctrl.get_sample_rate()
         bits = self.ctrl.get_sample_depth()
