@@ -265,7 +265,7 @@ class MainApplication(object):
         """Called by subclasses if a user exception occurs.  Handles the display of the warning message
         to the user."""
         print("_user_exception:", exc)
-        self.notifier.push_notification(UINotifier.NotifyMessage(UINotifier.NOTIFY_WARNING, str(exc)))
+        self.notifier.push_notification(UINotifier.NotifyMessage(UINotifier.NOTIFY_WARNING, str(exc) + " added " + str(time.time())))
     
     def _user_message(self, msg):
         """Called to display a message to the user."""

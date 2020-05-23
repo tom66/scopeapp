@@ -35,6 +35,7 @@ class NotifyController(object):
         self.last_computed_x = None
     
     def push_notification(self, notify):
+        print("Notification pushed: %r" % notify)
         self.notifiers.append(notify)
     
     def set_fixed_container(self, fixed):
