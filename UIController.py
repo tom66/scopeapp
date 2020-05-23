@@ -11,7 +11,7 @@ import gi
 gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk, GLib, Gio, Gdk, GdkPixbuf
 
-import sys, time
+import sys, time, random
 from datetime import datetime
 
 import AppConfigManager
@@ -476,7 +476,7 @@ class MainApplication(object):
         """
         #print("innerTick")
         #t0 = time.time()
-        time.sleep(0.01)
+        time.sleep(random.random() * 0.1)
         #t1 = time.time()
         #print(t1 - t0)
         #self.ctrl.tick()
