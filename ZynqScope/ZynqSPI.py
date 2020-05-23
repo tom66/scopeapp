@@ -222,7 +222,8 @@ class ZynqSPI(object):
                             cmd_state = STATE_CMD_IDLE
             elif resp_state == STATE_RESP_READ_DATA:
                 #data += "".join(map(chr, map(lambda x: 35 if (x == 0) else x, resp)))
-                data += "".join(map(chr, resp))
+                #data += b"".join(map(chr, resp))
+                data += resp
                 #print("READ_DATA2", byt_, size, len(data), data)
                 #return None
                 if len(data) >= size:
