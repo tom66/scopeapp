@@ -20,6 +20,9 @@ DEFAULT_ZYNQ_PING_MULT = 5          # Ping Zynq every 5 ticks for new data (~50H
 STATE_ZYNQ_NOT_READY = 0
 STATE_ZYNQ_IDLE = 1
 
+TSTATE_ACQ_NOT_RUNNING = 0
+TSTATE_ACQ_RUNNING = 1
+
 class ZynqScopeTaskQueueCommand(object): pass
 class ZynqScopeTaskQueueResponse(object): pass
 
@@ -180,6 +183,8 @@ class ZynqScopeTaskController():
     Container class that wraps the ZynqScopeSubprocess module and provides a convenient
     interface.
     """
+    acq_state = TSTATE_ACQ_NOT_RUNNING
+    
     def __init__(self, zs_init_args):
         # Create task queues and manager then initialise process with these resources
         self.evq = multiprocessing.Queue()
@@ -226,9 +231,11 @@ class ZynqScopeTaskController():
     
     def stop_acquisition(self):
         self.evq.put(ZynqScopeCmdsIfcSimpleCommand("stop_acquisition", True,))
+        self.acq_state = TSTATE_ACQ_NOT_RUNNING
     
     def start_acquisition(self):
         self.evq.put(ZynqScopeCmdsIfcSimpleCommand("start_acquisition", True, (), {'reset_fifo' : 1}))
+        self.acq_state = TSTATE_ACQ_RUNNING
     
     def sync_to_real_world(self):
         # Sync to the real world includes:  
@@ -240,13 +247,17 @@ class ZynqScopeTaskController():
         self.evq.put(self.roc['ZynqScopeSimpleCommand_SetupForTimebase'])
     
     def acquisition_tick(self):
-        """Ping Zynq to start acquisition and return buffers if available."""
+        """Manages Zynq acquisition control."""
         self.get_attributes()
         
-        cmd = self.roc['ZynqScopeSendCompAcqStreamCommand']
-        cmd.flags = zc.COMP0_ACQ_STOP | zc.COMP0_ACQ_GET_STATUS | zc.COMP0_ACQ_REWIND | zc.COMP0_ACQ_START_RESET_FIFO | \
-                    zc.COMP0_ACQ_SWAP_ACQ_LISTS | zc.COMP0_CSI_TRANSFER_WAVES | zc.COMP0_SPI_RESP_CSI_SIZE
-        print("cmd.flags 0x%04x" % cmd.flags)
-        self.evq.put(cmd)
-        print("buffer_count:", self.shared_dict['buffer_count'])
+        if self.acq_state == TSTATE_ACQ_RUNNING:
+            cmd = self.roc['ZynqScopeSendCompAcqStreamCommand']
+            cmd.flags = zc.COMP0_ACQ_STOP | zc.COMP0_ACQ_GET_STATUS | zc.COMP0_ACQ_REWIND | zc.COMP0_ACQ_START_RESET_FIFO | \
+                        zc.COMP0_ACQ_SWAP_ACQ_LISTS | zc.COMP0_CSI_TRANSFER_WAVES | zc.COMP0_SPI_RESP_CSI_SIZE
+            print("cmd.flags 0x%04x" % cmd.flags)
+            self.evq.put(cmd)
+            
+            print("buffer_count:", self.shared_dict['buffer_count'])
+        else:
+            print("Idle--not running")
     
