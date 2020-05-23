@@ -539,9 +539,6 @@ class ScopeController(object):
             print("No sync, we are stopped")
     
     def tick(self):
-        print("")
-        print("Tick!")
-        print("")
         print(self.zst.get_attributes())
         #print(dir(self.zst.get_attributes()))
     
