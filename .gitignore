@@ -1,2 +1,4 @@
 *.gtkbuilder~
 __pycache__/*
+*.pyc
+*.py~
