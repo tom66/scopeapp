@@ -461,7 +461,7 @@ class MainApplication(object):
         else:
             actual_delay = (time.time() - self.last_tick) * 1000
             self.delay_tick -= (actual_delay - UI_REFRESH_MS)
-            self.delay_tick = min(self.delay_tick, UI_MIN_DELAY_MS)
+            self.delay_tick = max(self.delay_tick, UI_MIN_DELAY_MS)
             
             print(self.delay_tick, actual_delay, tick_start)
         
