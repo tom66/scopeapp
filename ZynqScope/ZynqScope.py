@@ -175,6 +175,9 @@ class ZynqScope(object):
     next_delay = 0
     curr_tb = None
     
+    # Rawcam interface
+    rc = None
+    
     def __init__(self, display_samples_target, default_hdiv_span):
         # Set default parameters
         self.display_samples_target = display_samples_target
@@ -190,6 +193,7 @@ class ZynqScope(object):
         # Connect rawcam library.  TODO: These parameters might need to be configured by the 
         # hardware configuration, for instance the camera number in use.
         print("ZynqScope __init__(): setting up rawcam")
+        self.rc = rawcam.init()
         rawcam.set_data_lanes(2)
         rawcam.set_image_id(0x2a)
         rawcam.set_buffer_size(2048 * 128)
