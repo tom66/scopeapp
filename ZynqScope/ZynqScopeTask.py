@@ -61,7 +61,7 @@ def compress_class_attrs_for_response(resp, clas_, exclude=[]):
             continue
         if not callable(value):
             if not type(value) in exclude:
-                print(attr, value, type(value))
+                #print(attr, value, type(value))
                 setattr(resp, attr, copy.copy(value))
             else:
                 pass # print("excluding %s %r" % (attr, value))
