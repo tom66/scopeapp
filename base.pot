@@ -1,0 +1,859 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR ORGANIZATION
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"POT-Creation-Date: 2020-05-23 15:13+BST\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=CHARSET\n"
+"Content-Transfer-Encoding: ENCODING\n"
+"Generated-By: pygettext.py 1.5\n"
+
+
+#: CSSManager.py:34
+msgid "File should be a themed type, global styles not currently implemented"
+msgstr ""
+
+#: Measurements.py:154
+msgid "Measurement already exists"
+msgstr ""
+
+#: ScopeController.py:47
+msgid "Channel 1"
+msgstr ""
+
+#: ScopeController.py:48
+msgid "Channel 2"
+msgstr ""
+
+#: ScopeController.py:49
+msgid "Channel 3"
+msgstr ""
+
+#: ScopeController.py:50
+msgid "Channel 4"
+msgstr ""
+
+#: ScopeController.py:51
+msgid "External Input"
+msgstr ""
+
+#: ScopeController.py:73
+msgid "???"
+msgstr ""
+
+#: ScopeController.py:74 ScopeController.py:75 ScopeController.py:76
+msgid "Undefined"
+msgstr ""
+
+#: ScopeController.py:239
+msgid "Attenuation requested at upper limit"
+msgstr ""
+
+#: ScopeController.py:242
+msgid "Attenuation requested at lower limit"
+msgstr ""
+
+#: ScopeController.py:269 ScopeController.py:276
+msgid "Offset limited by attenuation range"
+msgstr ""
+
+#: ScopeController.py:271
+msgid "Offset requested at upper limit"
+msgstr ""
+
+#: ScopeController.py:278
+msgid "Offset requested at lower limit"
+msgstr ""
+
+#: ScopeController.py:401
+msgid "Timebase at maximum"
+msgstr ""
+
+#: ScopeController.py:410
+msgid "Timebase at minimum"
+msgstr ""
+
+#: ScopeController.py:513
+msgid "Unable to restore configuration file: Major version newer, cannot load"
+msgstr ""
+
+#: UIChannelColourPicker.py:64
+msgid "Colour Picker"
+msgstr ""
+
+#: UIChannelColourPicker.py:75
+msgid "Pick a colour for {channel_or_reference_name}"
+msgstr ""
+
+#: UIChannelColourPicker.py:76
+msgid "Hue"
+msgstr ""
+
+#: UIChannelColourPicker.py:77
+msgid "Saturation"
+msgstr ""
+
+#: UIChannelColourPicker.py:90
+msgid "OK"
+msgstr ""
+
+#: UIChannelColourPicker.py:94
+msgid "Cancel"
+msgstr ""
+
+#: UIChannelTab.py:38
+msgid "SPI and Serial"
+msgstr ""
+
+#: UIChannelTab.py:40
+msgid "MOSI"
+msgstr ""
+
+#: UIChannelTab.py:40
+msgid "Master Out"
+msgstr ""
+
+#: UIChannelTab.py:41
+msgid "MISO"
+msgstr ""
+
+#: UIChannelTab.py:41
+msgid "Slave Out"
+msgstr ""
+
+#: UIChannelTab.py:42
+msgid "CLK"
+msgstr ""
+
+#: UIChannelTab.py:42
+msgid "Clock"
+msgstr ""
+
+#: UIChannelTab.py:43
+msgid "SS"
+msgstr ""
+
+#: UIChannelTab.py:43
+msgid "Slave Select"
+msgstr ""
+
+#: UIChannelTab.py:44
+msgid "CS"
+msgstr ""
+
+#: UIChannelTab.py:44
+msgid "Chip Select"
+msgstr ""
+
+#: UIChannelTab.py:45
+msgid "1-Wire Data"
+msgstr ""
+
+#: UIChannelTab.py:45
+msgid "1WD"
+msgstr ""
+
+#: UIChannelTab.py:49
+msgid "I\\u00B2C"
+msgstr ""
+
+#: UIChannelTab.py:50
+msgid "I\\u00B2C Clock"
+msgstr ""
+
+#: UIChannelTab.py:50
+msgid "SCL"
+msgstr ""
+
+#: UIChannelTab.py:51
+msgid "I\\u00B2C Data"
+msgstr ""
+
+#: UIChannelTab.py:51
+msgid "SDA"
+msgstr ""
+
+#: UIChannelTab.py:55
+msgid "UART/RS232"
+msgstr ""
+
+#: UIChannelTab.py:56
+msgid "TX"
+msgstr ""
+
+#: UIChannelTab.py:56
+msgid "Transmit"
+msgstr ""
+
+#: UIChannelTab.py:57
+msgid "RX"
+msgstr ""
+
+#: UIChannelTab.py:57
+msgid "Receive"
+msgstr ""
+
+#: UIChannelTab.py:58
+msgid "RTS"
+msgstr ""
+
+#: UIChannelTab.py:58
+msgid "Ready-to-Send"
+msgstr ""
+
+#: UIChannelTab.py:59
+msgid "CTS"
+msgstr ""
+
+#: UIChannelTab.py:59
+msgid "Clear-to-Send"
+msgstr ""
+
+#: UIChannelTab.py:60
+msgid "DCD"
+msgstr ""
+
+#: UIChannelTab.py:60
+msgid "Data Carrier Det."
+msgstr ""
+
+#: UIChannelTab.py:61
+msgid "DSR"
+msgstr ""
+
+#: UIChannelTab.py:61
+msgid "Data Set Ready"
+msgstr ""
+
+#: UIChannelTab.py:62
+msgid "DTR"
+msgstr ""
+
+#: UIChannelTab.py:62
+msgid "Data Terminal Ready"
+msgstr ""
+
+#: UIChannelTab.py:63
+msgid "RING"
+msgstr ""
+
+#: UIChannelTab.py:63
+msgid "Ring Indicator"
+msgstr ""
+
+#: UIChannelTab.py:67 UIChannelTab.py:82 Utils.py:62
+msgid "Power"
+msgstr ""
+
+#: UIChannelTab.py:68
+msgid "G"
+msgstr ""
+
+#: UIChannelTab.py:68
+msgid "Gate"
+msgstr ""
+
+#: UIChannelTab.py:69
+msgid "Drain"
+msgstr ""
+
+#: UIChannelTab.py:69 UIChannelTab.py:104
+msgid "D"
+msgstr ""
+
+#: UIChannelTab.py:70
+msgid "S"
+msgstr ""
+
+#: UIChannelTab.py:70
+msgid "Source"
+msgstr ""
+
+#: UIChannelTab.py:71
+msgid "SUB"
+msgstr ""
+
+#: UIChannelTab.py:71
+msgid "Substrate"
+msgstr ""
+
+#: UIChannelTab.py:72
+msgid "Base"
+msgstr ""
+
+#: UIChannelTab.py:72 UIChannelTab.py:102
+msgid "B"
+msgstr ""
+
+#: UIChannelTab.py:73
+msgid "Collector"
+msgstr ""
+
+#: UIChannelTab.py:73 UIChannelTab.py:103
+msgid "C"
+msgstr ""
+
+#: UIChannelTab.py:74
+msgid "E"
+msgstr ""
+
+#: UIChannelTab.py:74
+msgid "Emitter"
+msgstr ""
+
+#: UIChannelTab.py:75
+msgid "Cathode"
+msgstr ""
+
+#: UIChannelTab.py:75
+msgid "K"
+msgstr ""
+
+#: UIChannelTab.py:76
+msgid "Anode"
+msgstr ""
+
+#: UIChannelTab.py:76 UIChannelTab.py:101 Utils.py:54
+msgid "A"
+msgstr ""
+
+#: UIChannelTab.py:77
+msgid "A1"
+msgstr ""
+
+#: UIChannelTab.py:77
+msgid "Anode 1"
+msgstr ""
+
+#: UIChannelTab.py:78
+msgid "A2"
+msgstr ""
+
+#: UIChannelTab.py:78
+msgid "Anode 2"
+msgstr ""
+
+#: UIChannelTab.py:79
+msgid "+ve"
+msgstr ""
+
+#: UIChannelTab.py:79
+msgid "Positive"
+msgstr ""
+
+#: UIChannelTab.py:80
+msgid "-ve"
+msgstr ""
+
+#: UIChannelTab.py:80
+msgid "Negative"
+msgstr ""
+
+#: UIChannelTab.py:81
+msgid "I"
+msgstr ""
+
+#: UIChannelTab.py:81 Utils.py:55
+msgid "Current"
+msgstr ""
+
+#: UIChannelTab.py:82 Utils.py:61
+msgid "W"
+msgstr ""
+
+#: UIChannelTab.py:83
+msgid "Vdd"
+msgstr ""
+
+#: UIChannelTab.py:84
+msgid "Vcc"
+msgstr ""
+
+#: UIChannelTab.py:85
+msgid "Vee"
+msgstr ""
+
+#: UIChannelTab.py:86
+msgid "Vcore"
+msgstr ""
+
+#: UIChannelTab.py:86
+msgid "Vcre"
+msgstr ""
+
+#: UIChannelTab.py:87
+msgid "15V"
+msgstr ""
+
+#: UIChannelTab.py:88
+msgid "12V"
+msgstr ""
+
+#: UIChannelTab.py:89
+msgid "9V"
+msgstr ""
+
+#: UIChannelTab.py:90
+msgid "5V"
+msgstr ""
+
+#: UIChannelTab.py:91
+msgid "3V3"
+msgstr ""
+
+#: UIChannelTab.py:92
+msgid "-5V"
+msgstr ""
+
+#: UIChannelTab.py:93
+msgid "-12V"
+msgstr ""
+
+#: UIChannelTab.py:94
+msgid "-15V"
+msgstr ""
+
+#: UIChannelTab.py:95
+msgid "BATT"
+msgstr ""
+
+#: UIChannelTab.py:95
+msgid "Battery"
+msgstr ""
+
+#: UIChannelTab.py:96
+msgid "B+"
+msgstr ""
+
+#: UIChannelTab.py:100
+msgid "Other"
+msgstr ""
+
+#: UIChannelTab.py:101
+msgid "Signal A"
+msgstr ""
+
+#: UIChannelTab.py:102
+msgid "Signal B"
+msgstr ""
+
+#: UIChannelTab.py:103
+msgid "Signal C"
+msgstr ""
+
+#: UIChannelTab.py:104
+msgid "Signal D"
+msgstr ""
+
+#: UIChannelTab.py:105
+msgid "IN"
+msgstr ""
+
+#: UIChannelTab.py:105
+msgid "Input"
+msgstr ""
+
+#: UIChannelTab.py:106
+msgid "OUT"
+msgstr ""
+
+#: UIChannelTab.py:106
+msgid "Output"
+msgstr ""
+
+#: UIChannelTab.py:107
+msgid "ACK"
+msgstr ""
+
+#: UIChannelTab.py:107
+msgid "Acknowledge"
+msgstr ""
+
+#: UIChannelTab.py:108
+msgid "Addr"
+msgstr ""
+
+#: UIChannelTab.py:108
+msgid "Address"
+msgstr ""
+
+#: UIChannelTab.py:109
+msgid "BIT"
+msgstr ""
+
+#: UIChannelTab.py:109
+msgid "Bit"
+msgstr ""
+
+#: UIChannelTab.py:110
+msgid "Err"
+msgstr ""
+
+#: UIChannelTab.py:110
+msgid "Error"
+msgstr ""
+
+#: UIChannelTab.py:111
+msgid "POS"
+msgstr ""
+
+#: UIChannelTab.py:111
+msgid "Position"
+msgstr ""
+
+#: UIChannelTab.py:112
+msgid "RSSI"
+msgstr ""
+
+#: UIChannelTab.py:113
+msgid "Temp"
+msgstr ""
+
+#: UIChannelTab.py:113
+msgid "Temperature"
+msgstr ""
+
+#: UIChannelTab.py:114
+msgid "DMod"
+msgstr ""
+
+#: UIChannelTab.py:114
+msgid "Demodulation"
+msgstr ""
+
+#: UIChannelTab.py:115
+msgid "Mod"
+msgstr ""
+
+#: UIChannelTab.py:115
+msgid "Modulation"
+msgstr ""
+
+#: UIChannelTab.py:116
+msgid "MR"
+msgstr ""
+
+#: UIChannelTab.py:116
+msgid "Magneto-Reluctance"
+msgstr ""
+
+#: UIChannelTab.py:117
+msgid "CDR"
+msgstr ""
+
+#: UIChannelTab.py:117
+msgid "Capacitive Diractance"
+msgstr ""
+
+#: UIChannelTab.py:118
+msgid "88MI"
+msgstr ""
+
+#: UIChannelTab.py:118
+msgid "Fusion Chamber"
+msgstr ""
+
+#: UIChannelTab.py:216
+msgid "AC"
+msgstr ""
+
+#: UIChannelTab.py:217
+msgid "DC"
+msgstr ""
+
+#: UIChannelTab.py:218
+msgid "GND"
+msgstr ""
+
+#: UIChannelTab.py:219
+msgid "Invert"
+msgstr ""
+
+#: UIChannelTab.py:220
+msgid "20 MHz Filter"
+msgstr ""
+
+#: UIChannelTab.py:221
+msgid "50\\u03A9 Impedance"
+msgstr ""
+
+#: UIChannelTab.py:222 UIChannelTab.py:632
+msgid "..."
+msgstr ""
+
+#: UIChannelTab.py:227
+msgid "Colour"
+msgstr ""
+
+#: UIChannelTab.py:244
+msgid "Category"
+msgstr ""
+
+#: UIChannelTab.py:249
+msgid "Name"
+msgstr ""
+
+#: UIChannelTab.py:259
+msgid "Short"
+msgstr ""
+
+#: UIChannelTab.py:268
+msgid "Custom"
+msgstr ""
+
+#: UIChannelTab.py:411 UIChannelTab.py:472
+msgid "This option is not supported right now"
+msgstr ""
+
+#: UIChannelTab.py:432
+msgid "Do you want to enable 50 ohm termination?"
+msgstr ""
+
+#: UIChannelTab.py:433
+msgid ""
+"Exceeding 10 volts DC on terminated inputs may cause instrument damage.\n"
+"\n"
+"You can disable this message in the Preferences dialog."
+msgstr ""
+
+#: UIChannelTab.py:508
+msgid "X"
+msgstr ""
+
+#: UIChannelTab.py:510
+msgid "dB"
+msgstr ""
+
+#: UIChannelTab.py:512
+msgid "?"
+msgstr ""
+
+#: UIChannelTab.py:519
+msgid "{0}X"
+msgstr ""
+
+#: UIChannelTab.py:567
+msgid "{long_channel_name} ({short_internal_name})"
+msgstr ""
+
+#: UIController.py:32
+msgid "Save Settings"
+msgstr ""
+
+#: UIController.py:33
+msgid "Load Settings"
+msgstr ""
+
+#: UIController.py:34
+msgid "Quick Save Settings"
+msgstr ""
+
+#: UIController.py:35
+msgid "Quick Load Settings"
+msgstr ""
+
+#: UIController.py:36
+msgid "Defaults"
+msgstr ""
+
+#: UIController.py:38
+msgid "Help"
+msgstr ""
+
+#: UIController.py:39
+msgid "About & Credits"
+msgstr ""
+
+#: UIController.py:40
+msgid "Licences"
+msgstr ""
+
+#: UIController.py:42
+msgid "Preferences"
+msgstr ""
+
+#: UIController.py:43
+msgid "Shutdown"
+msgstr ""
+
+#: UIController.py:44
+msgid "Reboot"
+msgstr ""
+
+#: UIController.py:45
+msgid "Exit Application"
+msgstr ""
+
+#: UIController.py:193
+msgid "BluePulse Oscilloscope - Main"
+msgstr ""
+
+#: UIController.py:309 UIController.py:312 UIController.py:328
+#: UIController.py:331 UIController.py:334 UIController.py:337
+#: UIController.py:340 UIController.py:343 UIController.py:346
+msgid "Function not implemented yet"
+msgstr ""
+
+#: UIController.py:317
+msgid "Present settings saved into quick restore file"
+msgstr ""
+
+#: UIController.py:325
+msgid "Settings restored from quick restore file"
+msgstr ""
+
+#: UIController.py:386
+msgid ""
+"If a terminated channel has a voltage greater than 10 volts applied, instrument damage could occur. \n"
+"\n"
+"Would you like to enable the termination for these channels?"
+msgstr ""
+
+#: UIController.py:389
+msgid "Warning - 50 ohm mode enabled for some channels!"
+msgstr ""
+
+#: UIController.py:418
+msgid "size parameter invalid"
+msgstr ""
+
+#: UIController.py:535
+msgid ""
+"{bits_value}-bit\n"
+"{samplerate_string}"
+msgstr ""
+
+#: UIController.py:537
+msgid "Sa/s"
+msgstr ""
+
+#: UIController.py:547
+msgid "pts"
+msgstr ""
+
+#: UIController.py:548
+msgid "wfm/s"
+msgstr ""
+
+#: UIController.py:566 UIController.py:569
+msgid "WAIT"
+msgstr ""
+
+#: UIController.py:573 UIController.py:576
+msgid "AUTO"
+msgstr ""
+
+#: UIController.py:579
+msgid "STOP"
+msgstr ""
+
+#: UIController.py:582
+msgid "TRIG'D"
+msgstr ""
+
+#: Utils.py:47 Utils.py:169
+msgid "V"
+msgstr ""
+
+#: Utils.py:48
+msgid "Voltage"
+msgstr ""
+
+#: Utils.py:114
+msgid "0 {unit}"
+msgstr ""
+
+#: Utils.py:116
+msgid "{value} p{unit}"
+msgstr ""
+
+#: Utils.py:118
+msgid "{value} n{unit}"
+msgstr ""
+
+#: Utils.py:120
+msgid "{value} \\u03BC{unit}"
+msgstr ""
+
+#: Utils.py:122
+msgid "{value} m{unit}"
+msgstr ""
+
+#: Utils.py:124
+msgid "{value} {unit}"
+msgstr ""
+
+#: Utils.py:126
+msgid "{value} k{unit}"
+msgstr ""
+
+#: Utils.py:128
+msgid "{value} M{unit}"
+msgstr ""
+
+#: Utils.py:130
+msgid "{value} G{unit}"
+msgstr ""
+
+#: Utils.py:132
+msgid "{value} T{unit}"
+msgstr ""
+
+#: Utils.py:138
+msgid "{vdiv:.0f} p{unit}/div"
+msgstr ""
+
+#: Utils.py:140
+msgid "{vdiv:.0f} n{unit}/div"
+msgstr ""
+
+#: Utils.py:142
+msgid "{vdiv:.0f} \\u03BC{unit}/div"
+msgstr ""
+
+#: Utils.py:144
+msgid "{vdiv:.0f} m{unit}/div"
+msgstr ""
+
+#: Utils.py:146
+msgid "{vdiv:.0f} {unit}/div"
+msgstr ""
+
+#: Utils.py:148
+msgid "{vdiv:.0f} k{unit}/div"
+msgstr ""
+
+#: Utils.py:150
+msgid "{vdiv:.0f} M{unit}/div"
+msgstr ""
+
+#: Utils.py:156
+msgid "[None] {unit}"
+msgstr ""
+
+#: Utils.py:161
+msgid "Exception during unit_format_suffix_handle_exc: {0}"
+msgstr ""
+
+#: Utils.py:164
+msgid "[EXC] {unit}"
+msgstr ""
+
+#: Utils.py:173
+msgid "{ratio:.{prec}f} dB"
+msgstr ""
+
+#: Utils.py:226
+msgid "Unable to restore configuration file: Value excessively long"
+msgstr ""
+
+#: Utils.py:235
+msgid "Unable to restore configuration file: Not all configuration values present"
+msgstr ""
+
