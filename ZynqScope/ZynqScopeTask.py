@@ -157,6 +157,7 @@ class ZynqScopeTaskController():
         self.evq = multiprocessing.Queue()
         self.rsq = multiprocessing.Queue()
         self.zstask = ZynqScopeSubprocess(self.evq, self.rsq, zs_init_args)
+        self.attribs_cache = None
     
     def start_task(self):
         self.zstask.start()
@@ -167,9 +168,13 @@ class ZynqScopeTaskController():
         time.sleep(0.2)
         self.zstask.kill()
     
+    def get_attributes_cache(self):
+        return self.attribs_cache
+    
     def get_attributes(self):
         self.evq.put(ZynqScopeGetAttributes())
         resp = self.rsq.get()
+        self.attribs_cache = resp
         return resp
     
     def get_supported_timebases(self):

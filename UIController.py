@@ -409,6 +409,9 @@ class MainApplication(object):
         This is run several times per second.  It despatches the update tasks (updating measurements,
         the time, wifi/network status, etc.)
         """
+        # Sync scope controller functions
+        self.ui_tick_scope()
+        
         # Update the flash state
         if self.last_ui_time == None:
             self.last_ui_time = time.time()
@@ -441,9 +444,16 @@ class MainApplication(object):
                 self.ctrl.save_settings_last()
                 self.last_state_sync_time = time.time()
                 self.state_sync_pending = False
+
             
         # To keep iteration running, return True
         return True
+    
+    def ui_tick_scope(self):
+        """
+        Sync instrument parameters.
+        """
+        self.ctrl.tick()
     
     def ui_update_clock(self):
         """

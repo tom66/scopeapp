@@ -382,13 +382,12 @@ class ScopeTimebaseController(object):
         return self.supported_timebases[self.timebase_index]
     
     def timebase_up(self):
-        print("timebase_up", self.timebase_index)
         self.timebase_index += 1
         if self.timebase_index >= len(self.supported_timebases):
             self.timebase_index = len(self.supported_timebases) - 1
             raise Utils.UserRequestOutOfRange(_("Timebase at maximum"))
-            
-        self.change_notifier('timebase-div')
+        else:
+            self.change_notifier('timebase-div')
     
     def timebase_down(self):
         print("timebase_down")
@@ -396,8 +395,8 @@ class ScopeTimebaseController(object):
         if self.timebase_index < 0:
             self.timebase_index = 0
             raise Utils.UserRequestOutOfRange(_("Timebase at minimum"))
-            
-        self.change_notifier('timebase-div')
+        else:
+            self.change_notifier('timebase-div')
     
     def adjust_offset(self, adj):
         # This function needs to be completely reworked
@@ -407,7 +406,7 @@ class ScopeTimebaseController(object):
         self.offset += adj
         self.offset = min(max_limit, self.offset)
         self.offset = max(min_limit, self.offset)
-            
+        
         self.change_notifier('timebase-offset')
     
     def get_offset(self):
@@ -539,8 +538,13 @@ class ScopeController(object):
         else:
             print("No sync, we are stopped")
     
+    def tick(self):
+        print(self.zst.get_attributes())
+        print(dir(self.zst.get_attributes()))
+    
     def get_memory_depth(self):
         return 0
+        #return self.zst.get_attributes_cache()
     
     def get_run_state_str(self):
         if self.run_state == ACQ_IS_STOPPED:
@@ -564,10 +568,10 @@ class ScopeController(object):
     def change_notifier(self, param):
         print("change_notifier:", param)
         
+        # Sync for timebase and delay changes
         if param == "timebase-div":
             self.zst.set_next_timebase_index(self.timebase.timebase_index)
-        
-        self.sync_if_needed()
+            self.sync_if_needed()
     
     def acq_run(self):
         print("acq_run() outer")
