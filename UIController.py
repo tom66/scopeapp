@@ -451,9 +451,9 @@ class MainApplication(object):
         # the desired tick rate
         if self.last_tick is None:
             self.last_tick = time.time()
-            delay = UI_REFRESH_MS / 1000
+            delay = UI_REFRESH_MS
         else:
-            delay = (UI_REFRESH_MS / 1000)
+            delay = UI_REFRESH_MS
             actual_delay = (time.time() - self.last_tick) * 1000
             print(delay, actual_delay)
         
