@@ -37,12 +37,15 @@ class ZynqScopeSimpleCommand(ZynqScopeTaskQueueCommand):
         self.cmd_name = cmd_name
         self.args = args
         self.kwargs = kwargs
+        
+class ZynqScopeSendCompAcqStreamCommand(ZynqScopeTaskQueueCommand):
+    def __init__(self, flags):
+        self.flags = flags
 
 class ZynqScopeSyncAcquisitionSettings(ZynqScopeTaskQueueCommand): pass
 class ZynqScopeGetStatus(ZynqScopeTaskQueueCommand): pass
 class ZynqScopeGetAcqStatus(ZynqScopeTaskQueueCommand): pass
 class ZynqScopeGetAttributes(ZynqScopeTaskQueueCommand): pass
-class ZynqScopeSendCompAcqStreamCommand(ZynqScopeTaskQueueCommand): pass
 class ZynqScopeRawcamStart(ZynqScopeTaskQueueCommand): pass
 class ZynqScopeDieTask(ZynqScopeTaskQueueCommand): pass
 
@@ -152,7 +155,7 @@ class ZynqScopeSubprocess(multiprocessing.Process):
             
         elif type(msg) is ZynqScopeSendCompAcqStreamCommand:
             # Send a composite acquisition status command and return the response data.
-            resp = self.zs.zcmd.comp_acq_control()
+            resp = self.zs.zcmd.comp_acq_control(msg.flags)
             self.rsq.put(resp)
         
         elif type(msg) is ZynqScopeRawcamStart:
@@ -188,7 +191,7 @@ class ZynqScopeTaskController():
         self.roc = {
             'ZynqScopeGetAttributes': ZynqScopeGetAttributes(),
             'ZynqScopeDieTask' : ZynqScopeDieTask(),
-            'ZynqScopeSendCompAcqStreamCommand' : ZynqScopeSendCompAcqStreamCommand(),
+            'ZynqScopeSendCompAcqStreamCommand' : ZynqScopeSendCompAcqStreamCommand(0x0000),
             'ZynqScopeSimpleCommand_SetupForTimebase' : ZynqScopeSimpleCommand("setup_for_timebase"),
         }
         
@@ -240,6 +243,10 @@ class ZynqScopeTaskController():
         """Ping Zynq to start acquisition and return buffers if available."""
         self.get_attributes()
         
-        self.evq.put(self.roc['ZynqScopeSendCompAcqStreamCommand'])
+        cmd = self.roc['ZynqScopeSendCompAcqStreamCommand']
+        cmd.flags = zc.COMP0_ACQ_STOP | zc.COMP0_ACQ_GET_STATUS | zc.COMP0_ACQ_REWIND | zc.COMP0_ACQ_START_RESET_FIFO | \
+                    zc.COMP0_ACQ_SWAP_ACQ_LISTS | zc.COMP0_CSI_TRANSFER_WAVES | zc.COMP0_SPI_RESP_CSI_SIZE
+        print("cmd.flags 0x%04x" % cmd.flags)
+        self.evq.put()
         print("buffer_count:", self.shared_dict['buffer_count'])
     
