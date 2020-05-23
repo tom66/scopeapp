@@ -87,6 +87,7 @@ class MainApplication(object):
     ticks = 0
     last_window_size = (0, 0)
     
+    delay_tick = 0
     last_tick = 0
     
     # Last time the state was synced and whether a new state needs to be synced
@@ -452,14 +453,15 @@ class MainApplication(object):
         # Stop this iteration and set a new iteration up with the correct delay to maintain
         # the desired tick rate
         if self.last_tick is None:
-            delay = UI_REFRESH_MS
+            self.delay_tick = UI_REFRESH_MS
         else:
-            delay = UI_REFRESH_MS
+            self.delay_tick = UI_REFRESH_MS
             actual_delay = (time.time() - self.last_tick) * 1000
-            print(delay, actual_delay, tick_start)
+            new_delay = self.delay_tick - (actual_delay - UI_REFRESH_MS)
+            print(self.delay_tick, new_delay, actual_delay, tick_start)
         
         # does this cause stack overflow?
-        GLib.timeout_add(delay, self.ui_tick, None, priority=GLib.PRIORITY_DEFAULT)
+        GLib.timeout_add(self.delay_tick, self.ui_tick, None, priority=GLib.PRIORITY_DEFAULT)
         self.last_tick = tick_start
             
         return False
@@ -549,5 +551,7 @@ class MainApplication(object):
         """
         self.window.show_all()
         self.last_tick = None
+        self.delay_tick = UI_REFRESH_MS
+        
         GLib.timeout_add(UI_REFRESH_MS, self.ui_tick, None, priority=GLib.PRIORITY_DEFAULT)
         Gtk.main()
