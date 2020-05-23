@@ -10,6 +10,9 @@ import Utils # from parent directory
 import ZynqScope.Standard4chAFE as AFE # For now, we import the standard 4ch AFE as the only supported AFE
 import ZynqScope.ZynqSPI, ZynqScope.ZynqCommands as zc
 
+# Rawcam library
+import ZynqScope.pirawcam.rawcam as rawcam
+
 ZYNQ_SAMPLE_WORD_SIZE = 8
 ZYNQ_SAMPLE_WORD_CACHE_DIVISIBLE = 32
 
@@ -119,7 +122,6 @@ class ZynqScopeSampleRateBehaviourModel(object):
 
 class ZynqScopeSampleRateBehaviourModel_8Bit(ZynqScopeSampleRateBehaviourModel): 
     adc_divider   = [1, 2, 4, 8]
-    #pll_frequency = [1000, 900, 850, 800, 750, 700, 650, 600, 550, 500, 450, 400, 333.33333333, 250, 125, 62.5, 40] # in MHz
     pll_frequency = [1000, 750, 500, 400, 250, 200, 125, 100, 62.5, 50] # in MHz
     min_freq = 120
 
@@ -174,14 +176,31 @@ class ZynqScope(object):
     curr_tb = None
     
     def __init__(self, display_samples_target, default_hdiv_span):
+        # Set default parameters
         self.display_samples_target = display_samples_target
         self.default_hdiv_span = default_hdiv_span
+        
+        # Generate supported timebase configurations
+        print("ZynqScope __init__(): generating timebases")
         self.samprate_mdl = ZynqScopeSampleRateBehaviourModel_8Bit()
         self.samprate_mdl.update()
         self.init_timebases()
-        
-        # set default timebase
         self.next_tb = self.timebase_settings[default_timebase]
+        
+        # Connect rawcam library.  TODO: These parameters might need to be configured by the 
+        # hardware configuration, for instance the camera number in use.
+        print("ZynqScope __init__(): setting up rawcam")
+        rawcam.set_data_lanes(2)
+        rawcam.set_image_id(0x2a)
+        rawcam.set_buffer_size(2048 * 128)
+        rawcam.set_buffer_num(8)
+        rawcam.set_buffer_dimensions(2048, 128)
+        rawcam.set_pack_mode(0)
+        rawcam.set_unpack_mode(0)
+        rawcam.set_unpack_mode(0)
+        rawcam.set_encoding_fourcc(ord('G'), ord('R'), ord('B'), ord('G'))
+        rawcam.set_zero_copy(1)
+        rawcam.set_camera_num(1)
     
     def connect(self):
         self.zcmd = zc.ZynqCommands()
@@ -195,7 +214,7 @@ class ZynqScope(object):
     
     def init_timebases(self):
         self.timebase_settings = []
-        print(self.samprate_mdl.rates)
+        #print(self.samprate_mdl.rates)
         
         for tb in timebase_options:
             new_tb = ZynqScopeTimebaseOption()
