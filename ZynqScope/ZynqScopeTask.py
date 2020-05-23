@@ -74,7 +74,7 @@ class ZynqScopeSubprocess(multiprocessing.Process):
         self.zs_init_args = zs_init_args
         
         # we might want the capability to tune the period as time goes by
-        self.task_period = 1000.0 / DEFAULT_ZYNQ_TASK_RATE
+        self.task_period = 1.0 / DEFAULT_ZYNQ_TASK_RATE
         self.ping_multiple = DEFAULT_ZYNQ_PING_MULT
         
         print("ZynqScopeSubprocess __init__(): task_period=%2.2f, ping_multiple=%2.2f" % (self.task_period, self.ping_multiple))
