@@ -244,36 +244,49 @@ class ScopeChannelController(object):
         self.atten_div = self.atten_supported[new_atten]
         
         # If attenuation change causes offset limits to change we need to adjust those too; 
-        # to account for this we adjust the offset by 0V
-        self.adjust_offset(0)
+        # to account for this we adjust the offset by "None" to force recomputation
+        self.adjust_offset(None)
         
         self.change_notifier('atten')
     
     def adjust_offset(self, adj, snap_zero=False):
-        self.set_offset(self.offset + adj, snap_zero)
+        if adj == None:
+            self.set_offset(None, snap_zero)
+        else:
+            self.set_offset(self.offset + adj, snap_zero)
     
     def set_offset(self, new, snap_zero=False):
         old_offset = self.offset
-        self.offset = new
+        
+        if new != None:
+            self.offset = new
         
         limits = AFE_module.get_max_offset_supported(self.atten_div)
         
         if self.offset > limits[1]:
             self.offset = limits[1]
-            raise Utils.UserRequestOutOfRange(_("Offset requested at upper limit"))
+            if new == None:
+                raise Utils.UserRequestOutOfRange(_("Offset limited by attenuation range"))
+            else:
+                raise Utils.UserRequestOutOfRange(_("Offset requested at upper limit"))
         
         if self.offset < limits[0]:
             self.offset = limits[0]
-            raise Utils.UserRequestOutOfRange(_("Offset requested at lower limit"))
+            if new == None:
+                raise Utils.UserRequestOutOfRange(_("Offset limited by attenuation range"))
+            else:
+                raise Utils.UserRequestOutOfRange(_("Offset requested at lower limit"))
     
-        sign = math.copysign(1, old_offset)
-        new_sign = math.copysign(1, self.offset)
+        if new != None:
+            sign = math.copysign(1, old_offset)
+            new_sign = math.copysign(1, self.offset)
+            
+            if snap_zero and sign != new_sign and abs(old_offset) > 1e-12:
+                print("Channel: Snap offset to zero")
+                self.offset = 0
         
-        if snap_zero and sign != new_sign and abs(old_offset) > 1e-12:
-            print("Channel: Snap offset to zero")
-            self.offset = 0
-        
-        self.change_notifier('offset')
+        if old_offset != self.offset:
+            self.change_notifier('offset')
     
     def atten_up_coarse(self):
         nearest_atten = self._get_nearest_atten_index()
