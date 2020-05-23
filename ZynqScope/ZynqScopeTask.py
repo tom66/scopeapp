@@ -42,7 +42,12 @@ class ZynqScopeGetStatus(ZynqScopeTaskQueueCommand): pass
 class ZynqScopeGetAcqStatus(ZynqScopeTaskQueueCommand): pass
 class ZynqScopeGetAttributes(ZynqScopeTaskQueueCommand): pass
 class ZynqScopeSendCompAcqStreamCommand(ZynqScopeTaskQueueCommand): pass
+class ZynqScopeRawcamStart(ZynqScopeTaskQueueCommand): pass
 class ZynqScopeDieTask(ZynqScopeTaskQueueCommand): pass
+
+class ZynqScopeRawcamBufferContainer(ZynqScopeTaskQueueResponse):
+    def __init__(self, rcb):
+        self.rcb = rcb
 
 class ZynqScopeAttributesResponse(ZynqScopeTaskQueueResponse): pass
 class ZynqScopeNullResponse(ZynqScopeTaskQueueResponse): pass
@@ -70,11 +75,12 @@ class ZynqScopeSubprocess(multiprocessing.Process):
     die_req = False
     zs_init_args = None
     
-    def __init__(self, event_queue, response_queue, zs_init_args):
+    def __init__(self, event_queue, response_queue, shared_dict, zs_init_args):
         super(ZynqScopeSubprocess, self).__init__()
         
         self.evq = event_queue
         self.rsq = response_queue
+        self.shared_dict = shared_dict
         self.zs_init_args = zs_init_args
         
         # we might want the capability to tune the period as time goes by
@@ -98,6 +104,7 @@ class ZynqScopeSubprocess(multiprocessing.Process):
                 # Process any commands in the queue
                 while not self.evq.empty():
                     self.queue_process()
+                    self.rawcam_tick()
             
             if self.die_req:
                 self.terminate()
@@ -146,6 +153,12 @@ class ZynqScopeSubprocess(multiprocessing.Process):
             # Send a composite acquisition status command and return the response data.
             resp = self.zs.zcmd.comp_acq_control()
             self.rsq.put(resp)
+        
+        elif type(msg) is ZynqScopeRawcamStart:
+            self.zs.rawcam_mod.start()
+            
+        elif type(msg) is ZynqScopeRawcamDequeueBuffer:
+            self.rsq.put(self.zs.rawcam_mod.buffer_get())
             
         elif type(msg) is ZynqScopeDieTask:
             print("ZynqScopeSubprocess: DieTask received")
@@ -153,22 +166,28 @@ class ZynqScopeSubprocess(multiprocessing.Process):
             
         else:
             raise RuntimeError("Unimplemented/unsupported task class")
-
+    
+    def rawcam_tick(self):
+        """Rawcam tick process.  Checks buffer state."""
+        self.shared_dict['buffer_count'] = self.zs.rawcam_mod.buffer_count()
+            
 class ZynqScopeTaskController():
     """
     Container class that wraps the ZynqScopeSubprocess module and provides a convenient
     interface.
     """
     def __init__(self, zs_init_args):
-        # Create task queues and create task with these queues
+        # Create task queues and manager then initialise process with these resources
         self.evq = multiprocessing.Queue()
         self.rsq = multiprocessing.Queue()
-        self.zstask = ZynqScopeSubprocess(self.evq, self.rsq, zs_init_args)
+        self.mgr_dict = multiprocessing.Manager().dict()
+        self.zstask = ZynqScopeSubprocess(self.evq, self.rsq, self.mgr_dict, zs_init_args)
         
         # Fill common request objects cache
         self.roc = {
             'ZynqScopeGetAttributes': ZynqScopeGetAttributes(),
             'ZynqScopeDieTask' : ZynqScopeDieTask(),
+            'ZynqScopeSendCompAcqStreamCommand' : ZynqScopeSendCompAcqStreamCommand(),
             'ZynqScopeSimpleCommand_SetupForTimebase' : ZynqScopeSimpleCommand("setup_for_timebase"),
         }
         
@@ -215,4 +234,10 @@ class ZynqScopeTaskController():
         #  - Sending any ADC configuration changes.
         print("sync_to_real_world")
         self.evq.put(self.roc['ZynqScopeSimpleCommand_SetupForTimebase'])
+    
+    def acquisition_tick(self):
+        """Ping Zynq to start acquisition and return buffers if available."""
+        self.evq.put(self.roc['ZynqScopeSendCompAcqStreamCommand'])
         
+        print("buffer_count:", self.shared_dict['buffer_count'])
+    
