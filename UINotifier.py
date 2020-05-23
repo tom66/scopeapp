@@ -90,7 +90,7 @@ class NotifyController(object):
                 if wdg == False:
                     self.notifiers[n] = None
                 else:
-                    return self.notifiers[n]
+                    return wdg
         
         """
         wdg = None
