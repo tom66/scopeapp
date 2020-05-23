@@ -170,6 +170,9 @@ class ZynqScopeTaskController():
             'ZynqScopeSimpleCommand_SetupForTimebase' : ZynqScopeSimpleCommand("setup_for_timebase"),
         }
         
+        print(self.roc)
+        sys.exit()
+        
         # Cache for last fetched attributes
         self.attribs_cache = None
     
