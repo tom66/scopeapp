@@ -546,8 +546,7 @@ class ScopeController(object):
         print(dir(self.zst.get_attributes()))
     
     def get_memory_depth(self):
-        return 0
-        #return self.zst.get_attributes_cache()
+        return self.zst.get_attributes_cache().params.memory_depth
     
     def get_run_state_str(self):
         if self.run_state == ACQ_IS_STOPPED:
