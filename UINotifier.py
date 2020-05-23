@@ -44,23 +44,23 @@ class NotifyController(object):
     def update_overlay(self, screen_width):
         wdg = self.get_next_notify_widget()
         if wdg == None:
-            print("noWidgets")
+            #print("noWidgets")
             self.last_computed_x = None
             return
         
         # If allocated_width is small, hide the widget for now; we'll show it on the next frame
         # (This is used to avoid the widget snapping into place after it is attached to the GtkFixed)
         if wdg.get_allocated_width() <= NOTIFY_SMALL_WIDGET:
-            print("allocWidthSmall")
+            #print("allocWidthSmall")
             wdg.set_opacity(0)
         
         computed_x = (screen_width / 2) - (wdg.get_allocated_width() / 2)
-        print("computed_x: %d  alloc_width: %d" % (computed_x, wdg.get_allocated_width()))
+        #print("computed_x: %d  alloc_width: %d" % (computed_x, wdg.get_allocated_width()))
         
         if self.cur_wdg != wdg:
             if self.cur_wdg != None:
                 self.fixed.remove(self.cur_wdg)
-            print("putWdg")
+            #print("putWdg")
             self.fixed.put(wdg, computed_x, NOTIFY_YPOS)
         else:
             if computed_x != self.last_computed_x:
@@ -147,7 +147,7 @@ class NotifyMessage(object):
                 self.label.destroy()   # Kill the widget
                 return False
         else:
-            print("setOpacity...")
+            #print("setOpacity...")
             self.label.set_opacity(1.0)
             self.last_opacity = 1.0
         

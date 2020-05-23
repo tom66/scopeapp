@@ -136,7 +136,7 @@ class ZynqScopeSubprocess(multiprocessing.Process):
             # Return a safed object copy of all scope parameters which can be accessed
             resp = ZynqScopeAttributesResponse()
             compress_class_attrs_for_response(resp, self.zs, exclude=[zc.ZynqCommands])
-            print(resp)
+            #print(resp)
             self.rsq.put(resp)
             
         elif type(msg) is ZynqScopeSendCompAcqStreamCommand:
