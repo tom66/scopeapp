@@ -93,6 +93,9 @@ class MainApplication(object):
     
     delay_tick = 0
     last_tick = 0
+    fps_average_accu = 0
+    fps_average_count = 0
+    fps_average = 0
     
     # Last time the state was synced and whether a new state needs to be synced
     last_state_sync_time = time.time()
@@ -465,7 +468,18 @@ class MainApplication(object):
             actual_delay = (tick_start - self.last_tick) * 1000
             self.delay_tick -= (actual_delay - UI_REFRESH_MS)
             self.delay_tick = max(self.delay_tick, UI_MIN_DELAY_MS)
-            print("set_tick: %2.2f ms, actual_delay: %3.3f ms, frame_rate: %2.1f fps" % (self.delay_tick, actual_delay, 1.0 / actual_delay))
+            
+            # performance benchmarking: average performance over last 200 frames, once at least 8 frames acquired
+            self.fps_average_accu += 1000.0 / actual_delay
+            self.fps_average_count += 1
+            
+            if self.fps_average_count > 200:
+                self.fps_average_count = 0
+                self.fps_average_accu = 0
+            else if (self.fps_average_count & 7) == 0:
+                self.fps_average = self.fps_average_accu / self.fps_average_count
+            
+            print("set_tick: %2.2f ms, actual_delay: %3.3f ms, avg_frame_rate: %2.1f fps" % (self.delay_tick, actual_delay, 1000.0 / actual_delay))
         
         # does this cause stack overflow?
         GLib.timeout_add(self.delay_tick, self.ui_tick, None, priority=GLib.PRIORITY_DEFAULT)
