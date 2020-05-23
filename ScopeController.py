@@ -506,7 +506,7 @@ class ScopeController(object):
                 #self.channels[ch].termination_50R_applied = False
             
             self.acq_state = STATE_STOPPED              # Default to stopped
-            self.run_state = ACQ_IS_STOPPED
+            #self.run_state = ACQ_IS_STOPPED
             self.active_tab = json_obj['active_tab']    # Recall tab
             
             print("actTab?", self.active_tab)
