@@ -184,8 +184,8 @@ class ZynqScopeTaskController():
         # Create task queues and manager then initialise process with these resources
         self.evq = multiprocessing.Queue()
         self.rsq = multiprocessing.Queue()
-        self.mgr_dict = multiprocessing.Manager().dict()
-        self.zstask = ZynqScopeSubprocess(self.evq, self.rsq, self.mgr_dict, zs_init_args)
+        self.shared_dict = multiprocessing.Manager().dict()
+        self.zstask = ZynqScopeSubprocess(self.evq, self.rsq, self.shared_dict, zs_init_args)
         
         # Fill common request objects cache
         self.roc = {
