@@ -45,7 +45,7 @@ class ZynqScopeAttributesResponse(ZynqScopeTaskQueueResponse): pass
 class ZynqScopeNullResponse(ZynqScopeTaskQueueResponse): pass
 
 def compress_class_attrs_for_response(resp, clas_, exclude=[]):
-    print("compress_class_attrs_for_response %r %r" % (resp, clas_))
+    #print("compress_class_attrs_for_response %r %r" % (resp, clas_))
     attrs = inspect.getmembers(clas_)
     for attr, value in attrs:
         if attr.startswith("__"):
@@ -55,7 +55,7 @@ def compress_class_attrs_for_response(resp, clas_, exclude=[]):
                 #print(attr, value)
                 setattr(resp, attr, copy.copy(value))
             else:
-                print("excluding %s %r" % (attr, value))
+                pass # print("excluding %s %r" % (attr, value))
 
 class ZynqScopeSubprocess(multiprocessing.Process):
     """
@@ -105,7 +105,7 @@ class ZynqScopeSubprocess(multiprocessing.Process):
     def queue_process(self):
         """See what work there is to do."""
         msg = self.evq.get()
-        print("queue_process: %r" % msg)
+        #print("queue_process: %r" % msg)
         
         if not isinstance(msg, ZynqScopeTaskQueueCommand):
             raise RuntimeError("Queue message not subclass of ZynqScopeTaskQueueCommand")
@@ -187,7 +187,7 @@ class ZynqScopeTaskController():
     def get_attributes(self):
         self.evq.put(self.roc['ZynqScopeGetAttributes'])
         resp = self.rsq.get()
-        print("get_attributes response:", resp)
+        #print("get_attributes response:", resp)
         self.attribs_cache = resp
         return resp
     
