@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Generated with glade 3.22.1 -->
+<!-- Generated with glade 3.36.0 -->
 <interface>
   <requires lib="gtk+" version="3.0"/>
   <object class="GtkVBox" id="vbox_main">
@@ -37,7 +37,7 @@
             <property name="visible">True</property>
             <property name="can_focus">False</property>
             <property name="ypad">5</property>
-            <property name="label" translatable="yes">WAIT</property>
+            <property name="label" translatable="yes">RunState</property>
             <property name="width_chars">6</property>
           </object>
           <packing>
@@ -52,8 +52,8 @@
             <property name="name">lbl_status_time</property>
             <property name="visible">True</property>
             <property name="can_focus">False</property>
-            <property name="label" translatable="yes">17:59:08
-2019-02-28</property>
+            <property name="label" translatable="yes">Time
+Date</property>
             <property name="justify">center</property>
           </object>
           <packing>
@@ -68,8 +68,8 @@
             <property name="name">lbl_status_bits_samplerate</property>
             <property name="visible">True</property>
             <property name="can_focus">False</property>
-            <property name="label" translatable="yes">12-bit
-500MSa/s</property>
+            <property name="label" translatable="yes">X-bit
+X MSa/s</property>
             <property name="justify">center</property>
             <style>
               <class name="lbl_top"/>
@@ -87,8 +87,8 @@
             <property name="name">lbl_status_npoints_nwaves</property>
             <property name="visible">True</property>
             <property name="can_focus">False</property>
-            <property name="label" translatable="yes">2048 pts
-50kwfms/s</property>
+            <property name="label" translatable="yes">X pts
+X wfms/s</property>
             <property name="justify">center</property>
           </object>
           <packing>
@@ -137,7 +137,7 @@
                     <property name="name">lbl_status_timebase</property>
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
-                    <property name="label" translatable="yes">2.0μs/div</property>
+                    <property name="label" translatable="yes">TimeBase</property>
                     <property name="justify">center</property>
                     <property name="width_chars">12</property>
                   </object>
@@ -180,7 +180,7 @@
                 <property name="name">lbl_status_delay</property>
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
-                <property name="label" translatable="yes">+500ns</property>
+                <property name="label" translatable="yes">Delay</property>
                 <property name="justify">center</property>
                 <property name="width_chars">10</property>
               </object>
@@ -259,7 +259,7 @@
                 <property name="name">lbl_status_trigger_info</property>
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
-                <property name="label" translatable="yes">370mV</property>
+                <property name="label" translatable="yes">TrigPt</property>
                 <property name="justify">center</property>
               </object>
               <packing>

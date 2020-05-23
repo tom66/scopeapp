@@ -137,6 +137,8 @@ class MainApplication(object):
         self.lbl_status_time = self.builder.get_object("lbl_status_time")
         self.lbl_status_run = self.builder.get_object("lbl_status_run")
         self.lbl_status_run_ctx = self.lbl_status_run.get_style_context()
+        self.lbl_status_bits_samplerate = self.builder.get_object("lbl_status_bits_samplerate")
+        self.lbl_status_npoints_nwaves = self.builder.get_object("lbl_status_npoints_nwaves")
         
         # Connect to the timebase labels
         self.evt_lbl_status_timebase = self.builder.get_object("evt_lbl_status_timebase")
@@ -347,11 +349,11 @@ class MainApplication(object):
         if xp >= 0 and xp < 0.33:
             # Clicks in the first 1/3rd are interpreted as a decreased timebase;  
             self.ctrl.timebase.timebase_down()
-        elif xp >= 0.33 and xp < 0.66:
+        elif xp > 0.4 and xp < 0.6:
+            # Clicks in between the two are interpreted as selecting the timebase/horizontal options (not implemented)
+            print("Middle click on timebase: not yet implemented")
+        elif xp > 0.66 and xp <= 1:
             # Clicks in the last 1/3rd are interpreted as an increase timebase; 
-            pass
-        elif xp >= 0.66 and xp < 1:
-            # Clicks in between the two are interpreted as selecting the timebase/horizontal options.
             self.ctrl.timebase.timebase_up()
         
         self.ui_update_timebase_labels()
@@ -433,6 +435,7 @@ class MainApplication(object):
         # Run helper functions
         self.ui_update_clock()
         self.ui_update_run_state()
+        self.ui_update_acq_parameters()
         self.ui_update_tabs()
         self.ui_update_widgets()
         
@@ -498,6 +501,35 @@ class MainApplication(object):
             self.lbl_status_time.set_markup(time_outstr)
             self.last_clock_time = time.time()
     
+    def ui_update_acq_parameters(self):
+        """
+        Update acquisition parameters: memory depth, waves/sec, bit depth, etc.
+        """
+        waveforms_per_second = self.ctrl.get_waves_per_second()
+        sample_depth = self.ctrl.get_sample_depth()
+        sample_rate = self.ctrl.get_sample_rate()
+        bits = self.ctrl.get_sample_depth()
+        
+        # TRANSLATORS: lbl_status_bits_samplerate contains a bit depth (8-bit; compare 'audio' and 'graphics' bit depths, for instance)
+        # and a sample rate (samples per second, compare with frequency or repetitiveness.)  This label probably should not be translated,
+        # or altered.  Only translate the units if they are not commonly understood in engineering fields in your locale.
+        self.lbl_status_bits_samplerate.set_markup(\
+            _("{bits_value}-bit\n{samplerate_string}".format(
+                bits_value=bits, \
+                samplerate_string=Utils.unit_format_suffix_handle_exc(sample_rate, _("Sa/s"), precision=3)) \
+            ))
+        
+        # TRANSLATORS: lbl_status_npoints_nwaves contains the number of points per waveform and the number of waveforms per second
+        # that the instrument is acquiring (or is targeting for acquisition.) The base label is not translatable.
+        #
+        # pts = points,  wfm/s = waveforms per second;  only translate the units if they are not commonly understood in engineering 
+        # fields in your locale.
+        self.lbl_status_npoints_nwaves.set_markup(\
+            "{points_string}\n{nwaves_string}".format(\
+                points_string=Utils.unit_format_suffix_handle_exc(sample_depth, _("pts"), precision=3)), \
+                points_string=Utils.unit_format_suffix_handle_exc(waveforms_per_second, _("wfm/s"), precision=2)) \
+            ))
+    
     def ui_update_run_state(self):
         """
         Update the run state based on the ScopeController state.
@@ -532,7 +564,6 @@ class MainApplication(object):
             self.lbl_status_run.set_markup(_("TRIG'D"))
     
     def ui_update_timebase_labels(self):
-        print(self.ctrl.timebase.get_timebase())
         self.lbl_status_timebase.set_markup(Utils.unit_format_atten(self.ctrl.timebase.get_timebase().get_div_value(), "s"))
     
     def ui_update_tabs(self):

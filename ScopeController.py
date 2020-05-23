@@ -546,7 +546,20 @@ class ScopeController(object):
         print(dir(self.zst.get_attributes()))
     
     def get_memory_depth(self):
+        # ZynqScopeCurrentParameters
         return self.zst.get_attributes_cache().params.memory_depth
+    
+    def get_waves_per_second(self):
+        return self.zst.get_attributes_cache().params.wave_rate
+    
+    def get_nwaves(self):
+        return self.zst.get_attributes_cache().params.nwaves
+    
+    def get_sample_depth(self):
+        return self.zst.get_attributes_cache().params.sample_depth
+    
+    def get_sample_rate(self):
+        return self.zst.get_attributes_cache().params.sample_rate
     
     def get_run_state_str(self):
         if self.run_state == ACQ_IS_STOPPED:

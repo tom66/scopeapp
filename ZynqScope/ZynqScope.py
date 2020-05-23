@@ -34,6 +34,8 @@ class ZynqScopeCurrentParameters(object):
     sample_depth = 8
     memory_depth = 0
     sample_rate = 0
+    nwaves = 0
+    wave_rate = 0
     trigger_point = 0.5
     delay = 0
     
@@ -356,6 +358,8 @@ class ZynqScope(object):
             # positive delay not yet implemented
             self.params.trigger_point = 1.0
         
+        self.params.nwaves = nwaves
+        self.params.wave_rate = nwaves * self.acq_framerate
         self.params.delay = self.next_delay
         self.curr_tb = self.next_tb
         print(self.params)
