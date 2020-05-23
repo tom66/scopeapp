@@ -29,14 +29,23 @@ NOTIFY_SMALL_WIDGET = 16
 
 class NotifyController(object):
     def __init__(self):
-        self.notifiers = []
+        self.notifiers = [None, None]
         self.fixed = None
         self.cur_wdg = None
         self.last_computed_x = None
     
     def push_notification(self, notify):
-        self.notifiers.append(notify)
-        print(self.notifiers)
+        # We used to have a complex sorting logic that picked out the newest notification,
+        # but this is better. We only show the newest notification, except if that notification
+        # has a lower priority than the current notification.  If so, it gets put into slot 1
+        # of the notification queue. 
+        if notify.cls_ < self.notifiers[0]:
+            self.notifiers[1] = notify
+        else:
+            print("Replacing current notification with %r" % notify)
+            if self.notifiers[0] is not None:
+                self.notifiers[0].destroy()
+            self.notifiers[0] = notify
     
     def set_fixed_container(self, fixed):
         self.fixed = fixed
@@ -71,8 +80,16 @@ class NotifyController(object):
         self.cur_wdg = wdg
     
     def get_next_notify_widget(self):
-        """Searches the list of notifiers and finds the highest priority notification. If 
-        one isn't available then it returns None.  Will delete any expired notifications."""
+        """Determines which notifier to show from the two available slots."""
+        for n in range(2):
+            if self.notifiers[n] != None:
+                wdg = self.notifiers[n].get_widget()
+                if wdg == False:
+                    self.notifiers[n] = None
+                else:
+                    return self.notifiers[n]
+        
+        """
         wdg = None
         nsorted = sorted(self.notifiers)
         
@@ -88,8 +105,9 @@ class NotifyController(object):
         
         if wdg == False:
             wdg = None
+        """
         
-        return wdg
+        return None
 
 class NotifyMessage(object):
     def __init__(self, cls_, message):
@@ -152,3 +170,8 @@ class NotifyMessage(object):
             self.last_opacity = 1.0
         
         return self.label
+    
+    def destroy(self):
+        """Quick cleanup before we're killed."""
+        self.label.set_opacity(0.0)
+        
