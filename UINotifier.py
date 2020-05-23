@@ -57,10 +57,10 @@ class NotifyController(object):
             print("putWdg")
             self.fixed.put(wdg, computed_x, NOTIFY_YPOS)
         else:
-            #if computed_x != self.last_computed_x:
-            #    print("moveWdg")
-            self.fixed.move(wdg, computed_x, NOTIFY_YPOS)
-            self.last_computed_x = computed_x
+            if computed_x != self.last_computed_x:
+                #print("moveWdg")
+                self.fixed.move(wdg, computed_x, NOTIFY_YPOS)
+                self.last_computed_x = computed_x
         
         self.cur_wdg = wdg
     
