@@ -283,6 +283,9 @@ class ZynqScope(object):
     def rawcam_free_buffer(self, buffer):
         rawcam.buffer_free(buffer)
 
+    def rawcam_flush(self):
+        rawcam.flush()
+
     def rawcam_stop(self):
         if self.rawcam_running:
             print("ZynqScope: rawcam_stop()")
