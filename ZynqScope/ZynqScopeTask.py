@@ -182,8 +182,8 @@ class ZynqScopeSubprocess(multiprocessing.Process):
             self.zs.setup_for_timebase(0, None) # TODO: These parameters need to be filled in, too!
             
         elif typ is ZynqScopeGetAcqStatus:
-            # Enquire scope acquisition status.  Returns a ZynqAcqS
-            self.rsq.put(resp)tatus object.
+            # Enquire scope acquisition status.  Returns a ZynqAcqStatus object.
+            self.rsq.put(resp)
             resp = self.zs.zcmd.acq_status()
             
         elif typ is ZynqScopeGetAttributes:
