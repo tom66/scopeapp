@@ -19,6 +19,9 @@ ZYNQ_SAMPLE_WORD_CACHE_DIVISIBLE = 32
 RAWCAM_LINE_SIZE = 2048
 RAWCAM_NUM_BUFFERS = 8
 
+RAWCAM_IMAGE_ID = 0x2a
+RAWCAM_WCT_HEADER = 0x0000
+
 # Supported timebases
 """
 timebase_options = [1e-9, 2e-9, 5e-9, 10e-9, 20e-9, 50e-9, 100e-9, 200e-9, 500e-9, 
@@ -202,13 +205,13 @@ class ZynqScope(object):
         self.samprate_mdl.update()
         self.init_timebases()
         self.next_tb = self.timebase_settings[default_timebase]
-        
+
         # Connect rawcam library.  TODO: These parameters might need to be configured by the 
         # hardware configuration, for instance the camera number in use.
         print("ZynqScope connect(): setting up rawcam")
         self.rc = rawcam.init()
         rawcam.set_data_lanes(2)
-        rawcam.set_image_id(0x2a)
+        rawcam.set_image_id(RAWCAM_IMAGE_ID)
         rawcam.set_pack_mode(0)
         rawcam.set_unpack_mode(0)
         rawcam.set_unpack_mode(0)
@@ -218,6 +221,9 @@ class ZynqScope(object):
         
         print("ZynqScope connect(): rawcam debug follows")
         rawcam.debug()
+
+        # Configure CSI transmitter with rawcam parameters: image_id must match for successful reception
+        self.zcmd.csi_setup_params(RAWCAM_IMAGE_ID, RAWCAM_WCT_HEADER)
         
         print("ZynqScope connect(): done initialisation")
         
