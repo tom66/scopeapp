@@ -254,7 +254,7 @@ class ZynqScope(object):
         else:
             buffer_count = RAWCAM_MIN_SPARE_BUFFERS + 1
 
-        self.rawcam_buffer_dims = (lines, buffer_size, buffer_count)
+        self.rawcam_buffer_dims = (lines, buffer_size, buffer_count - RAWCAM_MIN_SPARE_BUFFERS)
 
         print("lines_per_buffer:", lines, "buffer_size:", buffer_size, "buffer_max:", buffer_max, "num_buffers:", buffer_count)
 
