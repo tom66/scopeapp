@@ -222,7 +222,6 @@ class ZynqScope(object):
         return True
     
     def rawcam_init(self):
-        return
         print("ZynqScope rawcam_init(): setting up rawcam")
 
         self.rc = rawcam.init()
@@ -281,7 +280,6 @@ class ZynqScope(object):
         rawcam.buffer_free(buffer)
 
     def rawcam_stop(self):
-        return
         if self.rawcam_running:
             print("ZynqScope: rawcam_stop()")
             rawcam.stop()
