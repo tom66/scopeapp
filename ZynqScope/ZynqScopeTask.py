@@ -58,7 +58,7 @@ class ZynqScopeGetStatus(ZynqScopeTaskQueueCommand): pass
 class ZynqScopeGetAcqStatus(ZynqScopeTaskQueueCommand): pass
 class ZynqScopeGetAttributes(ZynqScopeTaskQueueCommand): pass
 
-class ZynqScopeRawcamConfgiure(ZynqScopeTaskQueueCommand):
+class ZynqScopeRawcamConfigure(ZynqScopeTaskQueueCommand):
     def __init__(self, buffer_size):
         self.buffer_size = buffer_size
 
@@ -197,7 +197,7 @@ class ZynqScopeSubprocess(multiprocessing.Process):
             resp = self.zs.zcmd.comp_acq_control(msg.flags)
             self.rsq.put(resp)
         
-        elif typ is ZynqScopeRawcamConfgiure:
+        elif typ is ZynqScopeRawcamConfigure:
             self.zs.rawcam_configure(msg.buffer_size)
             
         elif typ is ZynqScopeRawcamStart:
