@@ -229,7 +229,7 @@ class ZynqSPI(object):
                 #return None
                 if len(data) >= size:
                     resp_state = STATE_RESP_DONE
-                raise Exception
+                #raise Exception
             elif resp_state == STATE_RESP_DONE:
                 data = data[:size] # Crop any extra bytes
                 break
