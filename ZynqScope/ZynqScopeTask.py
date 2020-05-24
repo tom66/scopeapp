@@ -259,7 +259,7 @@ class ZynqScopeSubprocess(multiprocessing.Process):
         """Acquisition tick process.  Manages acquisition and SPI control."""
         # This function should be cleaned up: we need to use ZynqScope API where possible, 
         # and not send our own ZynqCommands...
-        if self.acq_state != TSTATE_ACQ_IDLE
+        if self.acq_state != TSTATE_ACQ_IDLE:
             print("aq=%d" % self.acq_state)
 
         if self.acq_state == TSTATE_ACQ_PREPARE_TO_START:
