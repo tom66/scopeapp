@@ -210,19 +210,7 @@ class ZynqScope(object):
 
         # Connect rawcam library.  TODO: These parameters might need to be configured by the 
         # hardware configuration, for instance the camera number in use.
-        print("ZynqScope connect(): setting up rawcam")
-        self.rc = rawcam.init()
-        rawcam.set_data_lanes(2)
-        rawcam.set_image_id(RAWCAM_IMAGE_ID)
-        rawcam.set_pack_mode(0)
-        rawcam.set_unpack_mode(0)
-        rawcam.set_unpack_mode(0)
-        rawcam.set_encoding_fourcc(ord('G'), ord('R'), ord('B'), ord('G'))
-        rawcam.set_zero_copy(1)
-        rawcam.set_camera_num(1)
-        
-        print("ZynqScope connect(): rawcam debug follows")
-        rawcam.debug()
+        self.rawcam_init()
 
         # Configure CSI transmitter with rawcam parameters: image_id must match for successful reception
         self.zcmd.csi_setup_params(RAWCAM_WCT_HEADER, RAWCAM_IMAGE_ID)
@@ -232,7 +220,25 @@ class ZynqScope(object):
         # Instead of blindly returning True we should check that the hardware is ready first...
         return True
     
+    def rawcam_init(self):
+        return
+        print("ZynqScope rawcam_init(): setting up rawcam")
+
+        self.rc = rawcam.init()
+        rawcam.set_data_lanes(2)
+        rawcam.set_image_id(RAWCAM_IMAGE_ID)
+        rawcam.set_pack_mode(0)
+        rawcam.set_unpack_mode(0)
+        rawcam.set_unpack_mode(0)
+        rawcam.set_encoding_fourcc(ord('G'), ord('R'), ord('B'), ord('G'))
+        rawcam.set_zero_copy(1)
+        rawcam.set_camera_num(1)
+
+        print("ZynqScope rawcam_init(): rawcam debug follows")
+        rawcam.debug()
+
     def rawcam_configure(self, buffer_size):
+        return
         """Configure the rawcam port for a specific buffer size."""
         lines = buffer_size // RAWCAM_LINE_SIZE
 
@@ -247,6 +253,7 @@ class ZynqScope(object):
         rawcam.debug()
 
     def rawcam_start(self):
+        return
         if self.rawcam_running:
             raise RuntimeError("Rawcam is already started, must stop before starting")
         else:
@@ -266,6 +273,7 @@ class ZynqScope(object):
         rawcam.buffer_free(buffer)
 
     def rawcam_stop(self):
+        return
         if self.rawcam_running:
             print("ZynqScope: rawcam_stop()")
             rawcam.stop()
