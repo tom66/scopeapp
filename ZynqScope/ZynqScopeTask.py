@@ -170,12 +170,15 @@ class ZynqScopeSubprocess(multiprocessing.Process):
         elif typ is ZynqScopeRawcamDequeueBuffer:
             self.rsq.put(self.zs.rawcam_get_buffer())
             
+        elif typ is ZynqScopeRawcamStop:
+            self.zs.rawcam_stop()
+            
         elif typ is ZynqScopeDieTask:
             print("ZynqScopeSubprocess: DieTask received")
             self.die_req = True
             
         else:
-            raise RuntimeError("Unimplemented/unsupported task class")
+            raise RuntimeError("Unimplemented/unsupported task class: %r (type: %r)" % (msg, typ))
     
     def rawcam_tick(self):
         """Rawcam tick process.  Checks buffer state."""
@@ -274,6 +277,7 @@ class ZynqScopeTaskController():
         if self.acq_state == TSTATE_ACQ_RUNNING:
             if self.rawcam_running:
                 self.evq_cache('ZynqScopeRawcamStop')
+                self.rawcam_running = False
 
             cmd = self.roc['ZynqScopeSendCompAcqStreamCommand']
             cmd.flags = zc.COMP0_ACQ_STOP | zc.COMP0_ACQ_GET_STATUS | zc.COMP0_ACQ_REWIND | zc.COMP0_ACQ_START_RESET_FIFO | \
