@@ -223,7 +223,7 @@ class ZynqScope(object):
         rawcam.debug()
 
         # Configure CSI transmitter with rawcam parameters: image_id must match for successful reception
-        self.zcmd.csi_setup_params(RAWCAM_IMAGE_ID, RAWCAM_WCT_HEADER)
+        self.zcmd.csi_setup_params(RAWCAM_WCT_HEADER, RAWCAM_IMAGE_ID)
         
         print("ZynqScope connect(): done initialisation")
         
@@ -247,6 +247,9 @@ class ZynqScope(object):
 
     def rawcam_get_buffer(self):
         return rawcam.buffer_get()
+
+    def rawcam_free_buffer(self, buffer):
+        rawcam.buffer_free(buffer)
 
     def calc_real_sample_rate_for_index(self, index):
         """Only supports 8-bit mode for now"""
