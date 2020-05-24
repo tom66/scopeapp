@@ -259,7 +259,8 @@ class ZynqScopeSubprocess(multiprocessing.Process):
         """Acquisition tick process.  Manages acquisition and SPI control."""
         # This function should be cleaned up: we need to use ZynqScope API where possible, 
         # and not send our own ZynqCommands...
-        print("aq=%d" % self.acq_state)
+        if self.acq_state != TSTATE_ACQ_IDLE
+            print("aq=%d" % self.acq_state)
 
         if self.acq_state == TSTATE_ACQ_PREPARE_TO_START:
             # Stop, if we get a signal
@@ -311,7 +312,7 @@ class ZynqScopeSubprocess(multiprocessing.Process):
             if self.stop_signal:
                 self.acq_state = TSTATE_ACQ_IDLE
                 self.cleanup_rawcam_buffers()
-                self.rawcam_stop()
+                self.zs.rawcam_stop()
                 self.zcmd.stop_acquisition()
             else:
                 # We sit in this state waiting for the buffers we need to come in.

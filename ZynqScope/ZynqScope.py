@@ -246,7 +246,7 @@ class ZynqScope(object):
         rawcam.set_buffer_dimensions(RAWCAM_LINE_SIZE, lines)
         rawcam.debug()
 
-    def rawcam_start(self, buffer_size):
+    def rawcam_start(self):
         print("ZynqScope: rawcam_start()")
         rawcam.debug()
         rawcam.start()
