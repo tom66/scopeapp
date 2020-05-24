@@ -147,9 +147,12 @@ class ZynqScopeSubprocess(multiprocessing.Process):
                 # Process any commands in the queue
                 while not self.evq.empty():
                     self.queue_process()
-                    self.acquisition_tick()
+
+                # Process the acquisition tasks
+                self.acquisition_tick()
             
             if self.die_req:
+                self.die_cleanup()
                 self.terminate()
                 return False
             
@@ -349,6 +352,10 @@ class ZynqScopeSubprocess(multiprocessing.Process):
         
         else:
             print("Idle--not running")
+
+    def die_cleanup(self):
+        """Stub - to be fleshed out later."""
+        return
             
 class ZynqScopeTaskController():
     """

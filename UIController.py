@@ -259,8 +259,8 @@ class MainApplication(object):
         except:
             self.flash_period = 0.4 # Default
 
-        # Set the start signal.  It will start the acquisition automatically about 2 seconds after the application launches.
-        self.start_auto = time.time() + 2.0
+        # Set the start signal.  It will start the acquisition automatically a few seconds after the application launches.
+        self.start_auto = time.time() + 8.0
     
     def __user_exception_handler(func):
         def wrapper(self, *args):
