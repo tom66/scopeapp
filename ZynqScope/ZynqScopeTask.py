@@ -273,8 +273,10 @@ class ZynqScopeSubprocess(multiprocessing.Process):
 
                 # Setup the rawcam interface preparing to acquire.  Save a copy of the acquisition
                 # params before starting.
+                print("rawcam_configure()")
                 self.acq_params = self.zs.params
                 self.zs.rawcam_configure(self.acq_params.expected_buffer_size)
+                print("rawcam_configure() is done")
 
                 # Wait, then start acquiring data
                 self.acq_state = TSTATE_ACQ_AUTO_WAIT
