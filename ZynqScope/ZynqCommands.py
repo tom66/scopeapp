@@ -315,7 +315,7 @@ class ZynqCommands(object):
             resp = self.acqstatus_cache.unpack(resp)
             ret['AcqStatus'] = self.acqstatus_cache
 
-        if (flags & COMP0_RESP_CSI_SIZE):
+        if (flags & COMP0_SPI_RESP_CSI_SIZE):
             resp = self.csitxsize_cache.unpack(resp)
             ret['CSITxSize'] = self.csitxsize_cache
 
