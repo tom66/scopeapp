@@ -130,7 +130,7 @@ class ZynqScopeSubprocess(multiprocessing.Process):
         self.task_period = 1.0 / DEFAULT_ZYNQ_TASK_RATE
         self.target_acq_period = 1.0 / DEFAULT_ACQUISITION_RATE
         
-        print("ZynqScopeSubprocess __init__(): task_period=%2.6f, ping_multiple=%2.2f" % (self.task_period, self.ping_multiple))
+        print("ZynqScopeSubprocess __init__(): task_period=%2.6f, target_acq_period=%2.2f" % (self.task_period, self.target_acq_period))
         
     def run(self):
         """Runs periodically to check the status of the Zynq.  Presently set to ping at 50Hz,
