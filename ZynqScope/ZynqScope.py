@@ -16,6 +16,9 @@ import ZynqScope.pirawcam.rawcam as rawcam
 ZYNQ_SAMPLE_WORD_SIZE = 8
 ZYNQ_SAMPLE_WORD_CACHE_DIVISIBLE = 32
 
+RAWCAM_LINE_SIZE = 2048
+RAWCAM_NUM_BUFFERS = 8
+
 # Supported timebases
 """
 timebase_options = [1e-9, 2e-9, 5e-9, 10e-9, 20e-9, 50e-9, 100e-9, 200e-9, 500e-9, 
@@ -206,18 +209,12 @@ class ZynqScope(object):
         self.rc = rawcam.init()
         rawcam.set_data_lanes(2)
         rawcam.set_image_id(0x2a)
-        rawcam.set_buffer_size(2048 * 128)
-        rawcam.set_buffer_num(8)
-        rawcam.set_buffer_dimensions(2048, 128)
         rawcam.set_pack_mode(0)
         rawcam.set_unpack_mode(0)
         rawcam.set_unpack_mode(0)
         rawcam.set_encoding_fourcc(ord('G'), ord('R'), ord('B'), ord('G'))
         rawcam.set_zero_copy(1)
         rawcam.set_camera_num(1)
-        
-        # I can't help but think this is a horrible, horrible hack and we should do better. (Is it even needed?)
-        self.rawcam_mod = rawcam  
         
         print("ZynqScope connect(): rawcam debug follows")
         rawcam.debug()
@@ -227,6 +224,24 @@ class ZynqScope(object):
         # Instead of blindly returning True we should check that the hardware is ready first...
         return True
     
+    def rawcam_start(self, buffer_size):
+        """Setup rawcam with the given buffer size, and a line count that is a rounded
+        multiple of the buffer size."""
+        lines = buffer_size / RAWCAM_LINE_SIZE
+
+        if (buffer_size % RAWCAM_LINE_SIZE) != 0:
+            lines += 1
+
+        rawcam.set_buffer_num(RAWCAM_NUM_BUFFERS)
+        rawcam.set_buffer_size(RAWCAM_LINE_SIZE * lines)
+        rawcam.set_buffer_dimensions(RAWCAM_LINE_SIZE, lines)
+
+    def rawcam_get_buffer_count(self):
+        return rawcam.buffer_count()
+
+    def rawcam_get_buffer(self):
+        return rawcam.buffer_get()
+
     def calc_real_sample_rate_for_index(self, index):
         """Only supports 8-bit mode for now"""
         return (1e6 * self.sample_rates_8b_pll_freq[index]) / self.sample_rates_8b_adc_div[index]

@@ -49,12 +49,13 @@ class ZynqScopeSyncAcquisitionSettings(ZynqScopeTaskQueueCommand): pass
 class ZynqScopeGetStatus(ZynqScopeTaskQueueCommand): pass
 class ZynqScopeGetAcqStatus(ZynqScopeTaskQueueCommand): pass
 class ZynqScopeGetAttributes(ZynqScopeTaskQueueCommand): pass
-class ZynqScopeRawcamStart(ZynqScopeTaskQueueCommand): pass
-class ZynqScopeDieTask(ZynqScopeTaskQueueCommand): pass
 
-class ZynqScopeRawcamBufferContainer(ZynqScopeTaskQueueResponse):
-    def __init__(self, rcb):
-        self.rcb = rcb
+class ZynqScopeRawcamStart(ZynqScopeTaskQueueCommand):
+    def __init__(self, size):
+        self.size = size
+
+class ZynqScopeRawcamDequeueBuffer(ZynqScopeTaskQueueCommand): pass
+class ZynqScopeDieTask(ZynqScopeTaskQueueCommand): pass
 
 class ZynqScopeAttributesResponse(ZynqScopeTaskQueueResponse): pass
 class ZynqScopeNullResponse(ZynqScopeTaskQueueResponse): pass
@@ -122,12 +123,13 @@ class ZynqScopeSubprocess(multiprocessing.Process):
     def queue_process(self):
         """See what work there is to do."""
         msg = self.evq.get()
-        #print("queue_process: %r" % msg)
         
         if not isinstance(msg, ZynqScopeTaskQueueCommand):
             raise RuntimeError("Queue message not subclass of ZynqScopeTaskQueueCommand")
         
-        if type(msg) is ZynqScopeCmdsIfcSimpleCommand:
+        typ = type(msg)
+
+        if typ is ZynqScopeCmdsIfcSimpleCommand:
             # This is a simple command: we call the relevant method on the ZynqCommands interface.
             # This is used, e.g. to set trigger parameters.  If 'flush' bit is set, then a flush 
             # command is also sent.
@@ -135,39 +137,39 @@ class ZynqScopeSubprocess(multiprocessing.Process):
             if msg.flush:
                 self.zs.zcmd.flush()
             
-        elif type(msg) is ZynqScopeSimpleCommand:
+        elif typ is ZynqScopeSimpleCommand:
             # This is a simple command: we call the relevant method on the ZynqScope interface.
             # This is used, e.g. to set acquisition parameters.  
             print("ZynqScopeSimpleCommand:", msg, msg.args, msg.kwargs)
             getattr(self.zs, msg.cmd_name)(*msg.args, **msg.kwargs)
             
-        elif type(msg) is ZynqScopeSyncAcquisitionSettings:
+        elif typ is ZynqScopeSyncAcquisitionSettings:
             self.zs.setup_for_timebase(0, None) # TODO: These parameters need to be filled in, too!
             
-        elif type(msg) is ZynqScopeGetAcqStatus:
+        elif typ is ZynqScopeGetAcqStatus:
             # Enquire scope acquisition status.  Returns a ZynqAcqStatus object.
             resp = self.zs.zcmd.acq_status()
             self.rsq.put(resp)
             
-        elif type(msg) is ZynqScopeGetAttributes:
+        elif typ is ZynqScopeGetAttributes:
             # Return a safed object copy of all scope parameters which can be accessed
             resp = ZynqScopeAttributesResponse()
             compress_class_attrs_for_response(resp, self.zs, exclude=[zc.ZynqCommands, rawcam.interface, ModuleType])
             #print(resp)
             self.rsq.put(resp)
             
-        elif type(msg) is ZynqScopeSendCompAcqStreamCommand:
+        elif typ is ZynqScopeSendCompAcqStreamCommand:
             # Send a composite acquisition status command and return the response data.
             resp = self.zs.zcmd.comp_acq_control(msg.flags)
             self.rsq.put(resp)
         
-        elif type(msg) is ZynqScopeRawcamStart:
-            self.zs.rawcam_mod.start()
+        elif typ is ZynqScopeRawcamStart:
+            self.zs.rawcam_start(msg.buffer_size)
             
-        elif type(msg) is ZynqScopeRawcamDequeueBuffer:
-            self.rsq.put(self.zs.rawcam_mod.buffer_get())
+        elif typ is ZynqScopeRawcamDequeueBuffer:
+            self.rsq.put(self.zs.rawcam_get_buffer())
             
-        elif type(msg) is ZynqScopeDieTask:
+        elif typ is ZynqScopeDieTask:
             print("ZynqScopeSubprocess: DieTask received")
             self.die_req = True
             
@@ -176,7 +178,7 @@ class ZynqScopeSubprocess(multiprocessing.Process):
     
     def rawcam_tick(self):
         """Rawcam tick process.  Checks buffer state."""
-        self.shared_dict['buffer_count'] = self.zs.rawcam_mod.buffer_count()
+        self.shared_dict['buffer_count'] = self.zs.rawcam_get_buffer_count()
             
 class ZynqScopeTaskController():
     """
@@ -191,6 +193,7 @@ class ZynqScopeTaskController():
         self.rsq = multiprocessing.Queue()
         self.shared_dict = multiprocessing.Manager().dict()
         self.zstask = ZynqScopeSubprocess(self.evq, self.rsq, self.shared_dict, zs_init_args)
+        self.status = zc.ZynqAcqStatus()
         
         # Fill common request objects cache
         self.roc = {
@@ -198,6 +201,8 @@ class ZynqScopeTaskController():
             'ZynqScopeDieTask' : ZynqScopeDieTask(),
             'ZynqScopeSendCompAcqStreamCommand' : ZynqScopeSendCompAcqStreamCommand(0x0000),
             'ZynqScopeSimpleCommand_SetupForTimebase' : ZynqScopeSimpleCommand("setup_for_timebase"),
+            'ZynqScopeRawcamStart' : ZynqScopeRawcamStart(0),
+            'ZynqScopeRawcamDequeueBuffer' : ZynqScopeRawcamDequeueBuffer()
         }
         
         # Cache for last fetched attributes
@@ -270,7 +275,15 @@ class ZynqScopeTaskController():
             
             print("cmd.flags 0x%04x" % cmd.flags)
             self.evq.put(cmd)
-            print("CompAcqResponse:", self.rsq.get())
+            resp = self.rsq.get()
+            self.status = resp['AcqStatus']
+
+            # Setup the CSI TX for the amount of data we expect to receive
+            msg = self.roc['ZynqScopeRawcamStart']
+            msg.size = resp['CSITxSize'].all_waves_size
+            self.evq.put(msg)
+
+            #print("CompAcqResponse:", self.rsq.get())
             print("buffer_count:", self.shared_dict['buffer_count'])
         else:
             print("Idle--not running")
