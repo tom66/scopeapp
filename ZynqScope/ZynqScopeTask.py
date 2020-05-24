@@ -102,7 +102,6 @@ class ZynqScopeSubprocess(multiprocessing.Process):
     and emits state messages via a separate queue. 
     """
     state = STATE_ZYNQ_NOT_READY
-    acq_state = ACQSTATE_ACQ_NOT_RUNNING
     die_req = False
     zs_init_args = None
     buffers_freeable = []
