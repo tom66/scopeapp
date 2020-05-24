@@ -249,7 +249,7 @@ class ZynqScope(object):
         # add extra buffers if needed
         buffer_max = RAWCAM_LINE_SIZE * RAWCAM_MAX_BUFFER_HEIGHT
         if (buffer_size > buffer_max):
-            buffer_count = RAWCAM_MIN_SPARE_BUFFERS + (buffer_size / buffer_max)
+            buffer_count = RAWCAM_MIN_SPARE_BUFFERS + (buffer_size // buffer_max)
             lines = RAWCAM_MAX_BUFFER_HEIGHT
         else:
             buffer_count = RAWCAM_MIN_SPARE_BUFFERS + 1
