@@ -292,6 +292,7 @@ class ZynqScopeTaskController():
             msg = self.roc['ZynqScopeRawcamStart']
             msg.buffer_size = resp['CSITxSize'].all_waves_size
             self.evq.put(msg)
+            self.rawcam_running = True
 
             #print("CompAcqResponse:", self.rsq.get())
             print("rx_buffer_count:", self.shared_dict['buffer_count'], "buffer_size:", msg.buffer_size, "status:", self.status)
