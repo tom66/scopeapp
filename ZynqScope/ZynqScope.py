@@ -191,6 +191,7 @@ class ZynqScope(object):
     rc = None
     rawcam_mod = None 
     rawcam_running = False
+    rawcam_buffer_dims = (0, 0, 0)
     
     def __init__(self, display_samples_target, default_hdiv_span):
         # Set default parameters
@@ -252,6 +253,8 @@ class ZynqScope(object):
             lines = RAWCAM_MAX_BUFFER_HEIGHT
         else:
             buffer_count = RAWCAM_MIN_SPARE_BUFFERS + 1
+
+        self.rawcam_buffer_dims = (lines, buffer_size, buffer_count)
 
         print("lines_per_buffer:", lines, "buffer_size:", buffer_size, "buffer_max:", buffer_max, "num_buffers:", buffer_count)
 

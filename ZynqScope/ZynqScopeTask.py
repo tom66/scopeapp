@@ -320,9 +320,7 @@ class ZynqScopeSubprocess(multiprocessing.Process):
                 print("Buffer count: %d" % self.zs.rawcam_get_buffer_count())
 
                 # We sit in this state waiting for the buffers we need to come in.
-                # In actuality we set the peripheral up to transfer 1 buffer of the correct size, once
-                # maximums are determined we will split transfers up.  So we just wait for one buffer to be done.
-                if self.zs.rawcam_get_buffer_count() >= 1:
+                if self.zs.rawcam_get_buffer_count() >= self.zs.rawcam_buffer_dims[2]:
                     # Dequeue this buffer and record the pointer so we can free this later
                     resp = ZynqScopeAcquisitionResponse()
                     buff = self.zs.rawcam_get_buffer()
