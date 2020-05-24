@@ -164,7 +164,7 @@ class ZynqScopeSubprocess(multiprocessing.Process):
             # This is a simple command: we call the relevant method on the ZynqCommands interface.
             # This is used, e.g. to set trigger parameters.  If 'flush' bit is set, then a flush 
             # command is also sent.
-            getattr(self.zs.zcmd, msg.cmd_name)(*msg.args, **msg.kwargs)
+            getattr(self.zs.zcmd, msg.cmd_name)(*msg.args, **msg.kwargs) 
             if msg.flush:
                 self.zs.zcmd.flush()
             
@@ -229,7 +229,7 @@ class ZynqScopeSubprocess(multiprocessing.Process):
         Then the acquisition is started and result buffers will be streamed via the response queue.
         Note that auto in this context refers to the acquisition control being autonomous; it does
         not relate to the AUTO trigger mode."""
-        print("in start_auto_acquisition()")
+        print("start_auto_acquisition(): entry")
 
         if self.acq_state != TSTATE_ACQ_IDLE:
             # We need to halt the state machine first... 
@@ -238,19 +238,26 @@ class ZynqScopeSubprocess(multiprocessing.Process):
 
             # We might need some timeout logic here if the state machine locks up for any reason
             while self.acq_state != TSTATE_ACQ_IDLE:
+                print("start_auto_acquisition(): waiting for IDLE %d ..." % self.acq_state)
                 self.acquisition_tick()
 
         self.zs.setup_for_timebase()
-        self.zcmd.setup_trigger_edge(zc.TRIG_CH_ADCSRC1, 0x7f, 0x10, zc.TRIG_EDGE_RISING) # write default trigger
-        self.zcmd.start_acquisition()
+        self.zs.zcmd.flush()
+        self.zs.zcmd.setup_trigger_edge(zc.TRIG_CH_ADCSRC1, 0x7f, 0x10, zc.TRIG_EDGE_RISING) # write default trigger
+        self.zs.zcmd.start_acquisition()
+        self.zs.zcmd.flush()
         self.time_last_acq = time.time()
         self.start_signal = True
         self.shared_dict['running_state'] = ACQSTATE_RUNNING_WAIT
+
+        print("start_auto_acquisition(): done")
 
     def acquisition_tick(self):
         """Acquisition tick process.  Manages acquisition and SPI control."""
         # This function should be cleaned up: we need to use ZynqScope API where possible, 
         # and not send our own ZynqCommands...
+        print("aq=%d" % self.acq_state)
+
         if self.acq_state == TSTATE_ACQ_PREPARE_TO_START:
             # Stop, if we get a signal
             if self.stop_signal:
@@ -265,8 +272,8 @@ class ZynqScopeSubprocess(multiprocessing.Process):
                 self.acq_params = self.zs.params
                 self.zs.rawcam_configure(self.acq_params.expected_buffer_size)
 
-                # Start acquiring data...
-                self.acq_state = TSTATE_ACQ_PING_ZYNQ
+                # Wait, then start acquiring data
+                self.acq_state = TSTATE_ACQ_AUTO_WAIT
 
         elif self.acq_state == TSTATE_ACQ_PING_ZYNQ:
             # Stop, if we get a signal
