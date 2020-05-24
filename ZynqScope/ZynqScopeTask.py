@@ -368,7 +368,7 @@ class ZynqScopeTaskController():
             'ZynqScopeRawcamStart' : ZynqScopeRawcamStart(),
             'ZynqScopeRawcamDequeueBuffer' : ZynqScopeRawcamDequeueBuffer(),
             'ZynqScopeRawcamStop' : ZynqScopeRawcamStop(),
-            'ZynqScopeStartAutoAcquisition' : ZynqScopeStartAutoAcquisition()
+            'ZynqScopeStartAutoAcquisition' : ZynqScopeStartAutoAcquisition(None)
         }
         
         # Cache for last fetched attributes
