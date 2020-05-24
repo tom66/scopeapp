@@ -227,7 +227,7 @@ class ZynqScope(object):
     def rawcam_start(self, buffer_size):
         """Setup rawcam with the given buffer size, and a line count that is a rounded
         multiple of the buffer size."""
-        lines = buffer_size / RAWCAM_LINE_SIZE
+        lines = buffer_size // RAWCAM_LINE_SIZE
 
         if (buffer_size % RAWCAM_LINE_SIZE) != 0:
             lines += 1
