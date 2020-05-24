@@ -473,9 +473,6 @@ class ScopeController(object):
         self.zst.start_task()
         self.timebase = ScopeTimebaseController(self.zst)
         self.timebase.set_change_notifier(self.change_notifier)
-        
-        # for testing
-        self.acq_run()
     
     def save_settings_temp(self):
         self.save_settings(TEMP_SETTING_FILE)

@@ -302,7 +302,7 @@ class ZynqScopeSubprocess(multiprocessing.Process):
                     # No acquisitions.  Maybe no trigger.  Go back to AUTO_WAIT.
                     self.acq_state = TSTATE_ACQ_AUTO_WAIT
                 else:
-                    self.rawcam_start()
+                    self.zs.rawcam_start()
                     self.acq_state = TSTATE_ACQ_WAITING_FOR_CSI_TRANSFER
                     self.shared_dict['running_state'] = ACQSTATE_RUNNING_TRIGD
 
