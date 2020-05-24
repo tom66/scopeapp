@@ -204,7 +204,7 @@ class ZynqScopeTaskController():
             'ZynqScopeSendCompAcqStreamCommand' : ZynqScopeSendCompAcqStreamCommand(0x0000),
             'ZynqScopeSimpleCommand_SetupForTimebase' : ZynqScopeSimpleCommand("setup_for_timebase"),
             'ZynqScopeRawcamStart' : ZynqScopeRawcamStart(0),
-            'ZynqScopeRawcamDequeueBuffer' : ZynqScopeRawcamDequeueBuffer()
+            'ZynqScopeRawcamDequeueBuffer' : ZynqScopeRawcamDequeueBuffer(),
             'ZynqScopeRawcamStop' : ZynqScopeRawcamStop()
         }
         
