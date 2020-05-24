@@ -104,7 +104,7 @@ class ZynqScopeSubprocess(multiprocessing.Process):
     state = STATE_ZYNQ_NOT_READY
     die_req = False
     zs_init_args = None
-    buffers_freeable = []
+    buffers_temp = []
 
     stop_signal = False
     start_signal = False
@@ -320,15 +320,16 @@ class ZynqScopeSubprocess(multiprocessing.Process):
                 print("Buffer count: %d" % self.zs.rawcam_get_buffer_count())
 
                 # We sit in this state waiting for the buffers we need to come in.
-                if self.zs.rawcam_get_buffer_count() >= self.zs.rawcam_buffer_dims[2]:
+                while self.zs.rawcam_get_buffer_count() > 0: #>= self.zs.rawcam_buffer_dims[2]:
                     # Dequeue this buffer and record the pointer so we can free this later
-                    resp = ZynqScopeAcquisitionResponse()
                     buff = self.zs.rawcam_get_buffer()
-                    self.buffers_freeable.append(buff)
+                    self.buffers_temp.append(buff)
 
+                if len(self.buffers_temp) >= self.zs.rawcam_buffer_dims[2]:
                     # Create the response and send it
+                    resp = ZynqScopeAcquisitionResponse()
                     resp.time = time.time()
-                    resp.buffers = [buff]
+                    resp.buffers = self.buffers_temp
                     resp.status = self.acq_comp0_response['AcqStatus']
                     self.acq_response_queue.put(resp)
 
