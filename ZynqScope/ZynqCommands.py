@@ -17,6 +17,14 @@ class ZynqAcqStatus(object):
     def __repr__(self):
         return "<ZynqAcqStatus flags=0x%04x num_acq=%d>" % (self.flags, self.num_acq)
 
+class ZynqTXSizeResponse(object):
+    all_waves_size = 0
+    trigger_data_size = 0
+    bitpack_size = 0
+    
+    def __repr__(self):
+        return "<ZynqTXSizeResponse all_waves_size=%d bytes trigger_data_size=%d bytes bitpack_size=%d bytes>" % (self.all_waves_size, self.trigger_data_size, self.bitpack_size)
+
 # Not all of these modes are currently implemented;  use only the 8-bit 1 channel mode for now
 ACQ_MODE_8B_1CH  = 0x0021
 ACQ_MODE_8B_2CH  = 0x0041
