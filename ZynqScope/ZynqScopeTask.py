@@ -317,7 +317,7 @@ class ZynqScopeSubprocess(multiprocessing.Process):
                 self.zs.rawcam_stop()
                 self.zcmd.stop_acquisition()
             else:
-                print("Buffer count: %d, size of list: %d" % (self.zs.rawcam_get_buffer_count(), len(self.buffers_temp)))
+                print("Buffer count: %d, size of list: %d/%d" % (self.zs.rawcam_get_buffer_count(), len(self.buffers_temp), self.zs.rawcam_buffer_dims[2]))
 
                 # We sit in this state waiting for the buffers we need to come in.
                 while self.zs.rawcam_get_buffer_count() > 0: #>= self.zs.rawcam_buffer_dims[2]:
