@@ -17,7 +17,8 @@ ZYNQ_SAMPLE_WORD_SIZE = 8
 ZYNQ_SAMPLE_WORD_CACHE_DIVISIBLE = 32
 
 RAWCAM_LINE_SIZE = 2048
-RAWCAM_NUM_BUFFERS = 4
+RAWCAM_MAX_BUFFER_HEIGHT = 128
+RAWCAM_MIN_SPARE_BUFFERS = 4
 
 RAWCAM_IMAGE_ID = 0x2a
 RAWCAM_WCT_HEADER = 0x0000
@@ -238,22 +239,29 @@ class ZynqScope(object):
         rawcam.debug()
 
     def rawcam_configure(self, buffer_size):
-        return
         """Configure the rawcam port for a specific buffer size."""
         lines = buffer_size // RAWCAM_LINE_SIZE
 
         if (buffer_size % RAWCAM_LINE_SIZE) != 0:
             lines += 1
 
-        print("lines:", lines, "buffer_size:", buffer_size, "num_buffers:", RAWCAM_NUM_BUFFERS)
+        # max per-buffer size is RAWCAM_LINE_SIZE * RAWCAM_MAX_BUFFER_HEIGHT;
+        # add extra buffers if needed
+        buffer_max = RAWCAM_LINE_SIZE * RAWCAM_MAX_BUFFER_HEIGHT
+        if (buffer_size > buffer_max):
+            buffer_count = RAWCAM_MIN_SPARE_BUFFERS + (buffer_size / buffer_max)
+            lines = RAWCAM_MAX_BUFFER_HEIGHT
+        else:
+            buffer_count = RAWCAM_MIN_SPARE_BUFFERS + 1
 
-        rawcam.set_buffer_num(RAWCAM_NUM_BUFFERS)
+        print("lines_per_buffer:", lines, "buffer_size:", buffer_size, "num_buffers:", buffer_count)
+
+        rawcam.set_buffer_num(buffer_count)
         rawcam.set_buffer_size(RAWCAM_LINE_SIZE * lines)
         rawcam.set_buffer_dimensions(RAWCAM_LINE_SIZE, lines)
         rawcam.debug()
 
     def rawcam_start(self):
-        return
         if self.rawcam_running:
             raise RuntimeError("Rawcam is already started, must stop before starting")
         else:
