@@ -223,12 +223,13 @@ class ZynqSPI(object):
             elif resp_state == STATE_RESP_READ_DATA:
                 #data += "".join(map(chr, map(lambda x: 35 if (x == 0) else x, resp)))
                 #data += b"".join(map(chr, resp))
-                print(resp)
+                print("ZynqSPI Append debug:", resp, len(resp), data)
                 data += bytearray(resp)
                 #print("READ_DATA2", byt_, size, len(data), data)
                 #return None
                 if len(data) >= size:
                     resp_state = STATE_RESP_DONE
+                raise Exception
             elif resp_state == STATE_RESP_DONE:
                 data = data[:size] # Crop any extra bytes
                 break
