@@ -26,6 +26,11 @@ TSTATE_ACQ_PING_ZYNQ = 2
 TSTATE_ACQ_WAITING_FOR_CSI_TRANSFER = 3
 TSTATE_ACQ_AUTO_WAIT = 4
 
+ACQSTATE_RUNNING_WAIT = 0
+ACQSTATE_RUNNING_TRIGD = 1
+ACQSTATE_RUNNING_AUTO_TRIGD = 2
+ACQSTATE_STOPPED = 3
+
 class ZynqScopeTaskQueueCommand(object): pass
 class ZynqScopeTaskQueueResponse(object): pass
 
@@ -120,7 +125,7 @@ class ZynqScopeSubprocess(multiprocessing.Process):
         self.zs_init_args = zs_init_args
 
         self.acq_state = TSTATE_ACQ_IDLE
-        self.shared_dict['running_state'] = 
+        self.shared_dict['running_state'] = ACQSTATE_STOPPED
         
         # we might want the capability to tune the period as time goes by
         self.task_period = 1.0 / DEFAULT_ZYNQ_TASK_RATE
@@ -241,6 +246,7 @@ class ZynqScopeSubprocess(multiprocessing.Process):
         self.zcmd.start_acquisition()
         self.time_last_acq = time.time()
         self.start_signal = True
+        self.shared_dict['running_state'] = ACQSTATE_RUNNING_WAIT
 
     def acquisition_tick(self):
         """Acquisition tick process.  Manages acquisition and SPI control."""
@@ -289,6 +295,7 @@ class ZynqScopeSubprocess(multiprocessing.Process):
                 else:
                     self.rawcam_start()
                     self.acq_state = TSTATE_ACQ_WAITING_FOR_CSI_TRANSFER
+                    self.shared_dict['running_state'] = ACQSTATE_RUNNING_TRIGD
 
         elif self.acq_state == TSTATE_ACQ_WAITING_FOR_CSI_TRANSFER:
             # Stop, if we get a signal
