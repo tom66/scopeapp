@@ -14,14 +14,24 @@ class ZynqAcqStatus(object):
     num_acq = 0
     flags = 0
     
+    def unpack(self, resp):
+        """Unpack the data from the passed bytestring and return the remaining bytes, if any."""
+        self.num_acq, self.flags = struct.unpack("Ih", resp)
+        return resp[6:]
+
     def __repr__(self):
         return "<ZynqAcqStatus flags=0x%04x num_acq=%d>" % (self.flags, self.num_acq)
 
-class ZynqTXSizeResponse(object):
+class ZynqCSITxSizeResponse(object):
     all_waves_size = 0
     trigger_data_size = 0
     bitpack_size = 0
     
+    def unpack(self, resp):
+        """Unpack the data from the passed bytestring and return the remaining bytes, if any."""
+        self.all_waves_size, self.trigger_data_size, self.bitpack_size = struct.unpack("III", resp)
+        return resp[12:]
+
     def __repr__(self):
         return "<ZynqTXSizeResponse all_waves_size=%d bytes trigger_data_size=%d bytes bitpack_size=%d bytes>" % (self.all_waves_size, self.trigger_data_size, self.bitpack_size)
 
@@ -104,11 +114,13 @@ def _pack_16b_int_arg(arg):
 def _pack_8b_int_arg(arg):
     """Helper function to pack an 8-bit integer argument."""
     return ((arg & 0xff),)
-    
+
 class ZynqCommands(object):
     def __init__(self):
         self.zspi = zspi.ZynqSPI()
         self.self_test()
+        self.acqstatus_cache = ZynqAcqStatus()
+        self.csitxsize_cache = ZynqCSITxSizeResponse()
     
     def self_test(self):
         """Self test of SPI interface and read back of software and bitstream version."""
@@ -229,10 +241,10 @@ class ZynqCommands(object):
             return None
 
         #print(repr(resp))
-        status = ZynqAcqStatus()
-        status.num_acq, status.flags = struct.unpack("Ih", resp)
+        self.acqstatus_cache.unpack(resp)
+        #status.num_acq, status.flags = struct.unpack("Ih", resp)
         
-        return status
+        return self.acqstatus_cache
 
     def csi_setup_test_pattern(self, testpatt, size = 0, init_value = 0):
         """Queue command to setup a test pattern stream via CSI."""
@@ -295,8 +307,19 @@ class ZynqCommands(object):
     def comp_acq_control(self, flags):
         """Composite acquisition control and CSI data transfer."""
         # The response takes time to generate, and varies according to the flags, so set the expected response size to None
+        ret = {}
         resp = self.zspi.send_command_read_response(zcmd._COMP0, args=_pack_16b_int_arg(flags), expected_resp_size=None) 
-        print(len(resp), repr(resp))
+
+        # The below order must be maintained to correctly decode the packets
+        if (flags & SPICOMP0_ACQ_GET_STATUS):
+            resp = self.acqstatus_cache.unpack(resp)
+            ret['AcqStatus'] = self.acqstatus_cache
+
+        if (flags & SPICOMP0_RESP_CSI_SIZE):
+            resp = self.csitxsize_cache.unpack(resp)
+            ret['CSITxSize'] = self.csitxsize_cache
+
+        return ret
     
     def nop_mark(self):
         """Emit 0xfe into the queue as a debugging NOP."""

@@ -270,7 +270,7 @@ class ZynqScopeTaskController():
             
             print("cmd.flags 0x%04x" % cmd.flags)
             self.evq.put(cmd)
-            
+            print("CompAcqResponse:", self.rsq.get())
             print("buffer_count:", self.shared_dict['buffer_count'])
         else:
             print("Idle--not running")
