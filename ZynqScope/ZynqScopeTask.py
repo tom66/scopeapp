@@ -259,8 +259,8 @@ class ZynqScopeSubprocess(multiprocessing.Process):
         """Acquisition tick process.  Manages acquisition and SPI control."""
         # This function should be cleaned up: we need to use ZynqScope API where possible, 
         # and not send our own ZynqCommands...
-        if self.acq_state != TSTATE_ACQ_IDLE:
-            print("aq=%d" % self.acq_state)
+        #if self.acq_state != TSTATE_ACQ_IDLE:
+        #    print("aq=%d" % self.acq_state)
 
         if self.acq_state == TSTATE_ACQ_PREPARE_TO_START:
             # Stop, if we get a signal
@@ -315,6 +315,8 @@ class ZynqScopeSubprocess(multiprocessing.Process):
                 self.zs.rawcam_stop()
                 self.zcmd.stop_acquisition()
             else:
+                print("Buffer count: %d" % self.zs.rawcam_get_buffer_count())
+
                 # We sit in this state waiting for the buffers we need to come in.
                 # In actuality we set the peripheral up to transfer 1 buffer of the correct size, once
                 # maximums are determined we will split transfers up.  So we just wait for one buffer to be done.
