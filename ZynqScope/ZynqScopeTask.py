@@ -54,6 +54,7 @@ class ZynqScopeRawcamStart(ZynqScopeTaskQueueCommand):
     def __init__(self, buffer_size):
         self.buffer_size = buffer_size
 
+class ZynqScopeRawcamStop(ZynqScopeTaskQueueCommand): pass
 class ZynqScopeRawcamDequeueBuffer(ZynqScopeTaskQueueCommand): pass
 class ZynqScopeDieTask(ZynqScopeTaskQueueCommand): pass
 
@@ -194,6 +195,7 @@ class ZynqScopeTaskController():
         self.shared_dict = multiprocessing.Manager().dict()
         self.zstask = ZynqScopeSubprocess(self.evq, self.rsq, self.shared_dict, zs_init_args)
         self.status = zc.ZynqAcqStatus()
+        self.rawcam_running = False
         
         # Fill common request objects cache
         self.roc = {
@@ -203,11 +205,16 @@ class ZynqScopeTaskController():
             'ZynqScopeSimpleCommand_SetupForTimebase' : ZynqScopeSimpleCommand("setup_for_timebase"),
             'ZynqScopeRawcamStart' : ZynqScopeRawcamStart(0),
             'ZynqScopeRawcamDequeueBuffer' : ZynqScopeRawcamDequeueBuffer()
+            'ZynqScopeRawcamStop' : ZynqScopeRawcamStop()
         }
         
         # Cache for last fetched attributes
         self.attribs_cache = None
     
+    def evq_cache(self, key):
+        """Pack a cached message quickly into the queue for the subprocess."""
+        self.evq.put(self.roc[key])
+
     def start_task(self):
         self.zstask.start()
         
@@ -232,7 +239,7 @@ class ZynqScopeTaskController():
     def get_supported_timebases(self):
         attrs = self.get_attributes()
         return attrs.timebase_settings
-    
+
     def set_next_timebase_index(self, tb):
         self.evq.put(ZynqScopeSimpleCommand("set_next_timebase", (int(tb),)))
     
@@ -257,7 +264,7 @@ class ZynqScopeTaskController():
         #  - Sending any relay/attenuation unit changes.
         #  - Sending any ADC configuration changes.
         print("sync_to_real_world")
-        self.evq.put(self.roc['ZynqScopeSimpleCommand_SetupForTimebase'])
+        self.evq_cache('ZynqScopeSimpleCommand_SetupForTimebase')
     
     def acquisition_tick(self):
         """Manages Zynq acquisition control."""
@@ -265,6 +272,9 @@ class ZynqScopeTaskController():
         #print(self.get_attributes_cache().params)
         
         if self.acq_state == TSTATE_ACQ_RUNNING:
+            if self.rawcam_running:
+                self.evq_cache('ZynqScopeRawcamStop')
+
             cmd = self.roc['ZynqScopeSendCompAcqStreamCommand']
             cmd.flags = zc.COMP0_ACQ_STOP | zc.COMP0_ACQ_GET_STATUS | zc.COMP0_ACQ_REWIND | zc.COMP0_ACQ_START_RESET_FIFO | \
                         zc.COMP0_CSI_TRANSFER_WAVES | zc.COMP0_SPI_RESP_CSI_SIZE

@@ -255,6 +255,10 @@ class ZynqScope(object):
     def rawcam_free_buffer(self, buffer):
         rawcam.buffer_free(buffer)
 
+    def rawcam_stop(self):
+        print("ZynqScope: rawcam_stop()")
+        rawcam.rawcam_stop()
+
     def calc_real_sample_rate_for_index(self, index):
         """Only supports 8-bit mode for now"""
         return (1e6 * self.sample_rates_8b_pll_freq[index]) / self.sample_rates_8b_adc_div[index]
