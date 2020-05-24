@@ -51,8 +51,8 @@ class ZynqScopeGetAcqStatus(ZynqScopeTaskQueueCommand): pass
 class ZynqScopeGetAttributes(ZynqScopeTaskQueueCommand): pass
 
 class ZynqScopeRawcamStart(ZynqScopeTaskQueueCommand):
-    def __init__(self, size):
-        self.size = size
+    def __init__(self, buffer_size):
+        self.buffer_size = buffer_size
 
 class ZynqScopeRawcamDequeueBuffer(ZynqScopeTaskQueueCommand): pass
 class ZynqScopeDieTask(ZynqScopeTaskQueueCommand): pass
@@ -280,7 +280,7 @@ class ZynqScopeTaskController():
 
             # Setup the CSI TX for the amount of data we expect to receive
             msg = self.roc['ZynqScopeRawcamStart']
-            msg.size = resp['CSITxSize'].all_waves_size
+            msg.buffer_size = resp['CSITxSize'].all_waves_size
             self.evq.put(msg)
 
             #print("CompAcqResponse:", self.rsq.get())
