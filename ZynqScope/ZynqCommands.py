@@ -311,11 +311,11 @@ class ZynqCommands(object):
         resp = self.zspi.send_command_read_response(zcmd._COMP0, args=_pack_16b_int_arg(flags), expected_resp_size=None) 
 
         # The below order must be maintained to correctly decode the packets
-        if (flags & SPICOMP0_ACQ_GET_STATUS):
+        if (flags & COMP0_ACQ_GET_STATUS):
             resp = self.acqstatus_cache.unpack(resp)
             ret['AcqStatus'] = self.acqstatus_cache
 
-        if (flags & SPICOMP0_RESP_CSI_SIZE):
+        if (flags & COMP0_RESP_CSI_SIZE):
             resp = self.csitxsize_cache.unpack(resp)
             ret['CSITxSize'] = self.csitxsize_cache
 
