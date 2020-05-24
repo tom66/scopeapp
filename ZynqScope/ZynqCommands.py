@@ -16,7 +16,7 @@ class ZynqAcqStatus(object):
     
     def unpack(self, resp):
         """Unpack the data from the passed bytestring and return the remaining bytes, if any."""
-        self.num_acq, self.flags = struct.unpack("Ih", resp)
+        self.num_acq, self.flags = struct.unpack("Ih", resp[:6])
         return resp[6:]
 
     def __repr__(self):
@@ -29,7 +29,7 @@ class ZynqCSITxSizeResponse(object):
     
     def unpack(self, resp):
         """Unpack the data from the passed bytestring and return the remaining bytes, if any."""
-        self.all_waves_size, self.trigger_data_size, self.bitpack_size = struct.unpack("III", resp)
+        self.all_waves_size, self.trigger_data_size, self.bitpack_size = struct.unpack("III", resp[:12])
         return resp[12:]
 
     def __repr__(self):
