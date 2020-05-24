@@ -247,10 +247,13 @@ class ZynqScope(object):
         rawcam.debug()
 
     def rawcam_start(self):
-        print("ZynqScope: rawcam_start()")
-        rawcam.debug()
-        rawcam.start()
-        self.rawcam_running = True
+        if self.rawcam_running:
+            raise RuntimeError("Rawcam is already started, must stop before starting")
+        else:
+            print("ZynqScope: rawcam_start()")
+            rawcam.debug()
+            rawcam.start()
+            self.rawcam_running = True
 
     def rawcam_get_buffer_count(self):
         return rawcam.buffer_count()
@@ -262,9 +265,12 @@ class ZynqScope(object):
         rawcam.buffer_free(buffer)
 
     def rawcam_stop(self):
-        print("ZynqScope: rawcam_stop()")
-        rawcam.stop()
-        self.rawcam_running = False
+        if self.rawcam_running:
+            print("ZynqScope: rawcam_stop()")
+            rawcam.stop()
+            self.rawcam_running = False
+        else:
+            print("ZynqScope: rawcam_stop() ignored - rawcam not running")
 
     def calc_real_sample_rate_for_index(self, index):
         """Only supports 8-bit mode for now"""
