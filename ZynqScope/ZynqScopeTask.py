@@ -353,7 +353,8 @@ class ZynqScopeTaskController():
         self.evq = multiprocessing.Queue()
         self.rsq = multiprocessing.Queue()
         self.acq_resp = multiprocessing.Queue()
-        self.zstask = ZynqScopeSubprocess(self.evq, self.rsq, self.acq_resp, zs_init_args)
+        self.shared_dict = multiprocessing.Manager().dict()
+        self.zstask = ZynqScopeSubprocess(self.evq, self.rsq, self.acq_resp, self.shared_dict, zs_init_args)
         self.status = zc.ZynqAcqStatus()
         self.rawcam_running = False
         
