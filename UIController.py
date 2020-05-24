@@ -97,6 +97,9 @@ class MainApplication(object):
     fps_average_count = 0
     fps_average = 0
     
+    # Time that the acquisition automatically starts; used for power-up auto start
+    start_auto = 0.0
+
     # Last time the state was synced and whether a new state needs to be synced
     last_state_sync_time = time.time()
     state_sync_pending = True
@@ -255,6 +258,9 @@ class MainApplication(object):
             self.flash_period = 1.0 / float(self.cfgmgr['UI']['FlashFreq'])
         except:
             self.flash_period = 0.4 # Default
+
+        # Set the start signal.  It will start the acquisition automatically about 2 seconds after the application launches.
+        self.start_auto = time.time() + 2.0
     
     def __user_exception_handler(func):
         def wrapper(self, *args):
@@ -474,7 +480,7 @@ class MainApplication(object):
             self.delay_tick -= (actual_delay - UI_REFRESH_MS)
             self.delay_tick = max(self.delay_tick, UI_MIN_DELAY_MS)
             
-            # performance benchmarking: average performance over last 200 frames, once at least 8 frames acquired
+            # performance benchmarking: average performance over last 200 frames, once every 8 frames
             self.fps_average_accu += 1000.0 / actual_delay
             self.fps_average_count += 1
             
@@ -492,16 +498,13 @@ class MainApplication(object):
         return False
     
     def ui_tick_scope(self):
-        """
-        Sync instrument parameters.
-        """
-        #print("innerTick")
         self.ctrl.tick()
-        
-        #t0 = time.time()
-        #time.sleep(1.0)
-        #t1 = time.time()
-        #print(t1 - t0)
+
+        # Should we start acquisition automatically?
+        if self.start_auto != None and time.time() > self.start_auto:
+            print("Automatically starting acquisition on power up...")
+            self.start_auto = None
+            self.ctrl.acq_run()
     
     def ui_update_clock(self):
         """

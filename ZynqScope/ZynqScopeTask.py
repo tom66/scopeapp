@@ -14,14 +14,17 @@ import ZynqScope.pirawcam.rawcam as rawcam
 
 AFE = zs.AFE
 
-DEFAULT_ZYNQ_TASK_RATE = 100        # Run internal task at 100Hz
-DEFAULT_ZYNQ_PING_MULT = 5          # Ping Zynq every 5 ticks for new data (~50Hz)
+DEFAULT_ZYNQ_TASK_RATE = 1000       # Run internal task at 1000Hz
+DEFAULT_ACQUISITION_RATE = 50       # By default acquire data at 50Hz from Zynq
 
 STATE_ZYNQ_NOT_READY = 0
 STATE_ZYNQ_IDLE = 1
 
-TSTATE_ACQ_NOT_RUNNING = 0
-TSTATE_ACQ_RUNNING = 1
+TSTATE_ACQ_IDLE = 0
+TSTATE_ACQ_PREPARE_TO_START = 1
+TSTATE_ACQ_PING_ZYNQ = 2
+TSTATE_ACQ_WAITING_FOR_CSI_TRANSFER = 3
+TSTATE_ACQ_AUTO_WAIT = 4
 
 class ZynqScopeTaskQueueCommand(object): pass
 class ZynqScopeTaskQueueResponse(object): pass
@@ -50,13 +53,18 @@ class ZynqScopeGetStatus(ZynqScopeTaskQueueCommand): pass
 class ZynqScopeGetAcqStatus(ZynqScopeTaskQueueCommand): pass
 class ZynqScopeGetAttributes(ZynqScopeTaskQueueCommand): pass
 
-class ZynqScopeRawcamStart(ZynqScopeTaskQueueCommand):
+class ZynqScopeRawcamConfgiure(ZynqScopeTaskQueueCommand):
     def __init__(self, buffer_size):
         self.buffer_size = buffer_size
 
+class ZynqScopeRawcamStart(ZynqScopeTaskQueueCommand): pass
 class ZynqScopeRawcamStop(ZynqScopeTaskQueueCommand): pass
 class ZynqScopeRawcamDequeueBuffer(ZynqScopeTaskQueueCommand): pass
 class ZynqScopeDieTask(ZynqScopeTaskQueueCommand): pass
+
+class ZynqScopeStartAutoAcquisition(ZynqScopeTaskQueueCommand): 
+    def __init__(self, rate):
+        self.rate = rate
 
 class ZynqScopeAttributesResponse(ZynqScopeTaskQueueResponse): pass
 class ZynqScopeNullResponse(ZynqScopeTaskQueueResponse): pass
@@ -74,6 +82,14 @@ def compress_class_attrs_for_response(resp, clas_, exclude=[]):
             else:
                 pass # print("excluding %s %r" % (attr, value))
 
+class ZynqScopeAcquisitionResponse(object):
+    buffers = []
+    status = None
+    time = 0.0
+
+    def __repr__(self):
+        return "<ZynqScopeAcquisitionResponse n_buffers=%d status=%r time=%f>" % (len(self.buffers), self.status, self.time)
+
 class ZynqScopeSubprocess(multiprocessing.Process):
     """
     This 'task' manages the interface with the Zynq via a multiprocessing interface.
@@ -81,20 +97,34 @@ class ZynqScopeSubprocess(multiprocessing.Process):
     and emits state messages via a separate queue. 
     """
     state = STATE_ZYNQ_NOT_READY
+    acq_state = ACQSTATE_ACQ_NOT_RUNNING
     die_req = False
     zs_init_args = None
-    
-    def __init__(self, event_queue, response_queue, shared_dict, zs_init_args):
+    buffers_freeable = []
+
+    stop_signal = False
+    start_signal = False
+
+    acq_comp0_response = None
+
+    time_last_acq = 0.0
+    target_acq_period = 0.0
+
+    def __init__(self, event_queue, response_queue, acq_response_queue, shared_dict, zs_init_args):
         super(ZynqScopeSubprocess, self).__init__()
         
         self.evq = event_queue
         self.rsq = response_queue
+        self.acq_response_queue = acq_response_queue
         self.shared_dict = shared_dict
         self.zs_init_args = zs_init_args
+
+        self.acq_state = TSTATE_ACQ_IDLE
+        self.shared_dict['running_state'] = 
         
         # we might want the capability to tune the period as time goes by
         self.task_period = 1.0 / DEFAULT_ZYNQ_TASK_RATE
-        self.ping_multiple = DEFAULT_ZYNQ_PING_MULT
+        self.target_acq_period = 1.0 / DEFAULT_ACQUISITION_RATE
         
         print("ZynqScopeSubprocess __init__(): task_period=%2.6f, ping_multiple=%2.2f" % (self.task_period, self.ping_multiple))
         
@@ -113,7 +143,7 @@ class ZynqScopeSubprocess(multiprocessing.Process):
                 # Process any commands in the queue
                 while not self.evq.empty():
                     self.queue_process()
-                    self.rawcam_tick()
+                    self.acquisition_tick()
             
             if self.die_req:
                 self.terminate()
@@ -124,10 +154,6 @@ class ZynqScopeSubprocess(multiprocessing.Process):
     def queue_process(self):
         """See what work there is to do."""
         msg = self.evq.get()
-        
-        if not isinstance(msg, ZynqScopeTaskQueueCommand):
-            raise RuntimeError("Queue message not subclass of ZynqScopeTaskQueueCommand")
-        
         typ = type(msg)
 
         if typ is ZynqScopeCmdsIfcSimpleCommand:
@@ -144,13 +170,16 @@ class ZynqScopeSubprocess(multiprocessing.Process):
             print("ZynqScopeSimpleCommand:", msg, msg.args, msg.kwargs)
             getattr(self.zs, msg.cmd_name)(*msg.args, **msg.kwargs)
             
+        elif typ is ZynqScopeStartAutoAcquisition:
+            self.start_auto_acquisition()
+
         elif typ is ZynqScopeSyncAcquisitionSettings:
             self.zs.setup_for_timebase(0, None) # TODO: These parameters need to be filled in, too!
             
         elif typ is ZynqScopeGetAcqStatus:
-            # Enquire scope acquisition status.  Returns a ZynqAcqStatus object.
+            # Enquire scope acquisition status.  Returns a ZynqAcqS
+            self.rsq.put(resp)tatus object.
             resp = self.zs.zcmd.acq_status()
-            self.rsq.put(resp)
             
         elif typ is ZynqScopeGetAttributes:
             # Return a safed object copy of all scope parameters which can be accessed
@@ -164,8 +193,11 @@ class ZynqScopeSubprocess(multiprocessing.Process):
             resp = self.zs.zcmd.comp_acq_control(msg.flags)
             self.rsq.put(resp)
         
+        elif typ is ZynqScopeRawcamConfgiure:
+            self.zs.rawcam_configure(msg.buffer_size)
+            
         elif typ is ZynqScopeRawcamStart:
-            self.zs.rawcam_start(msg.buffer_size)
+            self.zs.rawcam_start()
             
         elif typ is ZynqScopeRawcamDequeueBuffer:
             self.rsq.put(self.zs.rawcam_get_buffer())
@@ -178,25 +210,144 @@ class ZynqScopeSubprocess(multiprocessing.Process):
             self.die_req = True
             
         else:
-            raise RuntimeError("Unimplemented/unsupported task class: %r (type: %r)" % (msg, typ))
+            if not isinstance(msg, ZynqScopeTaskQueueCommand):
+                raise RuntimeError("Queue message not subclass of ZynqScopeTaskQueueCommand")
+            else:
+                raise RuntimeError("Unimplemented/unsupported task class: %r (type: %r)" % (msg, typ))
     
-    def rawcam_tick(self):
-        """Rawcam tick process.  Checks buffer state."""
-        self.shared_dict['buffer_count'] = self.zs.rawcam_get_buffer_count()
+    def cleanup_rawcam_buffers(self):
+        while len(self.buffers_freeable) > 0:
+            self.zs.rawcam_free_buffer(self.buffers_freeable.pop())
+
+    def start_auto_acquisition(self):
+        """Start automatic acquisition (i.e. continuous running as opposed to single shot.)
+        The current acquisition is stopped and the acquisition configuration is loaded into the Zynq.
+        Then the acquisition is started and result buffers will be streamed via the response queue.
+        Note that auto in this context refers to the acquisition control being autonomous; it does
+        not relate to the AUTO trigger mode."""
+        print("in start_auto_acquisition()")
+
+        if self.acq_state != TSTATE_ACQ_IDLE:
+            # We need to halt the state machine first... 
+            self.stop_signal = True
+            self.start_signal = False
+
+            # We might need some timeout logic here if the state machine locks up for any reason
+            while self.acq_state != TSTATE_ACQ_IDLE:
+                self.acquisition_tick()
+
+        self.zs.setup_for_timebase()
+        self.zcmd.setup_trigger_edge(zc.TRIG_CH_ADCSRC1, 0x7f, 0x10, zc.TRIG_EDGE_RISING) # write default trigger
+        self.zcmd.start_acquisition()
+        self.time_last_acq = time.time()
+        self.start_signal = True
+
+    def acquisition_tick(self):
+        """Acquisition tick process.  Manages acquisition and SPI control."""
+        # This function should be cleaned up: we need to use ZynqScope API where possible, 
+        # and not send our own ZynqCommands...
+        if self.acq_state == TSTATE_ACQ_PREPARE_TO_START:
+            # Stop, if we get a signal
+            if self.stop_signal:
+                self.acq_state = TSTATE_ACQ_IDLE
+            else:
+                # Rawcam must be stopped.  If not this is an error
+                if self.zs.rawcam_running:
+                    raise RuntimeError("rawcam not in stopped state")
+
+                # Setup the rawcam interface preparing to acquire.  Save a copy of the acquisition
+                # params before starting.
+                self.acq_params = self.zs.params
+                self.zs.rawcam_configure(self.acq_params.expected_buffer_size)
+
+                # Start acquiring data...
+                self.acq_state = TSTATE_ACQ_PING_ZYNQ
+
+        elif self.acq_state == TSTATE_ACQ_PING_ZYNQ:
+            # Stop, if we get a signal
+            if self.stop_signal:
+                self.acq_state = TSTATE_ACQ_IDLE
+            else:
+                # Send message to Zynq to stop the current acquisition (either the first acquisition started
+                # in start_auto_acquisition, or restared by this function) and return the status of it.  If 
+                # that acquisition has more than zero waves, the waves will be streamed out via CSI bus.  
+                # The Zynq function currently doesn't handle cases other than full waves or no waves yet; WIP.
+                flags = zc.COMP0_ACQ_STOP | zc.COMP0_ACQ_GET_STATUS | zc.COMP0_ACQ_REWIND | \
+                        zc.COMP0_ACQ_START_RESET_FIFO | zc.COMP0_CSI_TRANSFER_WAVES
+
+                # if double-buffer acquisition is set then we want to swap lists on each Comp0 command
+                if self.acq_params.flags & zc.ACQ_MODE_DOUBLE_BUFFER:
+                    flags |= zc.COMP0_ACQ_SWAP_ACQ_LISTS
+
+                self.acq_comp0_response = self.zs.zcmd.comp_acq_control(flags)
+                self.time_last_acq = time.time()
+
+                # Does Zynq have enough data for us?
+                if self.acq_comp0_response['AcqStatus'].num_acq == 0:
+                    # No acquisitions.  Maybe no trigger.  Go back to AUTO_WAIT.
+                    self.acq_state = TSTATE_ACQ_AUTO_WAIT
+                else:
+                    self.rawcam_start()
+                    self.acq_state = TSTATE_ACQ_WAITING_FOR_CSI_TRANSFER
+
+        elif self.acq_state == TSTATE_ACQ_WAITING_FOR_CSI_TRANSFER:
+            # Stop, if we get a signal
+            if self.stop_signal:
+                self.acq_state = TSTATE_ACQ_IDLE
+                self.cleanup_rawcam_buffers()
+                self.rawcam_stop()
+                self.zcmd.stop_acquisition()
+            else:
+                # We sit in this state waiting for the buffers we need to come in.
+                # In actuality we set the peripheral up to transfer 1 buffer of the correct size, once
+                # maximums are determined we will split transfers up.  So we just wait for one buffer to be done.
+                if self.zs.rawcam_get_buffer_count() >= 1:
+                    # Dequeue this buffer and record the pointer so we can free this later
+                    resp = ZynqScopeAcquisitionResponse()
+                    buff = self.zs.rawcam_get_buffer()
+                    self.buffers_freeable.append(buff)
+
+                    # Create the response and send it
+                    resp.time = time.time()
+                    resp.buffers = [buff]
+                    resp.status = self.acq_comp0_response['AcqStatus']
+                    self.acq_response_queue.put(resp)
+
+                    print(resp)
+                    self.acq_state = TSTATE_ACQ_AUTO_WAIT
+
+        elif self.acq_state == TSTATE_ACQ_AUTO_WAIT:
+            # Stop, if we get a signal
+            if self.stop_signal:
+                self.acq_state = TSTATE_ACQ_IDLE
+                self.zcmd.stop_acquisition()
+                # Do we need to cleanup??
+            else:
+                # Wait for the acquisition time to be reached before gathering data
+                if (time.time() - self.time_last_acq) > self.target_acq_period:
+                    self.acq_state = TSTATE_ACQ_PING_ZYNQ
+
+        elif self.acq_state == TSTATE_ACQ_IDLE:
+            if self.start_signal:
+                # Stop the rawcam and free all buffers
+                self.cleanup_rawcam_buffers()
+                self.zs.rawcam_stop()
+                self.acq_state = TSTATE_ACQ_PREPARE_TO_START
+        
+        else:
+            print("Idle--not running")
             
 class ZynqScopeTaskController():
     """
     Container class that wraps the ZynqScopeSubprocess module and provides a convenient
     interface.
     """
-    acq_state = TSTATE_ACQ_NOT_RUNNING
-    
     def __init__(self, zs_init_args):
         # Create task queues and manager then initialise process with these resources
         self.evq = multiprocessing.Queue()
         self.rsq = multiprocessing.Queue()
-        self.shared_dict = multiprocessing.Manager().dict()
-        self.zstask = ZynqScopeSubprocess(self.evq, self.rsq, self.shared_dict, zs_init_args)
+        self.acq_resp = multiprocessing.Queue()
+        self.zstask = ZynqScopeSubprocess(self.evq, self.rsq, self.acq_resp, zs_init_args)
         self.status = zc.ZynqAcqStatus()
         self.rawcam_running = False
         
@@ -206,9 +357,11 @@ class ZynqScopeTaskController():
             'ZynqScopeDieTask' : ZynqScopeDieTask(),
             'ZynqScopeSendCompAcqStreamCommand' : ZynqScopeSendCompAcqStreamCommand(0x0000),
             'ZynqScopeSimpleCommand_SetupForTimebase' : ZynqScopeSimpleCommand("setup_for_timebase"),
-            'ZynqScopeRawcamStart' : ZynqScopeRawcamStart(0),
+            'ZynqScopeRawcamConfigure' : ZynqScopeRawcamConfigure(0),
+            'ZynqScopeRawcamStart' : ZynqScopeRawcamStart(),
             'ZynqScopeRawcamDequeueBuffer' : ZynqScopeRawcamDequeueBuffer(),
-            'ZynqScopeRawcamStop' : ZynqScopeRawcamStop()
+            'ZynqScopeRawcamStop' : ZynqScopeRawcamStop(),
+            'ZynqScopeStartAutoAcquisition' : ZynqScopeStartAutoAcquisition()
         }
         
         # Cache for last fetched attributes
@@ -223,7 +376,7 @@ class ZynqScopeTaskController():
         
     def stop_task(self):
         # Send kill request, wait 200ms then force termination
-        self.evq.put(self.roc['ZynqScopeDieTask'])
+        self.evq_cache('ZynqScopeDieTask')
         time.sleep(0.2)
         self.zstask.kill()
     
@@ -233,8 +386,9 @@ class ZynqScopeTaskController():
         return self.attribs_cache
     
     def get_attributes(self):
-        self.evq.put(self.roc['ZynqScopeGetAttributes'])
+        self.evq_cache('ZynqScopeGetAttributes')
         resp = self.rsq.get()
+
         #print("get_attributes response:", resp)
         self.attribs_cache = resp
         return resp
@@ -244,21 +398,19 @@ class ZynqScopeTaskController():
         return attrs.timebase_settings
 
     def set_next_timebase_index(self, tb):
-        self.evq.put(ZynqScopeSimpleCommand("set_next_timebase", (int(tb),)))
+        cmd = self.roc['ZynqScopeSimpleCommand_SetupForTimebase']
+        cmd.args = (int(tb),)
+        self.evq.put(cmd)
     
     def setup_trigger_edge(self, ch, level, hyst, edge):
         self.evq.put(ZynqScopeCmdsIfcSimpleCommand("setup_trigger_edge", True, (ch, level, hyst, edge)))
     
     def stop_acquisition(self):
-        self.evq.put(ZynqScopeCmdsIfcSimpleCommand("stop_acquisition", True,))
-        self.acq_state = TSTATE_ACQ_NOT_RUNNING
+        pass
     
     def start_acquisition(self):
-        self.evq.put(ZynqScopeCmdsIfcSimpleCommand("start_acquisition", True, (), {'reset_fifo' : 1}))
-        self.acq_state = TSTATE_ACQ_RUNNING
-        
-        # Default trigger
-        self.setup_trigger_edge(zc.TRIG_CH_ADCSRC1, 0x7f, 0x10, zc.TRIG_EDGE_RISING)
+        print("ZSTC: ZynqScopeStartAutoAcquisition")
+        self.evq_cache('ZynqScopeStartAutoAcquisition')
     
     def sync_to_real_world(self):
         # Sync to the real world includes:  
@@ -270,36 +422,46 @@ class ZynqScopeTaskController():
         self.evq_cache('ZynqScopeSimpleCommand_SetupForTimebase')
     
     def acquisition_tick(self):
-        """Manages Zynq acquisition control."""
-        self.get_attributes()
-        #print(self.get_attributes_cache().params)
+        pass
+
+    # def acquisition_tick(self):
+    #     """Manages Zynq acquisition control."""
+    #     self.get_attributes()
+
+    #     if self.acq_state == TSTATE_ACQ_PREPARE_TO_START:
+    #         # Rawcam must be stopped.  If not this is an error
+    #         if self.shared_dict['rawcam_running']:
+    #             raise RuntimeError("rawcam not in stopped state")
+
+    #         # Setup the rawcam interface preparing to acquire buffers
+    #         msg = self.roc['ZynqScopeRawcamConfigure']
+    #         msg.buffer_size = resp['CSITxSize'].all_waves_size
+    #         self.evq.put(msg)
+
+    #         # Start acquiring data...
+    #         self.acq_state = TSTATE_ACQ_PING_ZYNQ
+
+    #     elif self.acq_state == TSTATE_ACQ_RUNNING:
+    #         if self.shared_dict['rawcam_running']:
+    #             self.evq_cache('ZynqScopeRawcamStop')
+
+    #         cmd = self.roc['ZynqScopeSendCompAcqStreamCommand']
+    #         cmd.flags = zc.COMP0_ACQ_STOP | zc.COMP0_ACQ_GET_STATUS | zc.COMP0_ACQ_REWIND | zc.COMP0_ACQ_START_RESET_FIFO | \
+    #                     zc.COMP0_CSI_TRANSFER_WAVES | zc.COMP0_SPI_RESP_CSI_SIZE
+            
+    #         # if double-buffer acquisition is set then we want to swap lists on each Comp0 command
+    #         if self.get_attributes_cache().params.flags & zc.ACQ_MODE_DOUBLE_BUFFER:
+    #             cmd.flags |= zc.COMP0_ACQ_SWAP_ACQ_LISTS
+            
+    #         #print("cmd.flags 0x%04x" % cmd.flags)
+    #         self.evq.put(cmd)
+    #         resp = self.rsq.get()
+    #         self.status = resp['AcqStatus']
+
+
+    #         #print("CompAcqResponse:", self.rsq.get())
+    #         print("rx_buffer_count:", self.shared_dict['buffer_count'], "buffer_size:", msg.buffer_size, "status:", self.status)
         
-        if self.acq_state == TSTATE_ACQ_RUNNING:
-            if self.rawcam_running:
-                self.evq_cache('ZynqScopeRawcamStop')
-                self.rawcam_running = False
-
-            cmd = self.roc['ZynqScopeSendCompAcqStreamCommand']
-            cmd.flags = zc.COMP0_ACQ_STOP | zc.COMP0_ACQ_GET_STATUS | zc.COMP0_ACQ_REWIND | zc.COMP0_ACQ_START_RESET_FIFO | \
-                        zc.COMP0_CSI_TRANSFER_WAVES | zc.COMP0_SPI_RESP_CSI_SIZE
-            
-            # if double-buffer acquisition is set then we want to swap lists on each Comp0 command
-            if self.get_attributes_cache().params.flags & zc.ACQ_MODE_DOUBLE_BUFFER:
-                cmd.flags |= zc.COMP0_ACQ_SWAP_ACQ_LISTS
-            
-            #print("cmd.flags 0x%04x" % cmd.flags)
-            self.evq.put(cmd)
-            resp = self.rsq.get()
-            self.status = resp['AcqStatus']
-
-            # Setup the CSI TX for the amount of data we expect to receive
-            msg = self.roc['ZynqScopeRawcamStart']
-            msg.buffer_size = resp['CSITxSize'].all_waves_size
-            self.evq.put(msg)
-            self.rawcam_running = True
-
-            #print("CompAcqResponse:", self.rsq.get())
-            print("rx_buffer_count:", self.shared_dict['buffer_count'], "buffer_size:", msg.buffer_size, "status:", self.status)
-        else:
-            print("Idle--not running")
-    
+    #     else:
+    #         print("Idle--not running")
+    # 

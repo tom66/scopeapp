@@ -48,6 +48,7 @@ class ZynqScopeCurrentParameters(object):
     trigger_point = 0.5
     delay = 0
     flags = 0x0000
+    expected_buffer_size = 0
     
     def __repr__(self):
         return "<ZynqScopeCurrentParameters sample_depth=%d bits, memory_depth=%s, sample_rate=%s, trigger_point=%2.1f%%, delay=%s>" % \
@@ -187,7 +188,8 @@ class ZynqScope(object):
     
     # Rawcam interface
     rc = None
-    rawcam_mod = None  
+    rawcam_mod = None 
+    rawcam_running = False
     
     def __init__(self, display_samples_target, default_hdiv_span):
         # Set default parameters
@@ -230,9 +232,8 @@ class ZynqScope(object):
         # Instead of blindly returning True we should check that the hardware is ready first...
         return True
     
-    def rawcam_start(self, buffer_size):
-        """Setup rawcam with the given buffer size, and a line count that is a rounded
-        multiple of the buffer size."""
+    def rawcam_configure(self, buffer_size):
+        """Configure the rawcam port for a specific buffer size."""
         lines = buffer_size // RAWCAM_LINE_SIZE
 
         if (buffer_size % RAWCAM_LINE_SIZE) != 0:
@@ -243,8 +244,13 @@ class ZynqScope(object):
         rawcam.set_buffer_num(RAWCAM_NUM_BUFFERS)
         rawcam.set_buffer_size(RAWCAM_LINE_SIZE * lines)
         rawcam.set_buffer_dimensions(RAWCAM_LINE_SIZE, lines)
-        rawcam.start()
         rawcam.debug()
+
+    def rawcam_start(self, buffer_size):
+        print("ZynqScope: rawcam_start()")
+        rawcam.debug()
+        rawcam.start()
+        self.rawcam_running = True
 
     def rawcam_get_buffer_count(self):
         return rawcam.buffer_count()
@@ -258,6 +264,7 @@ class ZynqScope(object):
     def rawcam_stop(self):
         print("ZynqScope: rawcam_stop()")
         rawcam.stop()
+        self.rawcam_running = False
 
     def calc_real_sample_rate_for_index(self, index):
         """Only supports 8-bit mode for now"""
@@ -342,7 +349,7 @@ class ZynqScope(object):
     def calculate_nwaves(self, acq_time):
         """nwaves is the number of waveforms to be captured in one frame.  It is
         set to a maximum of 255, a minimum of 1, or X% of the frame time."""
-        print("acq_time:", acq_time)
+        #print("acq_time:", acq_time)
         nwaves = math.floor(((1.0 / self.acq_framerate) * self.acq_frametime_frac) / acq_time)
         return int(max(1, min(255, nwaves)))
     
@@ -432,6 +439,7 @@ class ZynqScope(object):
         self.params.nwaves = nwaves
         self.params.wave_rate = nwaves * self.acq_framerate
         self.params.delay = self.next_delay
+        self.params.expected_buffer_size = self.params.nwaves * self.params.memory_depth
         self.curr_tb = self.next_tb
         print(self.params)
     
