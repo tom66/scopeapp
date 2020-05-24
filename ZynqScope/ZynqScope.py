@@ -243,6 +243,7 @@ class ZynqScope(object):
         rawcam.set_buffer_num(RAWCAM_NUM_BUFFERS)
         rawcam.set_buffer_size(RAWCAM_LINE_SIZE * lines)
         rawcam.set_buffer_dimensions(RAWCAM_LINE_SIZE, lines)
+        rawcam.start()
         rawcam.debug()
 
     def rawcam_get_buffer_count(self):
