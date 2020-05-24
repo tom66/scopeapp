@@ -253,6 +253,7 @@ class ZynqScope(object):
             print("ZynqScope: rawcam_start()")
             rawcam.debug()
             rawcam.start()
+            rawcam.debug()
             self.rawcam_running = True
 
     def rawcam_get_buffer_count(self):
