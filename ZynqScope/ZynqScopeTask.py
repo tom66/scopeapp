@@ -262,7 +262,7 @@ class ZynqScopeTaskController():
     def acquisition_tick(self):
         """Manages Zynq acquisition control."""
         self.get_attributes()
-        print(self.get_attributes_cache().params)
+        #print(self.get_attributes_cache().params)
         
         if self.acq_state == TSTATE_ACQ_RUNNING:
             cmd = self.roc['ZynqScopeSendCompAcqStreamCommand']
