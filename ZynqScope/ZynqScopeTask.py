@@ -273,7 +273,7 @@ class ZynqScopeTaskController():
             if self.get_attributes_cache().params.flags & zc.ACQ_MODE_DOUBLE_BUFFER:
                 cmd.flags |= zc.COMP0_ACQ_SWAP_ACQ_LISTS
             
-            print("cmd.flags 0x%04x" % cmd.flags)
+            #print("cmd.flags 0x%04x" % cmd.flags)
             self.evq.put(cmd)
             resp = self.rsq.get()
             self.status = resp['AcqStatus']
@@ -284,7 +284,7 @@ class ZynqScopeTaskController():
             self.evq.put(msg)
 
             #print("CompAcqResponse:", self.rsq.get())
-            print("buffer_count:", self.shared_dict['buffer_count'])
+            print("rx_buffer_count:", self.shared_dict['buffer_count'], "buffer_size:", msg.buffer_size, "status:", self.status)
         else:
             print("Idle--not running")
     
