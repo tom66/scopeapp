@@ -329,7 +329,7 @@ class ZynqScopeSubprocess(multiprocessing.Process):
                 self.acq_comp0_response = self.zs.zcmd.comp_acq_control(flags)
                 self.time_last_acq = time.time()
 
-                self.time_reqd_rawcam = (self.rawcam_buffer_dims[1] * 8) / RAWCAM_BITRATE
+                self.time_reqd_rawcam = (self.zs.rawcam_buffer_dims[1] * 8) / RAWCAM_BITRATE
                 self.time_reqd_rawcam *= RAWCAM_OVERHEAD
 
                 # Does Zynq have enough data for us?
