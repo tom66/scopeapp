@@ -40,23 +40,11 @@ class ZynqScopePicklableMemoryBuff(object):
         self.data_ptr = pirawcam_buff.data_ptr
         self.length = pirawcam_buff.length
         self.flags = pirawcam_buff.flags
-        self.dts = pirawcam_buff.dts
         self.pts = pirawcam_buff.pts
 
-        # print("[")
-        # print(repr(self.mmal_ptr))
-        # print(dir(self.mmal_ptr))
-        # print(repr(self.data_ptr))
-        # print(dir(self.data_ptr))
-        # print(repr(self.length))
-        # print(repr(self.flags))
-        # print(repr(self.dts))
-        # print(repr(self.pts))
-        # print("]")
-
     def __repr__(self):
-        return "<ZynqScopePicklableMemoryBuff mmal_ptr=0x%08x data_ptr=0x%08x length=%d flags=0x%04x dts=%d pts=%d>" % \
-            (self.mmal_ptr, self.data_ptr, self.length, self.flags, self.dts, self.pts)
+        return "<ZynqScopePicklableMemoryBuff mmal_ptr=0x%08x data_ptr=0x%08x length=%d flags=0x%04x pts=%d>" % \
+            (self.mmal_ptr, self.data_ptr, self.length, self.flags, self.pts)
 
 class ZynqScopeTaskQueueCommand(object): pass
 class ZynqScopeTaskQueueResponse(object): pass
@@ -353,6 +341,11 @@ class ZynqScopeSubprocess(multiprocessing.Process):
                     # Dequeue this buffer and record the pointer so we can free this later
                     count = self.zs.rawcam_get_buffer_count()
                     buff = ZynqScopePicklableMemoryBuff(self.zs.rawcam_buffer_get_friendly())
+
+                    # hack
+                    if buff.length == 0:
+                        buff.length = self.zs.rawcam_buffer_dims[3]
+
                     self.buffers_temp.append(buff)
                     self.rawcam_seq += 1
 
