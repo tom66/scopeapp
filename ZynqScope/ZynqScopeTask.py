@@ -98,9 +98,6 @@ class ZynqScopeAcquisitionResponse(object):
     def __repr__(self):
         return "<ZynqScopeAcquisitionResponse n_buffers=%d status=%r time=%f>" % (len(self.buffers), self.status, self.time)
 
-    def __lt__(self, b):
-        return b.time < self.time
-
 class ZynqScopePicklableMemoryBuff(object): 
     def __init__(self, pirawcam_buff):
         self.mmal_ptr = pirawcam_buff.mmal_ptr
@@ -112,6 +109,9 @@ class ZynqScopePicklableMemoryBuff(object):
     def __repr__(self):
         return "<ZynqScopePicklableMemoryBuff mmal_ptr=0x%08x data_ptr=0x%08x length=%d flags=0x%04x pts=%d>" % \
             (self.mmal_ptr, self.data_ptr, self.length, self.flags, self.pts)
+
+    def __lt__(self, b):
+        return b.pts < self.pts
 
 class ZynqScopeSubprocess(multiprocessing.Process):
     """
