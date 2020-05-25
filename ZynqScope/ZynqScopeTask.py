@@ -360,11 +360,11 @@ class ZynqScopeSubprocess(multiprocessing.Process):
                     self.last_pts = buff.pts
                     print("Buffer count: %d, size of list: %d (total %d), new buffer: %r, us_delta: %d" % (count, len(self.buffers_temp), self.rawcam_seq, buff, us_delta))
 
-                if len(self.buffers_temp) >= self.zs.rawcam_buffer_dims[2]:
+                if len(self.buffers_working) >= self.zs.rawcam_buffer_dims[2]:
                     # Create the response and send it
                     resp = ZynqScopeAcquisitionResponse()
                     resp.time = time.time()
-                    resp.buffers = self.buffers_temp
+                    resp.buffers = self.buffers_working
                     print("ResponseBuffers:", resp.buffers)
                     resp.status = self.acq_comp0_response['AcqStatus']
                     self.acq_response_queue.put(resp)
