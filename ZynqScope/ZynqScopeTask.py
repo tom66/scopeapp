@@ -324,8 +324,8 @@ class ZynqScopeSubprocess(multiprocessing.Process):
                 self.zcmd.stop_acquisition()
             else:
                 # We sit in this state waiting for the buffers we need to come in.
-                print("wait...")
-                
+                print("wait... %d" % self.zs.rawcam_get_buffer_count())
+
                 while self.zs.rawcam_get_buffer_count() > 0: #>= self.zs.rawcam_buffer_dims[2]:
                     # Dequeue this buffer and record the pointer so we can free this later
                     buff = self.zs.rawcam_get_buffer()
