@@ -369,7 +369,8 @@ class ZynqScopeSubprocess(multiprocessing.Process):
                     resp.status = self.acq_comp0_response['AcqStatus']
                     self.acq_response_queue.put(resp)
                     self.zs.rawcam_stop()
-                    self.acq_state = TSTATE_ACQ_IDLE#TSTATE_ACQ_AUTO_WAIT
+                    #self.acq_state = TSTATE_ACQ_IDLE
+                    self.acq_state = TSTATE_ACQ_AUTO_WAIT
                 else:
                     pass
                     #if (time.time() - self.time_last_acq) > self.time_reqd_rawcam:
