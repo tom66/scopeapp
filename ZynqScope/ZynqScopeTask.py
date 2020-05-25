@@ -368,7 +368,7 @@ class ZynqScopeSubprocess(multiprocessing.Process):
                     resp.status = self.acq_comp0_response['AcqStatus']
                     self.acq_response_queue.put(resp)
                     self.zs.rawcam_stop()
-                    self.acq_state = TSTATE_ACQ_AUTO_WAIT
+                    self.acq_state = TSTATE_ACQ_IDLE#TSTATE_ACQ_AUTO_WAIT
                 else:
                     pass
                     #if (time.time() - self.time_last_acq) > self.time_reqd_rawcam:
@@ -486,7 +486,9 @@ class ZynqScopeTaskController():
         self.evq_cache('ZynqScopeSimpleCommand_SetupForTimebase')
     
     def acquisition_tick(self):
-        pass
+        while True:
+            if not self.acq_resp.empty():
+                print("Got AcqResponse: %r" % self.acq_resp.get())
 
     # def acquisition_tick(self):
     #     """Manages Zynq acquisition control."""
