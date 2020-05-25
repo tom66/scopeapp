@@ -2,7 +2,7 @@
 This file is part of YAOS and is licenced under the MIT Licence.
 """
 
-import sys, operator, math, inspect, copy, time, spidev
+import sys, operator, math, inspect, copy, time, spidev, pickle
 import multiprocessing
 from types import ModuleType
 
@@ -321,7 +321,7 @@ class ZynqScopeSubprocess(multiprocessing.Process):
                 while self.zs.rawcam_get_buffer_count() > 0: #>= self.zs.rawcam_buffer_dims[2]:
                     # Dequeue this buffer and record the pointer so we can free this later
                     buff = self.zs.rawcam_get_buffer()
-                    self.buffers_temp.append(buff)
+                    self.buffers_temp.append(pickle.PickleBuffer(buff))
                     print("Buffer count: %d, size of list: %d/%d" % (self.zs.rawcam_get_buffer_count(), len(self.buffers_temp), self.zs.rawcam_buffer_dims[2]))
 
                 if len(self.buffers_temp) >= self.zs.rawcam_buffer_dims[2]:
