@@ -331,7 +331,7 @@ class ZynqScopeSubprocess(multiprocessing.Process):
                     buff = self.zs.rawcam_get_buffer()
                     #shm = multiprocessing.shared_memory.SharedMemory(create=False, name="ShmRawcam%d" % self.rawcam_seq)
                     #shm.buf = self.zs.rawcam_get_buffer()
-                    print("buffer:", ctypes.pythonapi.PyBuffer_GetPointer(ctypes.py_object(buff)))
+                    #print("buffer:", ctypes.pythonapi.PyBuffer_GetPointer(ctypes.py_object(buff)))
                     #print(buff, dir(buff), buff.nbytes, buff.ndim, buff.obj, buff.cast(), buff.itemsize, buff.shape, buff.toreadonly())
                     #self.buffers_temp.append(shm)
                     print("Buffer count: %d, size of list: %d/%d" % (self.zs.rawcam_get_buffer_count(), len(self.buffers_temp), self.zs.rawcam_buffer_dims[2]))
