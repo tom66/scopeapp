@@ -386,6 +386,7 @@ class ZynqScopeSubprocess(multiprocessing.Process):
             else:
                 # Wait for the acquisition time to be reached before gathering data
                 if (time.time() - self.time_last_acq) > self.target_acq_period:
+                    print("TimesUp!")
                     self.acq_state = TSTATE_ACQ_PING_ZYNQ
 
         elif self.acq_state == TSTATE_ACQ_IDLE:
