@@ -334,9 +334,10 @@ class ZynqScopeSubprocess(multiprocessing.Process):
                     #print(buff, dir(buff), buff.nbytes, buff.ndim, buff.obj, buff.cast(), buff.itemsize, buff.shape, buff.toreadonly())
                     #self.buffers_temp.append(shm)
                     print("Buffer count: %d, size of list: %d/%d" % (self.zs.rawcam_get_buffer_count(), len(self.buffers_temp), self.zs.rawcam_buffer_dims[2]))
-                    ctypes.pythonapi.PyBuffer_GetPointer.argtypes = (ctypes.py_object,)
-                    ctypes.pythonapi.PyBuffer_GetPointer.restype = ctypes.c_void_p
-                    print("buffer:", ctypes.pythonapi.PyBuffer_GetPointer(ctypes.py_object(buff)))
+                    print(buff, buff.obj, buff.nbytes, buff.ndim, buff.shape, buff.strides)
+                    #ctypes.pythonapi.PyBuffer_GetPointer.argtypes = (ctypes.py_object,)
+                    #ctypes.pythonapi.PyBuffer_GetPointer.restype = ctypes.c_void_p
+                    #print("buffer:", ctypes.pythonapi.PyBuffer_GetPointer(ctypes.py_object(buff)))
                     self.rawcam_seq += 1
 
                 if len(self.buffers_temp) >= self.zs.rawcam_buffer_dims[2]:
