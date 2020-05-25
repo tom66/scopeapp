@@ -350,8 +350,8 @@ class ZynqScopeSubprocess(multiprocessing.Process):
                     count = self.zs.rawcam_get_buffer_count()
                     buff = ZynqScopePicklableMemoryBuff(self.zs.rawcam_buffer_get_friendly())
                     self.buffers_temp.append(buff)
-                    
-                    print("Buffer count: %d, size of list: %d (total %d), new buffer: %r" % (count, len(self.buffers_temp), self.rawcam_seq, buff)
+
+                    print("Buffer count: %d, size of list: %d (total %d), new buffer: %r" % (count, len(self.buffers_temp), self.rawcam_seq, buff))
                     self.rawcam_seq += 1
 
                 if len(self.buffers_temp) >= self.zs.rawcam_buffer_dims[2]:
