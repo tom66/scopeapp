@@ -120,6 +120,7 @@ class ZynqScopeSubprocess(multiprocessing.Process):
     die_req = False
     zs_init_args = None
     buffers_working = []
+    buffers_freeable = []
 
     stop_signal = False
     start_signal = False
@@ -242,8 +243,9 @@ class ZynqScopeSubprocess(multiprocessing.Process):
                 raise RuntimeError("Unimplemented/unsupported task class: %r (type: %r)" % (msg, typ))
     
     def cleanup_rawcam_buffers(self):
-        while len(self.buffers_working) > 0:
-            self.zs.rawcam_buffer_free_friendly(self.buffers_working.pop())
+        while len(self.buffers_freeable) > 0:
+            self.zs.rawcam_buffer_free_friendly(self.buffers_freeable.pop())
+        self.buffers_working = []
 
     def start_auto_acquisition(self):
         """Start automatic acquisition (i.e. continuous running as opposed to single shot.)
@@ -354,6 +356,7 @@ class ZynqScopeSubprocess(multiprocessing.Process):
                         buff.length = self.zs.rawcam_buffer_dims[3]
 
                     self.buffers_working.append(buff)
+                    self.buffers_freeable.append(fr_buffer)
                     self.rawcam_seq += 1
 
                     if self.last_pts != None:
