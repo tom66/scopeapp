@@ -273,10 +273,10 @@ class ZynqScope(object):
             self.rawcam_running = True
 
     def rawcam_enable(self):
-        rawcam.rawcam_enable()
+        rawcam.enable()
 
     def rawcam_disable(self):
-        rawcam.rawcam_disable()
+        rawcam.disable()
 
     def rawcam_get_buffer_count(self):
         return rawcam.buffer_count()
