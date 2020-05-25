@@ -351,7 +351,7 @@ class ZynqScopeSubprocess(multiprocessing.Process):
 
                     print("Buffer count: %d, size of list: %d (total %d), new buffer: %r" % (count, len(self.buffers_temp), self.rawcam_seq, buff))
 
-                if len(self.buffers_temp) >= self.zs.rawcam_buffer_dims[2]:
+                if len(self.buffers_temp) > 5: # self.zs.rawcam_buffer_dims[2]:
                     # Create the response and send it
                     resp = ZynqScopeAcquisitionResponse()
                     resp.time = time.time()
