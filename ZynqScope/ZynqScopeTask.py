@@ -358,7 +358,7 @@ class ZynqScopeSubprocess(multiprocessing.Process):
                     else:
                         us_delta = 0
                     self.last_pts = buff.pts
-                    print("Buffer count: %d, size of list: %d (total %d), new buffer: %r, us_delta: %d" % (count, len(self.buffers_temp), self.rawcam_seq, buff, us_delta))
+                    print("Buffer count: %d, size of list: %d (total %d), new buffer: %r, us_delta: %d" % (count, len(self.buffers_working), self.rawcam_seq, buff, us_delta))
 
                 if len(self.buffers_working) >= self.zs.rawcam_buffer_dims[2]:
                     # Create the response and send it
