@@ -34,18 +34,6 @@ ACQSTATE_STOPPED = 3
 RAWCAM_BITRATE = 1.2e9              # 300MHz, 2 lanes, DDR: 1.2Gbit/s
 RAWCAM_OVERHEAD = 1.30              # 30% overhead (estimated)
 
-class ZynqScopePicklableMemoryBuff(object): 
-    def __init__(self, pirawcam_buff):
-        self.mmal_ptr = pirawcam_buff.mmal_ptr
-        self.data_ptr = pirawcam_buff.data_ptr
-        self.length = pirawcam_buff.length
-        self.flags = pirawcam_buff.flags
-        self.pts = pirawcam_buff.pts
-
-    def __repr__(self):
-        return "<ZynqScopePicklableMemoryBuff mmal_ptr=0x%08x data_ptr=0x%08x length=%d flags=0x%04x pts=%d>" % \
-            (self.mmal_ptr, self.data_ptr, self.length, self.flags, self.pts)
-
 class ZynqScopeTaskQueueCommand(object): pass
 class ZynqScopeTaskQueueResponse(object): pass
 
@@ -109,6 +97,18 @@ class ZynqScopeAcquisitionResponse(object):
 
     def __repr__(self):
         return "<ZynqScopeAcquisitionResponse n_buffers=%d status=%r time=%f>" % (len(self.buffers), self.status, self.time)
+
+class ZynqScopePicklableMemoryBuff(object): 
+    def __init__(self, pirawcam_buff):
+        self.mmal_ptr = pirawcam_buff.mmal_ptr
+        self.data_ptr = pirawcam_buff.data_ptr
+        self.length = pirawcam_buff.length
+        self.flags = pirawcam_buff.flags
+        self.pts = pirawcam_buff.pts
+
+    def __repr__(self):
+        return "<ZynqScopePicklableMemoryBuff mmal_ptr=0x%08x data_ptr=0x%08x length=%d flags=0x%04x pts=%d>" % \
+            (self.mmal_ptr, self.data_ptr, self.length, self.flags, self.pts)
 
 class ZynqScopeSubprocess(multiprocessing.Process):
     """
@@ -487,7 +487,10 @@ class ZynqScopeTaskController(object):
     
     def acquisition_tick(self):
         while not self.acq_resp.empty():
-            print("Got AcqResponse: %r" % self.acq_resp.get())
+            resp = self.acq_resp.get()
+            print("Got AcqResponse: %r" % resp)
+            for b in resp.buffers:
+                print("Buffer: %r" % b)
 
     # def acquisition_tick(self):
     #     """Manages Zynq acquisition control."""
