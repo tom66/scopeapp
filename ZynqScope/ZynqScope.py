@@ -280,6 +280,9 @@ class ZynqScope(object):
     def rawcam_get_buffer(self):
         return rawcam.buffer_get()
 
+    def rawcam_buffer_get_friendly(self):
+        return rawcam.buffer_get_friendly()
+
     def rawcam_free_buffer(self, buffer):
         rawcam.buffer_free(buffer)
 
