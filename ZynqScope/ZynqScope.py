@@ -210,13 +210,6 @@ class ZynqScope(object):
         self.init_timebases()
         self.next_tb = self.timebase_settings[default_timebase]
 
-        # Connect rawcam library.  TODO: These parameters might need to be configured by the 
-        # hardware configuration, for instance the camera number in use.
-        self.rawcam_init()
-
-        # Configure CSI transmitter with rawcam parameters: image_id must match for successful reception
-        self.zcmd.csi_setup_params(RAWCAM_WCT_HEADER, RAWCAM_IMAGE_ID)
-        
         print("ZynqScope connect(): done initialisation")
         
         # Instead of blindly returning True we should check that the hardware is ready first...
@@ -237,6 +230,9 @@ class ZynqScope(object):
 
         print("ZynqScope rawcam_init(): rawcam debug follows")
         rawcam.debug()
+
+        # Configure CSI transmitter with rawcam parameters: image_id must match for successful reception
+        self.zcmd.csi_setup_params(RAWCAM_WCT_HEADER, RAWCAM_IMAGE_ID)
 
     def rawcam_configure(self, buffer_size):
         """Configure the rawcam port for a specific buffer size."""

@@ -119,7 +119,7 @@ class ZynqScopeSubprocess(multiprocessing.Process):
     state = STATE_ZYNQ_NOT_READY
     die_req = False
     zs_init_args = None
-    buffers_temp = []
+    buffers_working = []
 
     stop_signal = False
     start_signal = False
@@ -242,8 +242,8 @@ class ZynqScopeSubprocess(multiprocessing.Process):
                 raise RuntimeError("Unimplemented/unsupported task class: %r (type: %r)" % (msg, typ))
     
     def cleanup_rawcam_buffers(self):
-        while len(self.buffers_temp) > 0:
-            self.zs.rawcam_free_buffer(self.buffers_temp.pop())
+        while len(self.buffers_working) > 0:
+            self.zs.rawcam_free_buffer(self.buffers_working.pop())
 
     def start_auto_acquisition(self):
         """Start automatic acquisition (i.e. continuous running as opposed to single shot.)
@@ -291,10 +291,11 @@ class ZynqScopeSubprocess(multiprocessing.Process):
 
                 # Setup the rawcam interface preparing to acquire.  Save a copy of the acquisition
                 # params before starting.
-                print("rawcam_configure()")
                 self.acq_params = self.zs.params
+                self.zs.rawcam_init()
                 self.zs.rawcam_configure(self.acq_params.expected_buffer_size)
-                print("rawcam_configure() is done")
+                self.zs.rawcam_start()
+                self.zs.rawcam_disable()
 
                 # Wait, then start acquiring data
                 self.acq_state = TSTATE_ACQ_AUTO_WAIT
@@ -315,7 +316,7 @@ class ZynqScopeSubprocess(multiprocessing.Process):
                 if self.acq_params.flags & zc.ACQ_MODE_DOUBLE_BUFFER:
                     flags |= zc.COMP0_ACQ_SWAP_ACQ_LISTS
 
-                self.zs.rawcam_start()
+                self.zs.rawcam_enable()
 
                 self.acq_comp0_response = self.zs.zcmd.comp_acq_control(flags)
                 self.time_last_acq = time.time()
@@ -349,7 +350,7 @@ class ZynqScopeSubprocess(multiprocessing.Process):
                     if buff.length == 0:
                         buff.length = self.zs.rawcam_buffer_dims[3]
 
-                    self.buffers_temp.append(buff)
+                    self.buffers_working.append(buff)
                     self.rawcam_seq += 1
 
                     if self.last_pts != None:
@@ -390,7 +391,8 @@ class ZynqScopeSubprocess(multiprocessing.Process):
             if self.start_signal:
                 # Stop the rawcam and free all buffers
                 #self.cleanup_rawcam_buffers()
-                self.zs.rawcam_stop()
+                #self.zs.rawcam_stop()
+                self.zs.rawcam_disable()
                 self.acq_state = TSTATE_ACQ_PREPARE_TO_START
         
         else:
@@ -489,6 +491,7 @@ class ZynqScopeTaskController(object):
         while not self.acq_resp.empty():
             resp = self.acq_resp.get()
             print("Got AcqResponse: %r" % resp)
+            f = open("test.bin", "wb")
             for b in resp.buffers:
                 print("Buffer: %r" % b)
 
