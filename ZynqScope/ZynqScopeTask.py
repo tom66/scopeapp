@@ -372,8 +372,8 @@ class ZynqScopeSubprocess(multiprocessing.Process):
 
                     print(resp)
                     self.acq_state = TSTATE_ACQ_AUTO_WAIT
-                else:
-                    self.zs.rawcam_flush() # Let's try and get some more, mkay?
+                #else:
+                    #self.zs.rawcam_flush() # Let's try and get some more, mkay?
 
         elif self.acq_state == TSTATE_ACQ_AUTO_WAIT:
             # Stop, if we get a signal
