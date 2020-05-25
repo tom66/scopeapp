@@ -367,8 +367,7 @@ class ZynqScopeSubprocess(multiprocessing.Process):
                     print("ResponseBuffers:", resp.buffers)
                     resp.status = self.acq_comp0_response['AcqStatus']
                     self.acq_response_queue.put(resp)
-
-                    print(resp)
+                    self.zs.rawcam_stop()
                     self.acq_state = TSTATE_ACQ_AUTO_WAIT
                 else:
                     pass
