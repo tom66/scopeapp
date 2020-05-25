@@ -3,7 +3,7 @@ This file is part of YAOS and is licenced under the MIT Licence.
 """
 
 import sys, operator, math, inspect, copy, time, spidev, pickle
-import multiprocessing
+import multiprocessing, ctypes
 from types import ModuleType
 
 import ZynqScope.ZynqScope as zs
@@ -329,7 +329,8 @@ class ZynqScopeSubprocess(multiprocessing.Process):
                     buff = self.zs.rawcam_get_buffer()
                     #shm = multiprocessing.shared_memory.SharedMemory(create=False, name="ShmRawcam%d" % self.rawcam_seq)
                     #shm.buf = self.zs.rawcam_get_buffer()
-                    print(buff, dir(buff), buff.nbytes, buff.ndim, buff.obj, buff.cast(), buff.itemsize, buff.shape, buff.toreadonly())
+                    print(ctypes.pythonapi.PyMemoryView_GET_BUFFER(ctypes.py_object(buff)))
+                    #print(buff, dir(buff), buff.nbytes, buff.ndim, buff.obj, buff.cast(), buff.itemsize, buff.shape, buff.toreadonly())
                     #self.buffers_temp.append(shm)
                     print("Buffer count: %d, size of list: %d/%d" % (self.zs.rawcam_get_buffer_count(), len(self.buffers_temp), self.zs.rawcam_buffer_dims[2]))
                     self.rawcam_seq += 1
