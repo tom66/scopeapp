@@ -345,7 +345,9 @@ class ZynqScopeSubprocess(multiprocessing.Process):
                 while self.zs.rawcam_get_buffer_count() > 0: #>= self.zs.rawcam_buffer_dims[2]:
                     # Dequeue this buffer and record the pointer so we can free this later
                     count = self.zs.rawcam_get_buffer_count()
-                    buff = ZynqScopePicklableMemoryBuff(self.zs.rawcam_buffer_get_friendly())
+                    fr_buffer = self.zs.rawcam_buffer_get_friendly()
+                    print(fr_buffer)
+                    buff = ZynqScopePicklableMemoryBuff(fr_buffer)
 
                     # hack
                     if buff.length == 0:
