@@ -381,9 +381,10 @@ class ZynqScopeSubprocess(multiprocessing.Process):
                     #self.acq_state = TSTATE_ACQ_IDLE
                     self.acq_state = TSTATE_ACQ_AUTO_WAIT
                 else:
-                    if (time.time() - self.time_last_acq) > self.time_reqd_rawcam:
-                        print("Rawcam time up (%.4f s), let's ask for more." % self.time_reqd_rawcam)
-                        self.zs.rawcam_flush() # Let's try and get some more, mkay?
+                    pass
+                    #if (time.time() - self.time_last_acq) > self.time_reqd_rawcam:
+                    #    print("Rawcam time up (%.4f s), let's ask for more." % self.time_reqd_rawcam)
+                    #    self.zs.rawcam_flush() # Let's try and get some more, mkay?
 
         elif self.acq_state == TSTATE_ACQ_AUTO_WAIT:
             # Stop, if we get a signal
