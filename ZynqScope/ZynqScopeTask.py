@@ -40,16 +40,16 @@ class ZynqScopePicklableMemoryBuff(object):
         self.dts = pirawcam_buff.dts
         self.pts = pirawcam_buff.pts
 
-        print("[")
-        print(repr(self.mmal_ptr))
-        print(dir(self.mmal_ptr))
-        print(repr(self.data_ptr))
-        print(dir(self.data_ptr))
-        print(repr(self.length))
-        print(repr(self.flags))
-        print(repr(self.dts))
-        print(repr(self.pts))
-        print("]")
+        # print("[")
+        # print(repr(self.mmal_ptr))
+        # print(dir(self.mmal_ptr))
+        # print(repr(self.data_ptr))
+        # print(dir(self.data_ptr))
+        # print(repr(self.length))
+        # print(repr(self.flags))
+        # print(repr(self.dts))
+        # print(repr(self.pts))
+        # print("]")
 
     def __repr__(self):
         return "<ZynqScopePicklableMemoryBuff mmal_ptr=0x%08x data_ptr=0x%08x length=%d flags=0x%04x dts=%d pts=%d>" % \
