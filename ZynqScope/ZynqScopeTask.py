@@ -321,7 +321,7 @@ class ZynqScopeSubprocess(multiprocessing.Process):
                 while self.zs.rawcam_get_buffer_count() > 0: #>= self.zs.rawcam_buffer_dims[2]:
                     # Dequeue this buffer and record the pointer so we can free this later
                     #buff = self.zs.rawcam_get_buffer()
-                    shm = multiprocessing.shared_memory()
+                    shm = multiprocessing.shared_memory.SharedMemory()
                     shm.buf = self.zs.rawcam_get_buffer()
                     self.buffers_temp.append(shm)
                     print("Buffer count: %d, size of list: %d/%d" % (self.zs.rawcam_get_buffer_count(), len(self.buffers_temp), self.zs.rawcam_buffer_dims[2]))
