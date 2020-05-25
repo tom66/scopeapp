@@ -347,18 +347,11 @@ class ZynqScopeSubprocess(multiprocessing.Process):
 
                 while self.zs.rawcam_get_buffer_count() > 0: #>= self.zs.rawcam_buffer_dims[2]:
                     # Dequeue this buffer and record the pointer so we can free this later
+                    count = self.zs.rawcam_get_buffer_count()
                     buff = ZynqScopePicklableMemoryBuff(self.zs.rawcam_buffer_get_friendly())
-                    #shm = multiprocessing.shared_memory.SharedMemory(create=False, name="ShmRawcam%d" % self.rawcam_seq)
-                    #shm.buf = self.zs.rawcam_get_buffer()
-                    #print(buff, dir(buff), buff.nbytes, buff.ndim, buff.obj, buff.cast(), buff.itemsize, buff.shape, buff.toreadonly())
-                    #self.buffers_temp.append(shm)
-                    print("Buffer count: %d, size of list: %d/%d" % (self.zs.rawcam_get_buffer_count(), len(self.buffers_temp), self.zs.rawcam_buffer_dims[2]))
-                    print(buff)
-                    #print(buff, buff.obj, buff.nbytes, buff.ndim, buff.shape, buff.strides)
-                    #ctypes.pythonapi.PyBuffer_GetPointer.argtypes = (ctypes.py_object,)
-                    #ctypes.pythonapi.PyBuffer_GetPointer.restype = ctypes.c_void_p
-                    #print("buffer:", ctypes.pythonapi.PyBuffer_GetPointer(ctypes.py_object(buff)))
                     self.buffers_temp.append(buff)
+                    
+                    print("Buffer count: %d, size of list: %d (total %d), new buffer: %r" % (count, len(self.buffers_temp), self.rawcam_seq, buff)
                     self.rawcam_seq += 1
 
                 if len(self.buffers_temp) >= self.zs.rawcam_buffer_dims[2]:
