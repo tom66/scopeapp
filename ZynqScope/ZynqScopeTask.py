@@ -351,7 +351,7 @@ class ZynqScopeSubprocess(multiprocessing.Process):
 
                     print("Buffer count: %d, size of list: %d (total %d), new buffer: %r" % (count, len(self.buffers_temp), self.rawcam_seq, buff))
 
-                if len(self.buffers_temp) > 5: # self.zs.rawcam_buffer_dims[2]:
+                if len(self.buffers_temp) >= self.zs.rawcam_buffer_dims[2]:
                     # Create the response and send it
                     resp = ZynqScopeAcquisitionResponse()
                     resp.time = time.time()
@@ -366,7 +366,7 @@ class ZynqScopeSubprocess(multiprocessing.Process):
                     pass
                     #if (time.time() - self.time_last_acq) > self.time_reqd_rawcam:
                     #    print("Rawcam time up (%.4f), let's ask for more." % self.time_reqd_rawcam)
-                    #    self.zs.rawcam_flush() # Let's try and get some more, mkay?
+                    #   self.zs.rawcam_flush() # Let's try and get some more, mkay?
 
         elif self.acq_state == TSTATE_ACQ_AUTO_WAIT:
             # Stop, if we get a signal
