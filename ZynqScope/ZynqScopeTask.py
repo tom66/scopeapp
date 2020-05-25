@@ -98,6 +98,9 @@ class ZynqScopeAcquisitionResponse(object):
     def __repr__(self):
         return "<ZynqScopeAcquisitionResponse n_buffers=%d status=%r time=%f>" % (len(self.buffers), self.status, self.time)
 
+    def __lt__(self, b):
+        return b.time < self.time
+
 class ZynqScopePicklableMemoryBuff(object): 
     def __init__(self, pirawcam_buff):
         self.mmal_ptr = pirawcam_buff.mmal_ptr
@@ -379,7 +382,7 @@ class ZynqScopeSubprocess(multiprocessing.Process):
                     self.acq_state = TSTATE_ACQ_AUTO_WAIT
                 else:
                     if (time.time() - self.time_last_acq) > self.time_reqd_rawcam:
-                        print("Rawcam time up (%.4f), let's ask for more." % self.time_reqd_rawcam)
+                        print("Rawcam time up (%.4f s), let's ask for more." % self.time_reqd_rawcam)
                         self.zs.rawcam_flush() # Let's try and get some more, mkay?
 
         elif self.acq_state == TSTATE_ACQ_AUTO_WAIT:
@@ -500,7 +503,8 @@ class ZynqScopeTaskController(object):
             resp = self.acq_resp.get()
             print("Got AcqResponse: %r" % resp)
             f = open("test.bin", "wb")
-            for b in resp.buffers:
+            bufs = sorted(resp.buffers)
+            for b in bufs:
                 print("Buffer: %r" % b)
 
     # def acquisition_tick(self):
