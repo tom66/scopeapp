@@ -114,6 +114,8 @@ class ZynqScopeSubprocess(multiprocessing.Process):
     time_last_acq = 0.0
     target_acq_period = 0.0
 
+    rawcam_seq = 0
+
     def __init__(self, event_queue, response_queue, acq_response_queue, shared_dict, zs_init_args):
         super(ZynqScopeSubprocess, self).__init__()
         
@@ -321,10 +323,11 @@ class ZynqScopeSubprocess(multiprocessing.Process):
                 while self.zs.rawcam_get_buffer_count() > 0: #>= self.zs.rawcam_buffer_dims[2]:
                     # Dequeue this buffer and record the pointer so we can free this later
                     #buff = self.zs.rawcam_get_buffer()
-                    shm = multiprocessing.shared_memory.SharedMemory()
+                    shm = multiprocessing.shared_memory.SharedMemory(name="ShmRawcam%d" % self.rawcam_seq)
                     shm.buf = self.zs.rawcam_get_buffer()
                     self.buffers_temp.append(shm)
                     print("Buffer count: %d, size of list: %d/%d" % (self.zs.rawcam_get_buffer_count(), len(self.buffers_temp), self.zs.rawcam_buffer_dims[2]))
+                    self.rawcam_seq += 1
 
                 if len(self.buffers_temp) >= self.zs.rawcam_buffer_dims[2]:
                     # Create the response and send it
