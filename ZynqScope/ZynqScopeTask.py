@@ -31,8 +31,8 @@ ACQSTATE_RUNNING_TRIGD = 1
 ACQSTATE_RUNNING_AUTO_TRIGD = 2
 ACQSTATE_STOPPED = 3
 
-RAWCAM_BITRATE = 1.2e9              # 300MHz, 2 lanes, DDR: 1.2Gbit/s
-RAWCAM_OVERHEAD = 1.30              # 30% overhead (estimated)
+RAWCAM_BITRATE = 0.4e9              # 300MHz, 2 lanes, DDR: 1.2Gbit/s
+RAWCAM_OVERHEAD = 1.50              # 30% overhead (estimated)
 
 class ZynqScopeTaskQueueCommand(object): pass
 class ZynqScopeTaskQueueResponse(object): pass
@@ -378,10 +378,9 @@ class ZynqScopeSubprocess(multiprocessing.Process):
                     #self.acq_state = TSTATE_ACQ_IDLE
                     self.acq_state = TSTATE_ACQ_AUTO_WAIT
                 else:
-                    pass
-                    #if (time.time() - self.time_last_acq) > self.time_reqd_rawcam:
-                    #    print("Rawcam time up (%.4f), let's ask for more." % self.time_reqd_rawcam)
-                    #   self.zs.rawcam_flush() # Let's try and get some more, mkay?
+                    if (time.time() - self.time_last_acq) > self.time_reqd_rawcam:
+                        print("Rawcam time up (%.4f), let's ask for more." % self.time_reqd_rawcam)
+                        self.zs.rawcam_flush() # Let's try and get some more, mkay?
 
         elif self.acq_state == TSTATE_ACQ_AUTO_WAIT:
             # Stop, if we get a signal
