@@ -389,7 +389,7 @@ class ZynqScopeSubprocess(multiprocessing.Process):
         elif self.acq_state == TSTATE_ACQ_IDLE:
             if self.start_signal:
                 # Stop the rawcam and free all buffers
-                self.cleanup_rawcam_buffers()
+                #self.cleanup_rawcam_buffers()
                 self.zs.rawcam_stop()
                 self.acq_state = TSTATE_ACQ_PREPARE_TO_START
         
@@ -400,7 +400,7 @@ class ZynqScopeSubprocess(multiprocessing.Process):
         """Stub - to be fleshed out later."""
         return
             
-class ZynqScopeTaskController():
+class ZynqScopeTaskController(object):
     """
     Container class that wraps the ZynqScopeSubprocess module and provides a convenient
     interface.
