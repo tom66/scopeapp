@@ -486,9 +486,8 @@ class ZynqScopeTaskController():
         self.evq_cache('ZynqScopeSimpleCommand_SetupForTimebase')
     
     def acquisition_tick(self):
-        while True:
-            if not self.acq_resp.empty():
-                print("Got AcqResponse: %r" % self.acq_resp.get())
+        while not self.acq_resp.empty():
+            print("Got AcqResponse: %r" % self.acq_resp.get())
 
     # def acquisition_tick(self):
     #     """Manages Zynq acquisition control."""
