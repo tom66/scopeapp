@@ -265,7 +265,7 @@ class ZynqScopeSubprocess(multiprocessing.Process):
         """Acquisition tick process.  Manages acquisition and SPI control."""
         # This function should be cleaned up: we need to use ZynqScope API where possible, 
         # and not send our own ZynqCommands...
-        print("aq=%d" % self.acq_state)
+        #print("aq=%d" % self.acq_state)
 
         if self.acq_state == TSTATE_ACQ_PREPARE_TO_START:
             # Stop, if we get a signal
@@ -323,7 +323,7 @@ class ZynqScopeSubprocess(multiprocessing.Process):
                 self.zcmd.stop_acquisition()
             else:
                 # We sit in this state waiting for the buffers we need to come in.
-                print("wait... %d" % self.zs.rawcam_get_buffer_count())
+                #print("wait... %d" % self.zs.rawcam_get_buffer_count())
 
                 while self.zs.rawcam_get_buffer_count() > 0: #>= self.zs.rawcam_buffer_dims[2]:
                     # Dequeue this buffer and record the pointer so we can free this later
@@ -338,6 +338,7 @@ class ZynqScopeSubprocess(multiprocessing.Process):
                     #ctypes.pythonapi.PyBuffer_GetPointer.argtypes = (ctypes.py_object,)
                     #ctypes.pythonapi.PyBuffer_GetPointer.restype = ctypes.c_void_p
                     #print("buffer:", ctypes.pythonapi.PyBuffer_GetPointer(ctypes.py_object(buff)))
+                    self.buffers_temp.append(buff)
                     self.rawcam_seq += 1
 
                 if len(self.buffers_temp) >= self.zs.rawcam_buffer_dims[2]:
@@ -345,6 +346,7 @@ class ZynqScopeSubprocess(multiprocessing.Process):
                     resp = ZynqScopeAcquisitionResponse()
                     resp.time = time.time()
                     resp.buffers = self.buffers_temp
+                    print("ResponseBuffers:", resp.buffers)
                     resp.status = self.acq_comp0_response['AcqStatus']
                     self.acq_response_queue.put(resp)
 
