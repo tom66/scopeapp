@@ -31,6 +31,9 @@ ACQSTATE_RUNNING_TRIGD = 1
 ACQSTATE_RUNNING_AUTO_TRIGD = 2
 ACQSTATE_STOPPED = 3
 
+RAWCAM_BITRATE = 1.2e9              # 300MHz, 2 lanes, DDR: 1.2Gbit/s
+RAWCAM_OVERHEAD = 1.30              # 30% overhead (estimated)
+
 class ZynqScopePicklableMemoryBuff(object): 
     def __init__(self, pirawcam_buff):
         self.mmal_ptr = pirawcam_buff.mmal_ptr
@@ -135,7 +138,8 @@ class ZynqScopeSubprocess(multiprocessing.Process):
 
     acq_comp0_response = None
 
-    time_last_acq = 0.0
+    time_last_acq = 0.0         # Starting timestamp for rawcam transaction
+    time_reqd_rawcam = 0.0      # Estimated time for rawcam transaction to complete
     target_acq_period = 0.0
 
     rawcam_seq = 0
@@ -325,6 +329,9 @@ class ZynqScopeSubprocess(multiprocessing.Process):
                 self.acq_comp0_response = self.zs.zcmd.comp_acq_control(flags)
                 self.time_last_acq = time.time()
 
+                self.time_reqd_rawcam = (self.rawcam_buffer_dims[1] * 8) / RAWCAM_BITRATE
+                self.time_reqd_rawcam *= RAWCAM_OVERHEAD
+
                 # Does Zynq have enough data for us?
                 if self.acq_comp0_response['AcqStatus'].num_acq == 0:
                     # No acquisitions.  Maybe no trigger.  Go back to AUTO_WAIT.
@@ -342,17 +349,14 @@ class ZynqScopeSubprocess(multiprocessing.Process):
                 self.zs.rawcam_stop()
                 self.zcmd.stop_acquisition()
             else:
-                # We sit in this state waiting for the buffers we need to come in.
-                #print("wait... %d" % self.zs.rawcam_get_buffer_count())
-
                 while self.zs.rawcam_get_buffer_count() > 0: #>= self.zs.rawcam_buffer_dims[2]:
                     # Dequeue this buffer and record the pointer so we can free this later
                     count = self.zs.rawcam_get_buffer_count()
                     buff = ZynqScopePicklableMemoryBuff(self.zs.rawcam_buffer_get_friendly())
                     self.buffers_temp.append(buff)
-
-                    print("Buffer count: %d, size of list: %d (total %d), new buffer: %r" % (count, len(self.buffers_temp), self.rawcam_seq, buff))
                     self.rawcam_seq += 1
+
+                    print("Buffer count: %d, size of list: %d (total %d), new buffer: %r" % (count, len(self.buffers_temp), self.rawcam_seq, buff)
 
                 if len(self.buffers_temp) >= self.zs.rawcam_buffer_dims[2]:
                     # Create the response and send it
@@ -365,8 +369,10 @@ class ZynqScopeSubprocess(multiprocessing.Process):
 
                     print(resp)
                     self.acq_state = TSTATE_ACQ_AUTO_WAIT
-                #else:
-                    #self.zs.rawcam_flush() # Let's try and get some more, mkay?
+                else:
+                    if (time.time() - self.time_last_acq) > self.time_reqd_rawcam:
+                        print("Rawcam time up, let's ask for more.")
+                        self.zs.rawcam_flush() # Let's try and get some more, mkay?
 
         elif self.acq_state == TSTATE_ACQ_AUTO_WAIT:
             # Stop, if we get a signal
