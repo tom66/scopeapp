@@ -42,7 +42,9 @@ class ZynqScopePicklableMemoryBuff(object):
 
         print("[")
         print(repr(self.mmal_ptr))
+        print(dir(self.mmal_ptr))
         print(repr(self.data_ptr))
+        print(dir(self.data_ptr))
         print(repr(self.length))
         print(repr(self.flags))
         print(repr(self.dts))
