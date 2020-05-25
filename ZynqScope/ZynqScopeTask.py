@@ -31,9 +31,18 @@ ACQSTATE_RUNNING_TRIGD = 1
 ACQSTATE_RUNNING_AUTO_TRIGD = 2
 ACQSTATE_STOPPED = 3
 
-class ZynqScopePicklableMemoryBuffer(object): 
-    def __init__(self, mv):
-        pass
+class ZynqScopePicklableMemoryBuff(object): 
+    def __init__(self, pirawcam_buff):
+        self.mmal_ptr = pirawcam_buff.mmal_ptr
+        self.data_ptr = pirawcam_buff.data_ptr
+        self.length = pirawcam_buff.length
+        self.flags = pirawcam_buff.flags
+        self.dts = pirawcam_buff.dts
+        self.pts = pirawcam_buff.pts
+
+    def __repr__(self):
+        return "<ZynqScopePicklableMemoryBuff mmal_ptr=0x%08x data_ptr=0x%08x length=%d flags=0x%04x dts=%d pts=%d>" % \
+            (self.mmal_ptr, self.data_ptr, self.length, self.flags, self.dts, self.pts)
 
 class ZynqScopeTaskQueueCommand(object): pass
 class ZynqScopeTaskQueueResponse(object): pass
@@ -327,13 +336,13 @@ class ZynqScopeSubprocess(multiprocessing.Process):
 
                 while self.zs.rawcam_get_buffer_count() > 0: #>= self.zs.rawcam_buffer_dims[2]:
                     # Dequeue this buffer and record the pointer so we can free this later
-                    buff = self.zs.rawcam_buffer_get_friendly()
+                    buff = ZynqScopePicklableMemoryBuff(self.zs.rawcam_buffer_get_friendly())
                     #shm = multiprocessing.shared_memory.SharedMemory(create=False, name="ShmRawcam%d" % self.rawcam_seq)
                     #shm.buf = self.zs.rawcam_get_buffer()
                     #print(buff, dir(buff), buff.nbytes, buff.ndim, buff.obj, buff.cast(), buff.itemsize, buff.shape, buff.toreadonly())
                     #self.buffers_temp.append(shm)
                     print("Buffer count: %d, size of list: %d/%d" % (self.zs.rawcam_get_buffer_count(), len(self.buffers_temp), self.zs.rawcam_buffer_dims[2]))
-                    print(buff, dir(buff))
+                    print(buff)
                     #print(buff, buff.obj, buff.nbytes, buff.ndim, buff.shape, buff.strides)
                     #ctypes.pythonapi.PyBuffer_GetPointer.argtypes = (ctypes.py_object,)
                     #ctypes.pythonapi.PyBuffer_GetPointer.restype = ctypes.c_void_p
