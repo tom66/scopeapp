@@ -243,7 +243,7 @@ class ZynqScopeSubprocess(multiprocessing.Process):
     
     def cleanup_rawcam_buffers(self):
         while len(self.buffers_working) > 0:
-            self.zs.rawcam_free_buffer(self.buffers_working.pop())
+            self.zs.rawcam_buffer_free_friendly(self.buffers_working.pop())
 
     def start_auto_acquisition(self):
         """Start automatic acquisition (i.e. continuous running as opposed to single shot.)
