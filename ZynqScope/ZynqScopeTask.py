@@ -315,6 +315,8 @@ class ZynqScopeSubprocess(multiprocessing.Process):
                 if self.acq_params.flags & zc.ACQ_MODE_DOUBLE_BUFFER:
                     flags |= zc.COMP0_ACQ_SWAP_ACQ_LISTS
 
+                self.zs.rawcam_start()
+
                 self.acq_comp0_response = self.zs.zcmd.comp_acq_control(flags)
                 self.time_last_acq = time.time()
 
@@ -324,9 +326,9 @@ class ZynqScopeSubprocess(multiprocessing.Process):
                 # Does Zynq have enough data for us?
                 if self.acq_comp0_response['AcqStatus'].num_acq == 0:
                     # No acquisitions.  Maybe no trigger.  Go back to AUTO_WAIT.
+                    self.zs.rawcam_stop()
                     self.acq_state = TSTATE_ACQ_AUTO_WAIT
                 else:
-                    self.zs.rawcam_start()
                     self.acq_state = TSTATE_ACQ_WAITING_FOR_CSI_TRANSFER
                     self.shared_dict['running_state'] = ACQSTATE_RUNNING_TRIGD
 
