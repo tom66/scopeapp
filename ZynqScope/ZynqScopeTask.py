@@ -131,6 +131,7 @@ class ZynqScopeSubprocess(multiprocessing.Process):
     target_acq_period = 0.0
 
     rawcam_seq = 0
+    last_pts = None
 
     def __init__(self, event_queue, response_queue, acq_response_queue, shared_dict, zs_init_args):
         super(ZynqScopeSubprocess, self).__init__()
@@ -349,7 +350,12 @@ class ZynqScopeSubprocess(multiprocessing.Process):
                     self.buffers_temp.append(buff)
                     self.rawcam_seq += 1
 
-                    print("Buffer count: %d, size of list: %d (total %d), new buffer: %r" % (count, len(self.buffers_temp), self.rawcam_seq, buff))
+                    if self.last_pts != None:
+                        us_delta = buff.pts - self.last_pts
+                    else:
+                        us_delta = 0
+                    self.last_pts = buff.pts
+                    print("Buffer count: %d, size of list: %d (total %d), new buffer: %r, us_delta: %d" % (count, len(self.buffers_temp), self.rawcam_seq, buff, us_delta))
 
                 if len(self.buffers_temp) > 5: #= self.zs.rawcam_buffer_dims[2]:
                     # Create the response and send it
@@ -362,7 +368,6 @@ class ZynqScopeSubprocess(multiprocessing.Process):
 
                     print(resp)
                     self.acq_state = TSTATE_ACQ_AUTO_WAIT
-                    while True: pass
                 else:
                     pass
                     #if (time.time() - self.time_last_acq) > self.time_reqd_rawcam:
