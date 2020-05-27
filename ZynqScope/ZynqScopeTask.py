@@ -386,6 +386,13 @@ class ZynqScopeSubprocess(multiprocessing.Process):
                     #    print("Rawcam time up (%.4f s), let's ask for more." % self.time_reqd_rawcam)
                     #    self.zs.rawcam_flush() # Let's try and get some more, mkay?
 
+                # Wait for the acquisition time to be reached for timeout purposes
+                # If this happens it's bad.  We want to reduce these occurrences to zero.
+                if (time.time() - self.time_last_acq) > self.target_acq_period:
+                    print("I timed out!  Going around again..,")
+                    self.cleanup_rawcam_buffers()
+                    self.acq_state = TSTATE_ACQ_PING_ZYNQ
+
         elif self.acq_state == TSTATE_ACQ_AUTO_WAIT:
             # Stop, if we get a signal
             if self.stop_signal:
