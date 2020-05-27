@@ -15,8 +15,6 @@ import LoggingHandler as lh
 import logging
 
 log = logging.getLogger(__name__)
-log.setLevel(logging.DEBUG)
-
 lh.set_console_logger(logging.INFO)
 
 class ScopeAppLauncher(object):
