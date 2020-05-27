@@ -62,8 +62,10 @@ class ANSIColouredConsoleLogger(logging.StreamHandler):
 
 if __name__ == "__main__":    
     set_console_logger(logging.DEBUG)
-    log.debug("This is a test of DEBUG level")
-    log.info("This is a test of INFO level")
-    log.warning("This is a test of WARNING level")
-    log.error("This is a test of ERROR level")
-    log.critical("This is a test of CRITICAL level")
+
+    while True:
+	    log.debug("This is a test of DEBUG level")
+	    log.info("This is a test of INFO level")
+	    log.warning("This is a test of WARNING level")
+	    log.error("This is a test of ERROR level")
+	    log.critical("This is a test of CRITICAL level")
