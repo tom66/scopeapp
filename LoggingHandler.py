@@ -26,39 +26,39 @@ def set_console_logger(level=logging.DEBUG):
     log.addHandler(ch)
 
 class ANSIColouredConsoleLogger(logging.StreamHandler):
-	start_time = None
+    start_time = None
 
     def __init__(self):
         super(ANSIColouredConsoleLogger, self).__init__()
 
     def emit(self, record):
-    	if start_time == None:
-    		self.start_time = record.created
+        if start_time == None:
+            self.start_time = record.created
 
-    	if record.levelno >= log.CRITICAL:
-    		code = ANSI_COLOUR_CRITICAL
-    	elif record.levelno >= log.ERROR:
-    		code = ANSI_COLOUR_ERROR
-    	elif record.levelno >= log.WARNING:
-    		code = ANSI_COLOUR_WARNING
-    	elif record.levelno >= log.INFO:
-    		code = ANSI_COLOUR_INFO
-    	else:
-    		code = ANSI_COLOUR_DEBUG
+        if record.levelno >= log.CRITICAL:
+            code = ANSI_COLOUR_CRITICAL
+        elif record.levelno >= log.ERROR:
+            code = ANSI_COLOUR_ERROR
+        elif record.levelno >= log.WARNING:
+            code = ANSI_COLOUR_WARNING
+        elif record.levelno >= log.INFO:
+            code = ANSI_COLOUR_INFO
+        else:
+            code = ANSI_COLOUR_DEBUG
 
-    	ev_time = record.created - self.start_time
-    	out = ""
+        ev_time = record.created - self.start_time
+        out = ""
 
-    	out  = "[%s%8s%s " % (code, record.levelname, ANSI_COLOUR_RESET))
-    	out += "%10.3f] <t:%10s> (M:%16s) %s\r\n" % (ev_time, record.threadName, record.module, record.message))
-		sys.stdout.write(out)
+        out  = "[%s%8s%s " % (code, record.levelname, ANSI_COLOUR_RESET))
+        out += "%10.3f] <t:%10s> (M:%16s) %s\r\n" % (ev_time, record.threadName, record.module, record.message))
+        sys.stdout.write(out)
 
-		if record.levelno >= log.ERROR:
-			sys.stderr.write(out)
+        if record.levelno >= log.ERROR:
+            sys.stderr.write(out)
 
     def flush(self):
-    	sys.stdout.flush()
-    	sys.stderr.flush()
+        sys.stdout.flush()
+        sys.stderr.flush()
 
 if __name__ == "__main__":    
     set_console_logger(logging.DEBUG)
