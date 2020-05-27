@@ -32,7 +32,7 @@ class ANSIColouredConsoleLogger(logging.StreamHandler):
         super(ANSIColouredConsoleLogger, self).__init__()
 
     def emit(self, record):
-        if start_time == None:
+        if self.start_time == None:
             self.start_time = record.created
 
         if record.levelno >= log.CRITICAL:
