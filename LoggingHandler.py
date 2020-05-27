@@ -48,17 +48,17 @@ class ANSIColouredConsoleLogger(logging.StreamHandler):
 
         ev_time = record.created - self.start_time
         out = ""
-        
+
         out  = "[%s%8s%s " % (code, record.levelname, ANSI_COLOUR_RESET)
-        out += "%10.3f] <t:%10s> (M:%16s) %s\r\n" % (ev_time, record.threadName, record.module, record.msg % record.args)
+        out += "%10.3f] <t:%10s> (M:%16s) %s%s%s\r\n" % (ev_time, record.threadName, record.module, code, record.msg % record.args, ANSI_COLOUR_RESET)
         sys.stdout.write(out)
 
-        if record.levelno >= logging.ERROR:
-            sys.stderr.write(out)
+        #if record.levelno >= logging.ERROR:
+        #    sys.stderr.write(out)
 
     def flush(self):
         sys.stdout.flush()
-        sys.stderr.flush()
+        #sys.stderr.flush()
 
 if __name__ == "__main__":    
     set_console_logger(logging.DEBUG)
