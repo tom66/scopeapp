@@ -16,7 +16,7 @@ import logging
 
 # Default logger configuration
 log = logging.getLogger(__name__)
-log.setLevel(logging.NOTSET)
+log.setLevel(logging.DEBUG)
 
 class ScopeAppLauncher(object):
     def __init__(self):
