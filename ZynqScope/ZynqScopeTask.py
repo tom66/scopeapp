@@ -300,7 +300,8 @@ class ZynqScopeSubprocess(multiprocessing.Process):
                 self.zs.rawcam_init()
                 self.zs.rawcam_configure(self.acq_params.expected_buffer_size)
                 self.zs.rawcam_start()
-                self.zs.rawcam_disable()
+                #self.zs.rawcam_disable()
+                self.zs.rawcam_enable()
 
                 # Wait, then start acquiring data
                 self.acq_state = TSTATE_ACQ_AUTO_WAIT
@@ -322,8 +323,6 @@ class ZynqScopeSubprocess(multiprocessing.Process):
                     flags |= zc.COMP0_ACQ_SWAP_ACQ_LISTS
 
                 #self.zs.rawcam_debug()
-                self.zs.rawcam_enable()
-
                 self.acq_comp0_response = self.zs.zcmd.comp_acq_control(flags)
                 self.time_last_acq = time.time()
 
