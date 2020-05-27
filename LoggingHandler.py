@@ -48,8 +48,7 @@ class ANSIColouredConsoleLogger(logging.StreamHandler):
 
         ev_time = record.created - self.start_time
         out = ""
-
-        print(dir(record))
+        
         out  = "[%s%8s%s " % (code, record.levelname, ANSI_COLOUR_RESET)
         out += "%10.3f] <t:%10s> (M:%16s) %s\r\n" % (ev_time, record.threadName, record.module, record.msg % record.args)
         sys.stdout.write(out)
