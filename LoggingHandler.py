@@ -15,15 +15,15 @@ ANSI_COLOUR_INFO = "\033[97m"
 ANSI_COLOUR_DEBUG = "\033[37m"
 ANSI_COLOUR_RESET = "\033[0m"
 
-def set_file_logger(file_name, level=logging.INFO):
+def set_file_logger(logger, file_name, level=logging.INFO):
     fh = BasicFileLogger(file_name)
     fh.setLevel(level)
-    log.addHandler(fh)
+    logger.addHandler(fh)
 
 def set_console_logger(level=logging.DEBUG):
     ch = ANSIColouredConsoleLogger()
     ch.setLevel(level)
-    log.addHandler(ch)
+    logger.addHandler(ch)
 
 class BasicFileLogger(logging.StreamHandler):
     start_time = None
