@@ -5,7 +5,7 @@ This file is part of YAOS and is licenced under the MIT licence.
 import sys, logging
 
 log = logging.getLogger(__name__)
-log.setLevel(logging.NOTSET)
+log.setLevel(logging.INFO)
 
 def set_file_logger(file_name, level=logging.INFO):
     fh = logging.FileHandler(file_name)
