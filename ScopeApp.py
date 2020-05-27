@@ -11,12 +11,13 @@ if sys.version_info.major < 3 or sys.version_info.minor < 8:
 import UIController
 
 # configure logger
-import LoggingHandler
+import LoggingHandler as lh
 import logging
 
-# Default logger configuration
 log = logging.getLogger(__name__)
 log.setLevel(logging.DEBUG)
+
+lh.set_console_logger(logging.INFO)
 
 class ScopeAppLauncher(object):
     def __init__(self):
