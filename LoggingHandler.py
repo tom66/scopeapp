@@ -20,7 +20,7 @@ def set_file_logger(logger, file_name, level=logging.INFO):
     fh.setLevel(level)
     logger.addHandler(fh)
 
-def set_console_logger(level=logging.DEBUG):
+def set_console_logger(logger, level=logging.DEBUG):
     ch = ANSIColouredConsoleLogger()
     ch.setLevel(level)
     logger.addHandler(ch)
