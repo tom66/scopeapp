@@ -3,7 +3,7 @@ This file is part of YAOS and is licenced under the MIT licence.
 """
 
 from datetime import datetime
-import sys, strftime
+import sys
 
 if sys.version_info.major < 3 or sys.version_info.minor < 8:
     raise EnvironmentError("Python 3.8 or higher required.  Try running with python3 or python3.8.")
