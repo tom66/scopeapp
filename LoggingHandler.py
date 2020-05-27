@@ -40,7 +40,8 @@ class BasicFileLogger(logging.StreamHandler):
         out = ""
 
         msg = (record.msg % record.args).replace("\r", "").replace("\n", "")
-        out += "[%8s %8.3f] %-12s %-16s %s\r\n" % (record.levelname, ev_time, "@" + record.threadName, "~" + record.module, msg)
+        loc = "~%s:%d" % (record.module, record.lineno)
+        out += "[%8s %8.3f] %-12s %-22s %s\r\n" % (record.levelname, ev_time, "@" + record.threadName, loc, msg)
         self.fp.write(out)
 
     def flush(self):
@@ -70,9 +71,10 @@ class ANSIColouredConsoleLogger(logging.StreamHandler):
         ev_time = record.created - self.start_time
         out = ""
 
-        msg = (record.msg % record.args).replace("\r", "").replace("\n", "")
+        msg  = (record.msg % record.args).replace("\r", "").replace("\n", "")
+        loc  = "~%s:%d" % (record.module, record.lineno)
         out  = "[%s%8s%s " % (code, record.levelname, ANSI_COLOUR_RESET)
-        out += "%8.3f] %-12s %-16s %s%s%s\r\n" % (ev_time, "@" + record.threadName, "~" + record.module, code, msg, ANSI_COLOUR_RESET)
+        out += "%8.3f] %-12s %-22s %s%s%s\r\n" % (ev_time, "@" + record.threadName, log, code, msg, ANSI_COLOUR_RESET)
         sys.stdout.write(out)
 
         #if record.levelno >= logging.ERROR:
