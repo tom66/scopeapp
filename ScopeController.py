@@ -7,7 +7,7 @@ gettext.bindtextdomain('yaosapp', '/lang')
 gettext.textdomain('yaosapp')
 _ = gettext.gettext
 
-import colorsys, math, json
+import colorsys, math, json, logging
 import Utils
 
 import ZynqScope.ZynqScopeTask as zst
@@ -62,6 +62,10 @@ MAX_TIMEBASE_SHIFT_POS = +100
 TEMP_SETTING_FILE = "user/temp.stg"
 DEFAULT_SETTING_FILE = "user/default.stg"
 LAST_SETTING_FILE = "user/last.stg"
+
+# Default logger configuration
+log = logging.getLogger(__name__)
+log.setLevel(logging.NOTSET)
 
 class ScopeChannelController(object):
     """
