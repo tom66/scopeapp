@@ -30,7 +30,7 @@ class BasicFileLogger(logging.StreamHandler):
 
     def __init__(self, file_name):
         super(BasicFileLogger, self).__init__()
-        self.fp = oepn(file_name, "w")
+        self.fp = open(file_name, "w")
 
     def emit(self, record):
         if self.start_time == None:
