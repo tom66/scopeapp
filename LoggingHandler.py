@@ -60,7 +60,8 @@ class ANSIColouredConsoleLogger(logging.StreamHandler):
         sys.stdout.flush()
         #sys.stderr.flush()
 
-if __name__ == "__main__":    
+if __name__ == "__main__":
+	set_file_logger("ScopeApp.log")
     set_console_logger(logging.DEBUG)
 
     while True:
