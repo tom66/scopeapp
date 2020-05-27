@@ -302,6 +302,7 @@ class ZynqScopeSubprocess(multiprocessing.Process):
                 self.zs.rawcam_start()
                 #self.zs.rawcam_disable()
                 self.zs.rawcam_enable()
+                time.sleep(0.001)  # Give rawcam a moment to start
 
                 # Wait, then start acquiring data
                 self.acq_state = TSTATE_ACQ_AUTO_WAIT
