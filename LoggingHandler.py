@@ -35,13 +35,13 @@ class ANSIColouredConsoleLogger(logging.StreamHandler):
         if self.start_time == None:
             self.start_time = record.created
 
-        if record.levelno >= log.CRITICAL:
+        if record.levelno >= logging.CRITICAL:
             code = ANSI_COLOUR_CRITICAL
-        elif record.levelno >= log.ERROR:
+        elif record.levelno >= logging.ERROR:
             code = ANSI_COLOUR_ERROR
-        elif record.levelno >= log.WARNING:
+        elif record.levelno >= logging.WARNING:
             code = ANSI_COLOUR_WARNING
-        elif record.levelno >= log.INFO:
+        elif record.levelno >= logging.INFO:
             code = ANSI_COLOUR_INFO
         else:
             code = ANSI_COLOUR_DEBUG
