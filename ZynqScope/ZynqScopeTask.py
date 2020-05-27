@@ -321,7 +321,7 @@ class ZynqScopeSubprocess(multiprocessing.Process):
                 if self.acq_params.flags & zc.ACQ_MODE_DOUBLE_BUFFER:
                     flags |= zc.COMP0_ACQ_SWAP_ACQ_LISTS
 
-                self.zs.rawcam_debug()
+                #self.zs.rawcam_debug()
                 self.zs.rawcam_enable()
 
                 self.acq_comp0_response = self.zs.zcmd.comp_acq_control(flags)
