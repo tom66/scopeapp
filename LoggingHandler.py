@@ -8,25 +8,25 @@ log = logging.getLogger(__name__)
 log.setLevel(logging.NOTSET)
 
 def set_file_logger(file_name, level=logging.INFO):
-	fh = logging.FileHandler(file_name)
-	fh.setLevel(logging.INFO)
-	log.addHandler(fh)
+    fh = logging.FileHandler(file_name)
+    fh.setLevel(logging.INFO)
+    log.addHandler(fh)
 
 def set_console_logger(level=logging.DEBUG):
-	ch = ANSIColouredConsoleLogger()
-	ch.setLevel(logging.DEBUG)
-	log.addHandler(ch)
+    ch = ANSIColouredConsoleLogger()
+    ch.setLevel(logging.DEBUG)
+    log.addHandler(ch)
 
 class ANSIColouredConsoleLogger(logging.StreamHandler):
-	def __init__(self):
+    def __init__(self):
         super(ANSIColouredConsoleLogger, self).__init__()
 
-	def emit(self, record):
-		print("LoggingRecord %r" % record)
+    def emit(self, record):
+        print("LoggingRecord %r" % record)
 
 if __name__ == "__main__":
-	log.info("This is a test of INFO level")
-	log.debug("This is a test of DEBUG level")
-	log.warning("This is a test of WARNING level")
-	log.error("This is a test of ERROR level")
-	log.critical("This is a test of CRITICAL level")
+    log.info("This is a test of INFO level")
+    log.debug("This is a test of DEBUG level")
+    log.warning("This is a test of WARNING level")
+    log.error("This is a test of ERROR level")
+    log.critical("This is a test of CRITICAL level")
