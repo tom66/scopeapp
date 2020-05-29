@@ -7,6 +7,13 @@ import time, random, struct
 import ZynqScope.ZynqCommandSet as zcmd
 import ZynqScope.ZynqSPI as zspi
 
+# Rawcam library
+import ZynqScope.pirawcam.rawcam as rawcam
+
+# Load debug logger
+import logging
+log = logging.getLogger()
+
 class ZynqCommandException(Exception): pass
 class ZynqCommandResponseParseError(ZynqCommandException): pass
 
@@ -151,8 +158,9 @@ class ZynqCommands(object):
         self.ver_ps_app_id = unpack_resp[2]
         self.ver_timestamp = unpack_resp[3]
         
-        print("Zynq: FPGA (PL): Bitstream 0x%08x, usraccess 0x%08x" % (self.ver_bitstream_id, self.ver_bitstream_usraccess))
-        print("Zynq:  ARM (PS): Appl. ID  0x%08x, timestamp 0x%08x" % (self.ver_ps_app_id, self.ver_timestamp))
+        log.info("--- Hardware information follows ---")
+        log.info("Zynq: FPGA (PL): Bitstream 0x%08x, usraccess 0x%08x" % (self.ver_bitstream_id, self.ver_bitstream_usraccess))
+        log.info("Zynq:  ARM (PS): Appl. ID  0x%08x, timestamp 0x%08x" % (self.ver_ps_app_id, self.ver_timestamp))
     
     def setup_triggered_acquisition(self, pre_size, post_size, number_acq, data_mode):
         """

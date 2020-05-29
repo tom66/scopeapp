@@ -34,6 +34,10 @@ ACQSTATE_STOPPED = 3
 RAWCAM_BITRATE = 0.4e9              # 300MHz, 2 lanes, DDR: 1.2Gbit/s
 RAWCAM_OVERHEAD = 1.50              # 30% overhead (estimated)
 
+# Load debug logger
+import logging
+log = logging.getLogger()
+
 class ZynqScopeTaskQueueCommand(object): pass
 class ZynqScopeTaskQueueResponse(object): pass
 
@@ -153,7 +157,7 @@ class ZynqScopeSubprocess(multiprocessing.Process):
         self.task_period = 1.0 / DEFAULT_ZYNQ_TASK_RATE
         self.target_acq_period = 1.0 / DEFAULT_ACQUISITION_RATE
         
-        print("ZynqScopeSubprocess __init__(): task_period=%2.6f, target_acq_period=%2.2f" % (self.task_period, self.target_acq_period))
+        log.info("ZynqScopeSubprocess __init__(): task_period=%2.6f, target_acq_period=%2.2f" % (self.task_period, self.target_acq_period))
         
     def run(self):
         """Runs periodically to check the status of the Zynq.  Presently set to ping at 50Hz,
