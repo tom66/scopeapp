@@ -2,10 +2,9 @@
 This file is part of YAOS and is licenced under the MIT licence.
 """
 
-import configparser
+import configparser, logging
 
 DEFAULT_CONFIG_FILENAME = "main.cfg"
-
 config_defaults = {}
 
 log = logging.getLogger(__name__)
@@ -68,7 +67,7 @@ class AppConfigManager(object):
         self.c = configparser.ConfigParser(config_defaults, interpolation=configparser.ExtendedInterpolation())
         self.c.read(filename)
         log.info("Read configuration file: %s" % filename)
-        
+
         self.subclass = ConfigSubClass(self.c, 0, "root")
     
     def __getitem__(self, key):
