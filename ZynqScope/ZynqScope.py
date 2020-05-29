@@ -258,7 +258,7 @@ class ZynqScope(object):
         self.rawcam_buffer_dims = (\
             lines, buffer_size, buffer_count - RAWCAM_MIN_SPARE_BUFFERS, RAWCAM_LINE_SIZE * lines)
 
-        log.debug("rawcam_config: lines_per_buffer:", lines, "buffer_size:", buffer_size, "buffer_max:", buffer_max, "num_buffers:", buffer_count)
+        log.debug("rawcam_config: lines_per_buffer: %d, buffer_size: %d, buffer_max: %d, num_buffers: %d" % (lines, buffer_size, buffer_max, buffer_count))
 
         rawcam.set_buffer_num(buffer_count)
         #rawcam.set_buffer_num(8)

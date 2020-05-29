@@ -8,11 +8,11 @@ log = logging.getLogger()
 log.setLevel(logging.DEBUG)
 
 short_levelname = {
-	"DEBUG"    : "--",
-	"INFO"     : "ii",
-	"WARNING"  : "^^",
-	"ERROR"    : "EE",
-	"CRITICAL" : "**"
+    "DEBUG"    : "--",
+    "INFO"     : "ii",
+    "WARNING"  : "^^",
+    "ERROR"    : "EE",
+    "CRITICAL" : "**"
 }
 
 def set_file_logger(logger, file_name, level=logging.INFO):
@@ -80,10 +80,13 @@ class ANSIColouredConsoleLogger(logging.StreamHandler):
         out = ""
 
         # format args if needed
-       	if len(record.args) > 0:
-       		msg = record.msg % record.args
-       	else:
-       		msg = record.msg
+        try:
+            if len(record.args) > 0:
+            	msg = record.msg % record.args
+            else:
+            	msg = record.msg
+        except TypeError:
+            log.critical("Format exception while trying to log message: %r with args %r" % (record.msg, record.args))
 
         msg  = msg.replace("\r", "").replace("\n", "")
         loc  = "~%s:%d" % (record.module, record.lineno)
