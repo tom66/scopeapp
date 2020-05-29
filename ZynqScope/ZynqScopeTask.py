@@ -123,8 +123,9 @@ class ZynqScopePicklableMemoryBuff(object):
     def dump_to_file(self, fn):
         fp = open(fn, "wb")
         mv = self.get_memoryview()
-        print(mv, dir(mv))
-        fp.write(mv.tobytes())
+        b = mv.tobytes()
+        log.warning("bytes: %r len: %d" % (b, len(b)))
+        fp.write(b)
         fp.close()
 
 class ZynqScopeSubprocess(multiprocessing.Process):
