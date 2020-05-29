@@ -67,8 +67,6 @@ class UnitWatt(Unit):
 supported_units = [UnitVolt, UnitAmp, UnitWatt]
 
 def unit_unpickle(pickle_str):
-    print(pickle_str)
-    
     if pickle_str.startswith("Unit:"):
         parts = pickle_str.split(":")
         for unit in supported_units:

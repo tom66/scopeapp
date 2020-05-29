@@ -594,7 +594,7 @@ class ScopeController(object):
                 return "STOP"
     
     def change_notifier(self, param):
-        print("change_notifier:", param)
+        log.debug("change_notifier:", param)
         
         # Sync for timebase and delay changes
         if param == "timebase-div":
