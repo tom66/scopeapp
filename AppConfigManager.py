@@ -67,6 +67,7 @@ class AppConfigManager(object):
         self.c = configparser.ConfigParser(config_defaults, interpolation=configparser.ExtendedInterpolation())
         self.c.read(filename)
         log.info("Read configuration file: %s" % filename)
+        log.warn("Warning configuration file: %s" % filename)
 
         self.subclass = ConfigSubClass(self.c, 0, "root")
     
