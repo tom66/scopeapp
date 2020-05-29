@@ -79,8 +79,13 @@ class ANSIColouredConsoleLogger(logging.StreamHandler):
         ev_time = record.created - self.start_time
         out = ""
 
-        print("ANSI:", record.msg, record.args)
-        msg  = (record.msg % record.args).replace("\r", "").replace("\n", "")
+        # format args if needed
+       	if len(records.args) > 0:
+       		msg = record.msg % record.args
+       	else:
+       		msg = record.msg
+
+        msg  = msg.replace("\r", "").replace("\n", "")
         loc  = "~%s:%d" % (record.module, record.lineno)
         out  = "[%s%s%s " % (code, short_levelname[record.levelname], ANSI_COLOUR_RESET)
         out += "%10.3f] %-12s %-22s %s%s%s\r\n" % (ev_time, "@" + record.threadName, loc, code, msg, ANSI_COLOUR_RESET)
