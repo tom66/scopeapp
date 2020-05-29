@@ -512,7 +512,7 @@ class ZynqScopeTaskController(object):
     def acquisition_tick(self):
         while not self.acq_resp.empty():
             resp = self.acq_resp.get()
-            log.debug("Got AcqResponse: %r" % resp)
+            #log.debug("Got AcqResponse: %r" % resp)
             f = open("test.bin", "wb")
             bufs = sorted(resp.buffers)
             #for b in bufs:
