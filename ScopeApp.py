@@ -16,6 +16,7 @@ import LoggingHandler as lh
 import logging
 
 log = logging.getLogger(__name__)
+log.setLevel(logging.DEBUG)
 lh.set_console_logger(log, logging.DEBUG)
 
 class ScopeAppLauncher(object):
@@ -27,8 +28,8 @@ class ScopeAppLauncher(object):
         self.uiapp.run()
 
 if __name__ == "__main__":
-    log.warning("Starting YAOS Application on %s" % datetime.now().strftime("%c"))
-    log.warning("Python %s" % sys.version)
+    log.info("Starting YAOS Application on %s" % datetime.now().strftime("%c"))
+    log.info("Python %s" % sys.version)
 
     launcher = ScopeAppLauncher()
     launcher.run()
