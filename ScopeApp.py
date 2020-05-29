@@ -12,10 +12,10 @@ import UIController
 import AppConfigManager
 
 # configure logger
-import LoggingHandler as lh
+import LoggingHandler
 import logging
 
-log = lh.logger()
+log = LoggingHandler.get_logger()
 
 class ScopeAppLauncher(object):
     def __init__(self):

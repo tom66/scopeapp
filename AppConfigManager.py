@@ -2,12 +2,13 @@
 This file is part of YAOS and is licenced under the MIT licence.
 """
 
-import configparser, logging
+import configparser
+import LoggingHandler
 
 DEFAULT_CONFIG_FILENAME = "main.cfg"
 config_defaults = {}
 
-log = logging.getLogger()
+log = LoggingHandler.get_logger()
 
 def infer_type(x):
     """For a given value `x' attempt to infer the type.  Return either a float value
