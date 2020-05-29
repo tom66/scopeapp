@@ -169,7 +169,7 @@ class ZynqCommands(object):
         """
         assert (data_mode & ~ACQ_MODE_DOUBLE_BUFFER) in ACQ_DATA_MODES
         
-        print("setup_triggered_acquisition(pre=%d, post=%d, n=%d, mode=0x%04x)"% (pre_size, post_size, number_acq, data_mode))
+        log.debug("setup_triggered_acquisition(pre=%d, post=%d, n=%d, mode=0x%04x)"% (pre_size, post_size, number_acq, data_mode))
         
         self.zspi.send_command_ignore_response(zcmd._ACQ_STOP)
         self.zspi.send_command_ignore_response(zcmd._ACQ_SETUP_TRIGGERED, \
@@ -245,7 +245,7 @@ class ZynqCommands(object):
         try:
             resp = self.zspi.send_command_read_response(zcmd._ACQ_STATUS, args=[], expected_resp_size=6)
         except ZynqCommandResponseParseError as e:
-            print("Exception reading Zynq acquistion status, ignored and returning None: %r" % e)
+            log.error("Exception reading Zynq acquistion status, ignored and returning None: %r" % e)
             return None
 
         #print(repr(resp))
@@ -303,7 +303,7 @@ class ZynqCommands(object):
         try:
             resp = self.zspi.send_command_read_response(zcmd._CSI_STATUS, args=[], expected_resp_size=8)
         except ZynqCommandResponseParseError as e:
-            print("Exception reading Zynq acquistion status, ignored and returning None: %r" % e)
+            log.error("Exception reading Zynq acquistion status, ignored and returning None: %r" % e)
             return None
         
         return resp
