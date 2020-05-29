@@ -19,7 +19,7 @@ lh.set_console_logger(log, logging.INFO)
 
 class ScopeAppLauncher(object):
     def __init__(self):
-    	self.cfgmgr = AppConfigManager.AppConfigManager()
+        self.cfgmgr = AppConfigManager.AppConfigManager()
         self.uiapp = UIController.MainApplication(self.cfgmgr)
         print(self.cfgmgr)
         print(self.cfgmgr.Theme.CSSFile)
