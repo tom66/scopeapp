@@ -531,6 +531,7 @@ class ZynqScopeTaskController(object):
             for b in bufs:
                 log.debug("Buffer: %r" % b)
                 log.debug("Deref:  %r" % b.get_memoryview())
+                b.dump_to_file("test.bin")
 
     # def acquisition_tick(self):
     #     """Manages Zynq acquisition control."""
