@@ -8,7 +8,7 @@ import logging
 DEFAULT_CONFIG_FILENAME = "main.cfg"
 config_defaults = {}
 
-log = logging.get_logger()
+log = logging.getLogger()
 
 def infer_type(x):
     """For a given value `x' attempt to infer the type.  Return either a float value

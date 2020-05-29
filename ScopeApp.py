@@ -15,7 +15,7 @@ import AppConfigManager
 import LoggingHandler
 
 LoggingHandler.set_console_logger(log, logging.DEBUG)
-log = logging.get_logger()
+log = logging.getLogger()
 
 class ScopeAppLauncher(object):
     def __init__(self):
