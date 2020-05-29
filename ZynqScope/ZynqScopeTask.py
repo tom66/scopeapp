@@ -355,7 +355,6 @@ class ZynqScopeSubprocess(multiprocessing.Process):
                     # Dequeue this buffer and record the pointer so we can free this later
                     count = self.zs.rawcam_get_buffer_count()
                     fr_buffer = self.zs.rawcam_buffer_get_friendly()
-                    #print(fr_buffer)
                     buff = ZynqScopePicklableMemoryBuff(fr_buffer)
 
                     # hack
@@ -378,7 +377,7 @@ class ZynqScopeSubprocess(multiprocessing.Process):
                     resp = ZynqScopeAcquisitionResponse()
                     resp.time = time.time()
                     resp.buffers = self.buffers_working
-                    log.debug("ResponseBuffers: %r" % resp.buffers)
+                    #log.debug("ResponseBuffers: %r" % resp.buffers)
                     resp.status = self.acq_comp0_response['AcqStatus']
                     self.acq_response_queue.put(resp)
                     #self.zs.rawcam_stop()
@@ -406,7 +405,7 @@ class ZynqScopeSubprocess(multiprocessing.Process):
             else:
                 # Wait for the acquisition time to be reached before gathering data
                 if (time.time() - self.time_last_acq) > self.target_acq_period:
-                    log.debug("TimesUp!")
+                    #log.debug("TimesUp!")
                     self.cleanup_rawcam_buffers()
                     self.acq_state = TSTATE_ACQ_PING_ZYNQ
 
