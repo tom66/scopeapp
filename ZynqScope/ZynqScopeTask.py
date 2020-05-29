@@ -124,7 +124,7 @@ class ZynqScopePicklableMemoryBuff(object):
         fp = open(fn, "w")
         mv = self.get_memoryview()
         print(mv, dir(mv))
-        fp.write(mv.tobytes())
+        fp.write(mv.tobytes().decode("ascii"))
         fp.close()
 
 class ZynqScopeSubprocess(multiprocessing.Process):
