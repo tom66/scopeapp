@@ -610,7 +610,7 @@ class MainApplication(object):
         for wdg in self.ui_widgets:
             wdg.refresh_object_attach()
     
-        log.info("Active tab index:", self.ctrl.active_tab)
+        log.info("Active tab index: %d" % self.ctrl.active_tab)
         self.nbk_main_settings.set_current_page(self.ctrl.active_tab)
     
     def run(self):
