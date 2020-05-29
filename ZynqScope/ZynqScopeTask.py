@@ -378,7 +378,7 @@ class ZynqScopeSubprocess(multiprocessing.Process):
                     resp = ZynqScopeAcquisitionResponse()
                     resp.time = time.time()
                     resp.buffers = self.buffers_working
-                    log.debug("ResponseBuffers:", resp.buffers)
+                    log.debug("ResponseBuffers: %r" % resp.buffers)
                     resp.status = self.acq_comp0_response['AcqStatus']
                     self.acq_response_queue.put(resp)
                     #self.zs.rawcam_stop()
