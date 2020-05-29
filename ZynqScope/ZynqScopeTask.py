@@ -443,7 +443,7 @@ class ZynqScopeTaskController(object):
         self.rawcam_running = False
 
         # Initialise local rawcam task
-        rawcam.init()
+        #rawcam.init()
         
         # Fill common request objects cache
         self.roc = {
