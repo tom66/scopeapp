@@ -14,7 +14,6 @@ from gi.repository import Gtk, GLib, Gio, Gdk, GdkPixbuf
 import sys, time, random, math
 from datetime import datetime
 
-import AppConfigManager
 import ScopeController as SC
 import UIChannelTab
 import UIChannelWidget
@@ -22,6 +21,10 @@ import UINotifier
 import Utils
 
 LAYOUT_FILE = "resources/mainapp.gtkbuilder"
+
+# Load debug logger
+import logging
+log = logging.getLogger()
 
 # Possible icon sizes
 SIZE_OTHER = 0
@@ -109,6 +112,7 @@ class MainApplication(object):
         Init function.  This loads the GUI configuration, the application configurator,
         and the required skin/theme.
         """
+        log.info("Start initialising GTK configuration")
         self.cfgmgr = cfgmgr
         
         # Create the oscilloscope controller
@@ -117,16 +121,16 @@ class MainApplication(object):
         # Here we'd display a splash screen while setting everything up...
         
         # Connect the ScopeController to hardware.
-        self.ctrl.set_render_parameters(int(self.cfgmgr['Render']['DisplaySamples']), int(self.cfgmgr['Render']['DisplayHDivisionsYT']))
+        self.ctrl.set_render_parameters(int(self.cfgmgr.Render.DisplaySamples), int(self.cfgmgr.Render.DisplayHDivisionsYT))
         self.ctrl.connect()
         
         # Load CSS file as specified in config file and apply it to everything
         self.css = Gtk.CssProvider()
-        self.css.load_from_file(Gio.File.new_for_path(self.cfgmgr['Theme']['CSSFile']))
+        self.css.load_from_file(Gio.File.new_for_path(self.cfgmgr.Theme.CSSFile))
         Gtk.StyleContext.add_provider_for_screen(Gdk.Screen.get_default(), self.css, Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION)
         
-        self.resource_icon_size = int(self.cfgmgr['Theme']['StatusIconSize'])
-        self.resource_root = str(self.cfgmgr['Theme']['ResourceDir'])
+        self.resource_icon_size = int(self.cfgmgr.Theme.StatusIconSize)
+        self.resource_root = str(self.cfgmgr.Theme.ResourceDir)
         
         # Load the GtkBuilder application object and load common objects.
         self.builder = Gtk.Builder()
@@ -257,6 +261,9 @@ class MainApplication(object):
         except:
             self.flash_period = 0.4 # Default
 
+        # Done initialisation of GUI stuff
+        log.info("Done initialising GTK configuration")
+
         # Set the start signal.  It will start the acquisition automatically a few seconds after the application launches.
         self.start_auto = time.time() + 6.0
     
@@ -273,12 +280,12 @@ class MainApplication(object):
     def _user_exception(self, exc):
         """Called by subclasses if a user exception occurs.  Handles the display of the warning message
         to the user."""
-        print("_user_exception:", exc)
+        log.error("UserException: %s" % repr(exc))
         self.notifier.push_notification(UINotifier.NotifyMessage(UINotifier.NOTIFY_WARNING, str(exc)))
     
     def _user_message(self, msg):
         """Called to display a message to the user."""
-        print("_user_message:", msg)
+        log.info("UserMessage: %s" % repr(exc))
         self.notifier.push_notification(UINotifier.NotifyMessage(UINotifier.NOTIFY_INFO, str(msg)))
     
     def _nbk_select_page(self, *args):
@@ -287,13 +294,13 @@ class MainApplication(object):
         self.state_change_notify()
     
     def _wnd_key_press(self, *args):
-        print("_wnd_key_press", args)
+        log.info("_wnd_key_press", args)
 
     def _wnd_key_release(self, *args):
-        print("_wnd_key_release", args)
+        log.info("_wnd_key_release", args)
     
     def _logo_clicked(self, *args):
-        print("_logo_clicked", args)
+        log.info("_logo_clicked", args)
         self.popdown_menu.show_all()
         self.popdown_menu.popup_at_widget(self.img_logo, Gdk.Gravity.SOUTH_WEST, Gdk.Gravity.NORTH_WEST, None)
     
@@ -307,6 +314,8 @@ class MainApplication(object):
         # then we'll nicely quit
         
         # ... but for now, just sys.exit()
+        log.info("Application quit")
+        log.flush()
         sys.exit()
     
     def _menu_save_settings(self, *args):
@@ -316,12 +325,12 @@ class MainApplication(object):
         self._user_exception(Utils.UserRequestUnsupported(_("Function not implemented yet")))
     
     def _menu_quick_save_settings(self, *args):
-        print("_menu_quick_save_settings")
+        log.info("Quick save settings activated")
         self.ctrl.save_settings_temp()
         self._user_message(_("Present settings saved into quick restore file"))
     
     def _menu_quick_load_settings(self, *args):
-        print("_menu_quick_load_settings")
+        log.info("Quick load settings activated")
         self.ctrl.restore_settings_temp()
         self.ui_sync_config()
         self.prompt_user_50ohm()
@@ -363,7 +372,7 @@ class MainApplication(object):
             self.ctrl.timebase.timebase_down()
         elif xp > 0.4 and xp < 0.6:
             # Clicks in between the two are interpreted as selecting the timebase/horizontal options (not implemented)
-            print("Middle click on timebase: not yet implemented")
+            log.warning("Middle click on timebase: not yet implemented")
         elif xp > 0.66 and xp <= 1:
             # Clicks in the last 1/3rd are interpreted as an increase timebase; 
             self.ctrl.timebase.timebase_up()
@@ -437,7 +446,6 @@ class MainApplication(object):
             self.last_ui_time = time.time()
         
         self.flash_timer += time.time() - self.last_ui_time
-        #print(int(self.flash_state), self.flash_timer, self.flash_error)
         
         if self.flash_timer >= self.flash_period:
             self.flash_error = self.flash_timer - self.flash_period
@@ -461,7 +469,7 @@ class MainApplication(object):
         if self.state_sync_pending:
             tdelta = time.time() - self.last_state_sync_time
             if tdelta < 0 or tdelta > STATE_SYNC_WAIT:
-                print("Syncing last oscilloscope state")
+                log.info("Syncing last oscilloscope state to disk")
                 self.ctrl.save_settings_last()
                 self.last_state_sync_time = time.time()
                 self.state_sync_pending = False
@@ -487,7 +495,7 @@ class MainApplication(object):
                 self.fps_average_accu = 0
             elif (self.fps_average_count & 7) == 0:
                 self.fps_average = self.fps_average_accu / self.fps_average_count
-                print("set_tick: %7.3f ms, actual_delay: %3.3f ms, avg_frame_rate: %2.1f fps" % (self.delay_tick, actual_delay, self.fps_average))
+                log.debug("set_tick: %7.3f ms, actual_delay: %3.3f ms, avg_frame_rate: %2.1f fps" % (self.delay_tick, actual_delay, self.fps_average))
         
         # does this cause stack overflow?
         GLib.timeout_add(self.delay_tick, self.ui_tick, None, priority=GLib.PRIORITY_DEFAULT)
@@ -500,7 +508,7 @@ class MainApplication(object):
 
         # Should we start acquisition automatically?
         if self.start_auto != None and time.time() > self.start_auto:
-            print("Automatically starting acquisition on power up...")
+            log.info("Automatically starting acquisition on power up...")
             self.start_auto = None
             self.ctrl.acq_run()
     
