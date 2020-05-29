@@ -117,6 +117,9 @@ class ZynqScopePicklableMemoryBuff(object):
     def __lt__(self, b):
         return b.pts < self.pts
 
+    def get_memoryview(self):
+        return rawcam.get_memoryview_from_buffer_ptrval(self.mmal_ptr)
+
 class ZynqScopeSubprocess(multiprocessing.Process):
     """
     This 'task' manages the interface with the Zynq via a multiprocessing interface.
@@ -515,8 +518,9 @@ class ZynqScopeTaskController(object):
             #log.debug("Got AcqResponse: %r" % resp)
             f = open("test.bin", "wb")
             bufs = sorted(resp.buffers)
-            #for b in bufs:
-            #    log.debug("Buffer: %r" % b)
+            for b in bufs:
+                log.debug("Buffer: %r" % b)
+                log.debug("Deref:  %r" % b.get_memoryview())
 
     # def acquisition_tick(self):
     #     """Manages Zynq acquisition control."""

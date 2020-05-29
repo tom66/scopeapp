@@ -41,7 +41,7 @@ timebase_options = [1e-9, 2e-9, 5e-9, 10e-9, 20e-9, 50e-9, 100e-9, 200e-9, 500e-
                     1e-3, 2e-3, 5e-3, 10e-3, 20e-3, 50e-3, 100e-3]
 
 default_timebase = 12
-                    
+
 class ZynqScopeParameterRangeError(ValueError): pass
 
 class ZynqScopeCurrentParameters(object): 
