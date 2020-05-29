@@ -12,8 +12,7 @@ import UIController
 import AppConfigManager
 
 # configure logger
-import LoggingHandler
-
+import LoggingHandler, logging
 log = logging.getLogger()
 LoggingHandler.set_console_logger(log, logging.DEBUG)
 
