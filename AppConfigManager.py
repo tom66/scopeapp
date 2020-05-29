@@ -67,8 +67,8 @@ class AppConfigManager(object):
     def __init__(self, filename=DEFAULT_CONFIG_FILENAME):
         self.c = configparser.ConfigParser(config_defaults, interpolation=configparser.ExtendedInterpolation())
         self.c.read(filename)
-        log.info("Read configuration file: %s" % filename)
-        log.warn("Warning configuration file: %s" % filename)
+        log.info("Read and parsed configuration file: %s" % filename)
+        log.info("Configuration file has %d sections" % len(self.c.sections()))
 
         self.subclass = ConfigSubClass(self.c, 0, "root")
     
