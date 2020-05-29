@@ -81,6 +81,9 @@ class ZynqScopeStartAutoAcquisition(ZynqScopeTaskQueueCommand):
 class ZynqScopeAttributesResponse(ZynqScopeTaskQueueResponse): pass
 class ZynqScopeNullResponse(ZynqScopeTaskQueueResponse): pass
 
+class ZynqScopeAcqStats(object):
+    num_waves_acqd = 0
+
 def compress_class_attrs_for_response(resp, clas_, exclude=[]):
     #print("compress_class_attrs_for_response %r %r" % (resp, clas_))
     attrs = inspect.getmembers(clas_)
@@ -124,7 +127,7 @@ class ZynqScopePicklableMemoryBuff(object):
         fp = open(fn, "wb")
         mv = self.get_memoryview()
         b = mv.tobytes()
-        log.warning("bytes: %r len: %d" % (b, len(b)))
+        #log.warning("bytes: %r len: %d" % (b, len(b)))
         fp.write(b)
         fp.close()
 
@@ -450,6 +453,9 @@ class ZynqScopeTaskController(object):
         self.status = zc.ZynqAcqStatus()
         self.rawcam_running = False
 
+        self.acqstat = ZynqScopeAcqStats()
+        self.acqstat.num_waves_acqd = 0
+
         # Initialise local rawcam task
         #rawcam.init()
         
@@ -532,7 +538,8 @@ class ZynqScopeTaskController(object):
             for b in bufs:
                 log.debug("Buffer: %r" % b)
                 log.debug("Deref:  %r" % b.get_memoryview())
-                b.dump_to_file("test.bin")
+                b.dump_to_file("rxtest/test%d.bin")
+                self.acqstat.num_waves_acqd += 1
 
     # def acquisition_tick(self):
     #     """Manages Zynq acquisition control."""
