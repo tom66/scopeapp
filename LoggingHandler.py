@@ -4,16 +4,8 @@ This file is part of YAOS and is licenced under the MIT licence.
 
 import sys, logging
 
-log = logging.getLogger(__name__)
+log = logging.getLogger("root")
 log.setLevel(logging.DEBUG)
-
-# The below codes are optimised for PuTTY/KiTTY
-ANSI_COLOUR_CRITICAL = "\033[95m"
-ANSI_COLOUR_ERROR = "\033[31m"
-ANSI_COLOUR_WARNING = "\033[33m"
-ANSI_COLOUR_INFO = "\033[97m"
-ANSI_COLOUR_DEBUG = "\033[37m"
-ANSI_COLOUR_RESET = "\033[0m"
 
 def set_file_logger(logger, file_name, level=logging.INFO):
     fh = BasicFileLogger(file_name)
@@ -24,6 +16,10 @@ def set_console_logger(logger, level=logging.DEBUG):
     ch = ANSIColouredConsoleLogger()
     ch.setLevel(level)
     logger.addHandler(ch)
+
+def logger(self):
+    set_console_logger(log, logging.DEBUG)
+    return log
 
 class BasicFileLogger(logging.StreamHandler):
     start_time = None
@@ -46,6 +42,14 @@ class BasicFileLogger(logging.StreamHandler):
 
     def flush(self):
         self.fp.flush()
+
+# The below codes are optimised for PuTTY/KiTTY
+ANSI_COLOUR_CRITICAL = "\033[95m"
+ANSI_COLOUR_ERROR = "\033[31m"
+ANSI_COLOUR_WARNING = "\033[33m"
+ANSI_COLOUR_INFO = "\033[97m"
+ANSI_COLOUR_DEBUG = "\033[37m"
+ANSI_COLOUR_RESET = "\033[0m"
 
 class ANSIColouredConsoleLogger(logging.StreamHandler):
     start_time = None
@@ -89,8 +93,9 @@ if __name__ == "__main__":
     set_console_logger(logging.DEBUG)
 
     while True:
-	    log.debug("This is a test of DEBUG level")
-	    log.info("This is a test of INFO level")
-	    log.warning("This is a test of WARNING level")
-	    log.error("This is a test of ERROR level")
-	    log.critical("This is a test of CRITICAL level")
+        log.debug("This is a test of DEBUG level")
+        log.info("This is a test of INFO level")
+        log.warning("This is a test of WARNING level")
+        log.error("This is a test of ERROR level")
+        log.critical("This is a test of CRITICAL level")
+
