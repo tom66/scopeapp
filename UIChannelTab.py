@@ -451,7 +451,7 @@ class ChannelTab(object):
     @__state_change
     def _cmb_probe_atten_changed(self, *args):
         if self.atten_init and not self.atten_unit_update and not self.atten_update:
-            print("Set probe gain to %f" % probe_atten_options[self.cmb_probe_atten.get_active()])
+            log.info("Set probe gain to %f" % probe_atten_options[self.cmb_probe_atten.get_active()])
             self.channel.set_probe_gain(probe_atten_options[self.cmb_probe_atten.get_active()])
     
     @__state_change
@@ -466,12 +466,12 @@ class ChannelTab(object):
         path = list(map(int, str(self.cmb_chan_label.get_model().get_path(self.cmb_chan_label.get_active_iter())).split(":")))
         if len(path) == 1:
             if path[0] == 0:
-                print("Reset channel name to defaults")
+                log.debug("Reset channel name to defaults")
                 self.channel.set_channel_name_defaults()
             elif path[0] == 1:
                 raise Utils.UserRequestUnsupported(_("This option is not supported right now"))
         else:
-            print("Request templated name")
+            log.debug("Request templated name")
             key = user_channel_names[path[0] - 2][1][path[1]]
             self.channel.set_channel_name_global(key[1], key[0])
     
