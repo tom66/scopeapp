@@ -112,10 +112,9 @@ class MainApplication(object):
         Init function.  This loads the GUI configuration, the application configurator,
         and the required skin/theme.
         """
-        log.info("Start initialising GTK configuration")
         self.cfgmgr = cfgmgr
-        
-        # Create the oscilloscope controller
+
+        log.info("Start initialising oscilloscope control")
         self.ctrl = SC.ScopeController()
         
         # Here we'd display a splash screen while setting everything up...
@@ -123,8 +122,11 @@ class MainApplication(object):
         # Connect the ScopeController to hardware.
         self.ctrl.set_render_parameters(int(self.cfgmgr.Render.DisplaySamples), int(self.cfgmgr.Render.DisplayHDivisionsYT))
         self.ctrl.connect()
+
+        log.info("Done initialising oscilloscope control")
         
         # Load CSS file as specified in config file and apply it to everything
+        log.info("Start initialising GTK configuration")
         self.css = Gtk.CssProvider()
         self.css.load_from_file(Gio.File.new_for_path(self.cfgmgr.Theme.CSSFile))
         Gtk.StyleContext.add_provider_for_screen(Gdk.Screen.get_default(), self.css, Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION)
