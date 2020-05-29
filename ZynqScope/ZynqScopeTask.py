@@ -201,7 +201,7 @@ class ZynqScopeSubprocess(multiprocessing.Process):
         elif typ is ZynqScopeSimpleCommand:
             # This is a simple command: we call the relevant method on the ZynqScope interface.
             # This is used, e.g. to set acquisition parameters.  
-            print("ZynqScopeSimpleCommand:", msg, msg.args, msg.kwargs)
+            log.debug("ZynqScopeSimpleCommand:", msg, msg.args, msg.kwargs)
             getattr(self.zs, msg.cmd_name)(*msg.args, **msg.kwargs)
             
         elif typ is ZynqScopeStartAutoAcquisition:
@@ -240,7 +240,7 @@ class ZynqScopeSubprocess(multiprocessing.Process):
             self.zs.rawcam_stop()
             
         elif typ is ZynqScopeDieTask:
-            print("ZynqScopeSubprocess: DieTask received")
+            log.warning("ZynqScopeSubprocess: DieTask received")
             self.die_req = True
             
         else:
@@ -260,7 +260,7 @@ class ZynqScopeSubprocess(multiprocessing.Process):
         Then the acquisition is started and result buffers will be streamed via the response queue.
         Note that auto in this context refers to the acquisition control being autonomous; it does
         not relate to the AUTO trigger mode."""
-        print("start_auto_acquisition(): entry")
+        log.debug("start_auto_acquisition(): entry")
 
         if self.acq_state != TSTATE_ACQ_IDLE:
             # We need to halt the state machine first... 
@@ -269,7 +269,7 @@ class ZynqScopeSubprocess(multiprocessing.Process):
 
             # We might need some timeout logic here if the state machine locks up for any reason
             while self.acq_state != TSTATE_ACQ_IDLE:
-                print("start_auto_acquisition(): waiting for IDLE %d ..." % self.acq_state)
+                log.debug("start_auto_acquisition(): waiting for IDLE %d ..." % self.acq_state)
                 self.acquisition_tick()
 
         self.zs.setup_for_timebase()
@@ -281,7 +281,7 @@ class ZynqScopeSubprocess(multiprocessing.Process):
         self.start_signal = True
         self.shared_dict['running_state'] = ACQSTATE_RUNNING_WAIT
 
-        print("start_auto_acquisition(): done")
+        log.debug("start_auto_acquisition(): done")
 
     def acquisition_tick(self):
         """Acquisition tick process.  Manages acquisition and SPI control."""
@@ -378,7 +378,7 @@ class ZynqScopeSubprocess(multiprocessing.Process):
                     resp = ZynqScopeAcquisitionResponse()
                     resp.time = time.time()
                     resp.buffers = self.buffers_working
-                    print("ResponseBuffers:", resp.buffers)
+                    log.debug("ResponseBuffers:", resp.buffers)
                     resp.status = self.acq_comp0_response['AcqStatus']
                     self.acq_response_queue.put(resp)
                     #self.zs.rawcam_stop()
@@ -393,7 +393,7 @@ class ZynqScopeSubprocess(multiprocessing.Process):
                 # Wait for the acquisition time to be reached for timeout purposes
                 # If this happens it's bad.  We want to reduce these occurrences to zero.
                 if (time.time() - self.time_last_acq) > self.target_acq_period:
-                    print("I timed out!  Going around again..,")
+                    log.warning("Timeout trying to get CSI buffers from Zynq/rawcam; let's try again")
                     self.cleanup_rawcam_buffers()
                     self.acq_state = TSTATE_ACQ_PING_ZYNQ
 
@@ -406,7 +406,7 @@ class ZynqScopeSubprocess(multiprocessing.Process):
             else:
                 # Wait for the acquisition time to be reached before gathering data
                 if (time.time() - self.time_last_acq) > self.target_acq_period:
-                    print("TimesUp!")
+                    log.debug("TimesUp!")
                     self.cleanup_rawcam_buffers()
                     self.acq_state = TSTATE_ACQ_PING_ZYNQ
 
@@ -419,7 +419,7 @@ class ZynqScopeSubprocess(multiprocessing.Process):
                 self.acq_state = TSTATE_ACQ_PREPARE_TO_START
         
         else:
-            print("Idle--not running")
+            log.debug("Idle--not running")
 
     def die_cleanup(self):
         """Stub - to be fleshed out later."""
@@ -498,7 +498,7 @@ class ZynqScopeTaskController(object):
         pass
     
     def start_acquisition(self):
-        print("ZSTC: ZynqScopeStartAutoAcquisition")
+        log.debug("ZSTC: ZynqScopeStartAutoAcquisition")
         self.evq_cache('ZynqScopeStartAutoAcquisition')
     
     def sync_to_real_world(self):
@@ -507,17 +507,17 @@ class ZynqScopeTaskController(object):
         #  - Clearing acquisition memory.  
         #  - Sending any relay/attenuation unit changes.
         #  - Sending any ADC configuration changes.
-        print("sync_to_real_world")
+        log.debug("sync_to_real_world")
         self.evq_cache('ZynqScopeSimpleCommand_SetupForTimebase')
     
     def acquisition_tick(self):
         while not self.acq_resp.empty():
             resp = self.acq_resp.get()
-            print("Got AcqResponse: %r" % resp)
+            log.debug("Got AcqResponse: %r" % resp)
             f = open("test.bin", "wb")
             bufs = sorted(resp.buffers)
             for b in bufs:
-                print("Buffer: %r" % b)
+                log.debug("Buffer: %r" % b)
 
     # def acquisition_tick(self):
     #     """Manages Zynq acquisition control."""
