@@ -63,9 +63,9 @@ TEMP_SETTING_FILE = "user/temp.stg"
 DEFAULT_SETTING_FILE = "user/default.stg"
 LAST_SETTING_FILE = "user/last.stg"
 
-# Default logger configuration
-log = logging.getLogger(__name__)
-log.setLevel(logging.NOTSET)
+# Load debug logger
+import logging
+log = logging.getLogger()
 
 class ScopeChannelController(object):
     """
@@ -127,6 +127,7 @@ class ScopeChannelController(object):
     
     def __init__(self, index, short_name=None, long_name=None):
         """Initialise a channel controller"""
+        log.info("__init__() ScopeChannelController for channel %d" % index)
         self.index = int(index)
         
         # Generate automatic name if needed (replace both names)
@@ -150,7 +151,7 @@ class ScopeChannelController(object):
     def restore_state(self, json_dict):
         try:
             Utils.unpack_json(self, json_dict, self.pack_vars_types)
-            print("??termination_50R", self.termination_50R)
+            #print("??termination_50R", self.termination_50R)
             self.unit = Utils.unit_unpickle(self.unit)
         except Exception as e:
             raise Utils.StateSaveFileCorrupted(_("Unable to restore configuration file: Exception - %s" % str(e)))
@@ -381,7 +382,6 @@ class ScopeTimebaseController(object):
         
         # Get the list of supported timebases
         self.supported_timebases = self.zstc.get_supported_timebases()
-        print("Supported timebases:", self.supported_timebases)
         
         # Set default change notifier (does nothing)
         self.change_notifier = lambda x: None
@@ -399,6 +399,8 @@ class ScopeTimebaseController(object):
         return self.supported_timebases[self.timebase_index]
     
     def timebase_up(self):
+        log.debug("timebase_up()")
+
         self.timebase_index += 1
         if self.timebase_index >= len(self.supported_timebases):
             self.timebase_index = len(self.supported_timebases) - 1
@@ -407,7 +409,8 @@ class ScopeTimebaseController(object):
             self.change_notifier('timebase-div')
     
     def timebase_down(self):
-        print("timebase_down")
+        log.debug("timebase_down()")
+
         self.timebase_index -= 1
         if self.timebase_index < 0:
             self.timebase_index = 0
@@ -471,7 +474,7 @@ class ScopeController(object):
         self.default_hdiv_span = default_hdiv_span
     
     def connect(self):
-        print("ScopeController.connect() - connecting to ZynqScopeTaskController and ScopeTimebaseController")
+        log.debug("ScopeController.connect() - connecting to ZynqScopeTaskController and ScopeTimebaseController")
 
         self.zst = zst.ZynqScopeTaskController((self.display_samples_target, self.default_hdiv_span))
         self.zst.start_task()

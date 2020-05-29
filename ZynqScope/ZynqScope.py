@@ -13,6 +13,10 @@ import ZynqScope.ZynqSPI, ZynqScope.ZynqCommands as zc
 # Rawcam library
 import ZynqScope.pirawcam.rawcam as rawcam
 
+# Load debug logger
+import logging
+log = logging.getLogger()
+
 ZYNQ_SAMPLE_WORD_SIZE = 8
 ZYNQ_SAMPLE_WORD_CACHE_DIVISIBLE = 32
 
@@ -108,7 +112,7 @@ class ZynqScopeSampleRateBehaviourModel(object):
                 
                 for r in rates:
                     if (abs(out_freq - r)) < 1e3:
-                        print(out_freq, r, "Duplicate!")
+                        #print(out_freq, r, "Duplicate!")
                         dupe = True
                         break
                 
@@ -119,7 +123,7 @@ class ZynqScopeSampleRateBehaviourModel(object):
         rates_list.sort(reverse=True, key=operator.itemgetter(0))
         self.rates = list(map(lambda x: x[0], rates_list))
         self.rates_lut = rates_list
-        print(self.rates_lut)
+        #print(self.rates_lut)
    
     def calculate_clock_for_index(self, freq, div):
         """Returns clock in Hz"""
@@ -200,23 +204,23 @@ class ZynqScope(object):
     
     def connect(self):
         # Connect to the Zynq
-        print("ZynqScope connect(): connecting to hardware")
+        log.info("ZynqScope connect(): connecting to hardware")
         self.zcmd = zc.ZynqCommands()
         
         # Generate supported timebase configurations
-        print("ZynqScope connect(): generating timebases")
+        log.debug("ZynqScope connect(): generating timebases")
         self.samprate_mdl = ZynqScopeSampleRateBehaviourModel_8Bit()
         self.samprate_mdl.update()
         self.init_timebases()
         self.next_tb = self.timebase_settings[default_timebase]
 
-        print("ZynqScope connect(): done initialisation")
+        log.info("ZynqScope connect(): done initialisation")
         
         # Instead of blindly returning True we should check that the hardware is ready first...
         return True
     
     def rawcam_init(self):
-        print("ZynqScope rawcam_init(): setting up rawcam")
+        log.debug("ZynqScope rawcam_init(): setting up rawcam")
 
         self.rc = rawcam.init()
         rawcam.set_data_lanes(2)
@@ -228,7 +232,7 @@ class ZynqScope(object):
         rawcam.set_zero_copy(1)
         rawcam.set_camera_num(1)
 
-        print("ZynqScope rawcam_init(): rawcam debug follows")
+        log.debug("ZynqScope rawcam_init(): rawcam debug follows")
         rawcam.debug()
 
         # Configure CSI transmitter with rawcam parameters: image_id must match for successful reception
@@ -254,7 +258,7 @@ class ZynqScope(object):
         self.rawcam_buffer_dims = (\
             lines, buffer_size, buffer_count - RAWCAM_MIN_SPARE_BUFFERS, RAWCAM_LINE_SIZE * lines)
 
-        print("lines_per_buffer:", lines, "buffer_size:", buffer_size, "buffer_max:", buffer_max, "num_buffers:", buffer_count)
+        log.debug("rawcam_config: lines_per_buffer:", lines, "buffer_size:", buffer_size, "buffer_max:", buffer_max, "num_buffers:", buffer_count)
 
         rawcam.set_buffer_num(buffer_count)
         #rawcam.set_buffer_num(8)
@@ -266,7 +270,7 @@ class ZynqScope(object):
         if self.rawcam_running:
             raise RuntimeError("Rawcam is already started, must stop before starting")
         else:
-            print("ZynqScope: rawcam_start()")
+            log.debug("ZynqScope: rawcam_start()")
             rawcam.debug()
             rawcam.start()
             rawcam.debug()
@@ -301,11 +305,11 @@ class ZynqScope(object):
 
     def rawcam_stop(self):
         if self.rawcam_running:
-            print("ZynqScope: rawcam_stop()")
+            log.debug("ZynqScope: rawcam_stop()")
             rawcam.stop()
             self.rawcam_running = False
         else:
-            print("ZynqScope: rawcam_stop() ignored - rawcam not running")
+            log.warning("ZynqScope: rawcam_stop() ignored - rawcam not running")
 
     def calc_real_sample_rate_for_index(self, index):
         """Only supports 8-bit mode for now"""
@@ -359,7 +363,7 @@ class ZynqScope(object):
                         raise ValueError("Unable to solve for timebase %r" % new_tb)
             
             #print(tb)
-            print(new_tb, "nwaves:", self.calculate_nwaves(new_tb.timebase_span_actual))
+            #print(new_tb, "nwaves:", self.calculate_nwaves(new_tb.timebase_span_actual))
             self.timebase_settings.append(new_tb)
 
     def get_supported_timebases(self): 
@@ -432,7 +436,7 @@ class ZynqScope(object):
         pre_size = int(pre_size)
         post_size = int(post_size)
         
-        print("pre/post:", pre_size, post_size)
+        #print("pre/post:", pre_size, post_size)
         assert(post_size >= self.mem_depth_minimum_pp)
         
         # Correct all buffers to be a multiple of a cache line.  The total buffer need only
@@ -443,7 +447,7 @@ class ZynqScope(object):
         post_size &= ~(ZYNQ_SAMPLE_WORD_CACHE_DIVISIBLE - 1)
         
         # Compute the number of waves we want to acquire for each frame
-        print("params?:", pre_size + post_size, sample_rate)
+        #print("params?:", pre_size + post_size, sample_rate)
         nwaves = self.calculate_nwaves((pre_size + post_size) * (1.0 / sample_rate))
         
         # Reduce nwaves if the allocation would exceed split or total memory limits (depending on which
@@ -457,7 +461,7 @@ class ZynqScope(object):
         if (nwaves * (pre_size + post_size)) > max_memory:
             nwaves = max_memory / (pre_size + post_size)
         
-        print(pre_size, post_size, nwaves)
+        #print(pre_size, post_size, nwaves)
         
         # Stop the current acquisition and set up a new acquisition.
         self.zcmd.stop_acquisition()
@@ -482,6 +486,7 @@ class ZynqScope(object):
         self.params.delay = self.next_delay
         self.params.expected_buffer_size = self.params.nwaves * self.params.memory_depth
         self.curr_tb = self.next_tb
-        print(self.params)
+
+        log.debug("New acquisition parameters:", self.params)
     
         
