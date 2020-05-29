@@ -17,7 +17,7 @@ def set_console_logger(logger, level=logging.DEBUG):
     ch.setLevel(level)
     logger.addHandler(ch)
 
-def logger(self):
+def logger():
     set_console_logger(log, logging.DEBUG)
     return log
 
