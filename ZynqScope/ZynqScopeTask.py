@@ -441,6 +441,9 @@ class ZynqScopeTaskController(object):
         self.zstask = ZynqScopeSubprocess(self.evq, self.rsq, self.acq_resp, self.shared_dict, zs_init_args)
         self.status = zc.ZynqAcqStatus()
         self.rawcam_running = False
+
+        # Initialise local rawcam task
+        rawcam.init()
         
         # Fill common request objects cache
         self.roc = {
