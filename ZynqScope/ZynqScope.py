@@ -487,6 +487,6 @@ class ZynqScope(object):
         self.params.expected_buffer_size = self.params.nwaves * self.params.memory_depth
         self.curr_tb = self.next_tb
 
-        log.debug("New acquisition parameters: %r" % repr(self.params))
+        log.debug("New acquisition parameters: %s" % repr(self.params))
     
         
