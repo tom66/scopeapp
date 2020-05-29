@@ -86,6 +86,7 @@ class ANSIColouredConsoleLogger(logging.StreamHandler):
             else:
             	msg = record.msg
         except TypeError:
+        	# This could end up in recursion but it should be well debugged enough that it's not a risk
             log.critical("Format exception while trying to log message: %r with args %r" % (record.msg, record.args))
             return
 
