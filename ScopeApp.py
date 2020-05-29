@@ -9,6 +9,7 @@ if sys.version_info.major < 3 or sys.version_info.minor < 8:
     raise EnvironmentError("Python 3.8 or higher required.  Try running with python3 or python3.8.")
 
 import UIController
+import AppConfigManager
 
 # configure logger
 import LoggingHandler as lh
