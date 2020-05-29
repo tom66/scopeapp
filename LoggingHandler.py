@@ -80,7 +80,7 @@ class ANSIColouredConsoleLogger(logging.StreamHandler):
         out = ""
 
         # format args if needed
-       	if len(records.args) > 0:
+       	if len(record.args) > 0:
        		msg = record.msg % record.args
        	else:
        		msg = record.msg
