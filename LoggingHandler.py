@@ -87,6 +87,7 @@ class ANSIColouredConsoleLogger(logging.StreamHandler):
             	msg = record.msg
         except TypeError:
             log.critical("Format exception while trying to log message: %r with args %r" % (record.msg, record.args))
+            return
 
         msg  = msg.replace("\r", "").replace("\n", "")
         loc  = "~%s:%d" % (record.module, record.lineno)
