@@ -104,14 +104,12 @@ class MainApplication(object):
     last_state_sync_time = time.time()
     state_sync_pending = True
     
-    def __init__(self):
+    def __init__(self, cfgmgr):
         """
         Init function.  This loads the GUI configuration, the application configurator,
         and the required skin/theme.
         """
-        # Create a configuration manager.  The configuration manager loads the default
-        # configuration file.
-        self.cfgmgr = AppConfigManager.AppConfigManager()
+        self.cfgmgr = cfgmgr
         
         # Create the oscilloscope controller
         self.ctrl = SC.ScopeController()
