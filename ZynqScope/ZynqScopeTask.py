@@ -84,6 +84,9 @@ class ZynqScopeNullResponse(ZynqScopeTaskQueueResponse): pass
 class ZynqScopeAcqStats(object):
     num_waves_acqd = 0
 
+class ZynqScopeAcqStatsSender(object):
+    num_waves_sent = 0
+
 def compress_class_attrs_for_response(resp, clas_, exclude=[]):
     #print("compress_class_attrs_for_response %r %r" % (resp, clas_))
     attrs = inspect.getmembers(clas_)
@@ -155,6 +158,8 @@ class ZynqScopeSubprocess(multiprocessing.Process):
     rawcam_seq = 0
     last_pts = None
 
+    stats = ZynqScopeAcqStatsSender()
+
     def __init__(self, event_queue, response_queue, acq_response_queue, shared_dict, zs_init_args):
         super(ZynqScopeSubprocess, self).__init__()
         
@@ -166,6 +171,8 @@ class ZynqScopeSubprocess(multiprocessing.Process):
 
         self.acq_state = TSTATE_ACQ_IDLE
         self.shared_dict['running_state'] = ACQSTATE_STOPPED
+
+        self.stats.num_waves_sent = 0
         
         # we might want the capability to tune the period as time goes by
         self.task_period = 1.0 / DEFAULT_ZYNQ_TASK_RATE
@@ -377,6 +384,10 @@ class ZynqScopeSubprocess(multiprocessing.Process):
 
                     self.buffers_working.append(buff)
                     self.buffers_freeable.append(fr_buffer)
+
+                    buff.dump_to_file("rxtest/sender%d.bin" % self.stats.num_waves_sent)
+
+                    self.stats.num_waves_sent += 1
                     self.rawcam_seq += 1
 
                     if self.last_pts != None:
