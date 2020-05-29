@@ -121,10 +121,10 @@ class ZynqScopePicklableMemoryBuff(object):
         return rawcam.get_memoryview_from_buffer_params(self.data_ptr, self.length)
 
     def dump_to_file(self, fn):
-        fp = open(fn, "w")
+        fp = open(fn, "wb")
         mv = self.get_memoryview()
         print(mv, dir(mv))
-        fp.write(mv.tobytes().decode("ascii"))
+        fp.write(mv.tobytes())
         fp.close()
 
 class ZynqScopeSubprocess(multiprocessing.Process):
