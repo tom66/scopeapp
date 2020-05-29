@@ -41,7 +41,7 @@ class BasicFileLogger(logging.StreamHandler):
 
         msg = (record.msg % record.args).replace("\r", "").replace("\n", "")
         loc = "~%s:%d" % (record.module, record.lineno)
-        out += "[%2s %10.3f] %-12s %-22s %s\r\n" % (short_levelname[record.levelname], ev_time, "@" + record.threadName, loc, msg)
+        out += "[%s %10.3f] %-12s %-22s %s\r\n" % (short_levelname[record.levelname], ev_time, "@" + record.threadName, loc, msg)
         self.fp.write(out)
 
     def flush(self):
@@ -81,7 +81,7 @@ class ANSIColouredConsoleLogger(logging.StreamHandler):
 
         msg  = (record.msg % record.args).replace("\r", "").replace("\n", "")
         loc  = "~%s:%d" % (record.module, record.lineno)
-        out  = "[%s%3s%s " % (code, short_levelname[record.levelname], ANSI_COLOUR_RESET)
+        out  = "[%s%s%s " % (code, short_levelname[record.levelname], ANSI_COLOUR_RESET)
         out += "%10.3f] %-12s %-22s %s%s%s\r\n" % (ev_time, "@" + record.threadName, loc, code, msg, ANSI_COLOUR_RESET)
         sys.stdout.write(out)
 
