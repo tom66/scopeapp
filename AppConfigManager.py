@@ -7,7 +7,7 @@ import configparser, logging
 DEFAULT_CONFIG_FILENAME = "main.cfg"
 config_defaults = {}
 
-log = logging.getLogger(__name__)
+log = logging.getLogger()
 
 def infer_type(x):
     """For a given value `x' attempt to infer the type.  Return either a float value
@@ -67,7 +67,6 @@ class AppConfigManager(object):
         self.c = configparser.ConfigParser(config_defaults, interpolation=configparser.ExtendedInterpolation())
         self.c.read(filename)
         log.info("Read configuration file: %s" % filename)
-        log.warn("nothing, all fine")
 
         self.subclass = ConfigSubClass(self.c, 0, "root")
     
