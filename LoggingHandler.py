@@ -7,6 +7,14 @@ import sys, logging
 log = logging.getLogger()
 log.setLevel(logging.DEBUG)
 
+short_levelname = {
+	"DEBUG"    : "--",
+	"INFO"     : "ii",
+	"WARNING"  : "^^",
+	"ERROR"    : "EE",
+	"CRITICAL" : "**"
+}
+
 def set_file_logger(logger, file_name, level=logging.INFO):
     fh = BasicFileLogger(file_name)
     fh.setLevel(level)
@@ -33,7 +41,7 @@ class BasicFileLogger(logging.StreamHandler):
 
         msg = (record.msg % record.args).replace("\r", "").replace("\n", "")
         loc = "~%s:%d" % (record.module, record.lineno)
-        out += "[%8s %10.3f] %-12s %-22s %s\r\n" % (record.levelname, ev_time, "@" + record.threadName, loc, msg)
+        out += "[%2s %10.3f] %-12s %-22s %s\r\n" % (short_levelname[record.levelname], ev_time, "@" + record.threadName, loc, msg)
         self.fp.write(out)
 
     def flush(self):
@@ -73,7 +81,7 @@ class ANSIColouredConsoleLogger(logging.StreamHandler):
 
         msg  = (record.msg % record.args).replace("\r", "").replace("\n", "")
         loc  = "~%s:%d" % (record.module, record.lineno)
-        out  = "[%s%8s%s " % (code, record.levelname, ANSI_COLOUR_RESET)
+        out  = "[%s%3s%s " % (code, hort_levelname[record.levelname], ANSI_COLOUR_RESET)
         out += "%10.3f] %-12s %-22s %s%s%s\r\n" % (ev_time, "@" + record.threadName, loc, code, msg, ANSI_COLOUR_RESET)
         sys.stdout.write(out)
 
