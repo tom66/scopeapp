@@ -515,8 +515,8 @@ class ZynqScopeTaskController(object):
             log.debug("Got AcqResponse: %r" % resp)
             f = open("test.bin", "wb")
             bufs = sorted(resp.buffers)
-            for b in bufs:
-                log.debug("Buffer: %r" % b)
+            #for b in bufs:
+            #    log.debug("Buffer: %r" % b)
 
     # def acquisition_tick(self):
     #     """Manages Zynq acquisition control."""
