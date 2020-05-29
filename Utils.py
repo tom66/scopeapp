@@ -9,7 +9,9 @@ gettext.bindtextdomain('yaosapp', '/lang')
 gettext.textdomain('yaosapp')
 _ = gettext.gettext
 
-import math, colorsys
+import math, colorsys, logging
+
+log = logging.getLogger()
 
 APP_VERSION_MAJOR = 0
 APP_VERSION_MINOR = 1
@@ -156,7 +158,7 @@ def unit_format_suffix_handle_exc(value, suffix, precision=2):
         try:
             return unit_format_suffix(value, suffix, precision)
         except Exception as e:
-            print(_("Exception during unit_format_suffix_handle_exc: {0}").format())
+            log.error(_("Exception during unit_format_suffix_handle_exc: {0}").format())
             
             # TRANSLATORS: do not translate {unit};  "Exc is equivalent to "Error"/"Exception"
             return _("[EXC] {unit}").format(unit=suffix)
@@ -185,7 +187,7 @@ def pack_dict_json(obj, vars_):
             else:
                 json_dict[v] = x.safe_pickle()
         except Exception as e:
-            print(e)
+            log.error("In pack_dict_json(): unpickable: %r" % e)
             json_dict[v] = ObjectUnpickled(str(e))
 
     return json_dict

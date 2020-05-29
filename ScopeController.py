@@ -287,7 +287,7 @@ class ScopeChannelController(object):
             new_sign = math.copysign(1, self.offset)
             
             if snap_zero and sign != new_sign and abs(old_offset) > 1e-12:
-                print("Channel: Snap offset to zero")
+                log.info("Channel %d: Snap offset to zero" % self.index)
                 self.offset = 0
         
         if old_offset != self.offset:
@@ -503,13 +503,14 @@ class ScopeController(object):
                   'active_tab'  : self.active_tab }
         
         for n in range(len(self.channels)):
-            print("Preparing channel %d" % n)
+            log.info("Preparing channel %d" % n)
             state['channel%d' % n] = self.channels[n].prepare_state()
         
         return json.dumps(state)
     
     def unpack_json_state(self, state):
-        print("unpack_json_state", state)
+        log.info("Trying to unpack JSON state...")
+
         try:
             json_obj = json.loads(state)
             
@@ -525,7 +526,7 @@ class ScopeController(object):
             #self.run_state = ACQ_IS_STOPPED
             self.active_tab = json_obj['active_tab']    # Recall tab
             
-            print("actTab?", self.active_tab)
+            log.info("After unpacking JSON state, active tab is %d" % self.active_tab)
             
         except Utils.StateSaveFileCorrupted as e:
             raise e
@@ -548,12 +549,12 @@ class ScopeController(object):
     def sync_if_needed(self):
         """Syncs changes to real world if needed.  If the oscilloscope is stopped changes are
         queued until the instrument resumes running."""
-        print("run_state:", self.run_state, "in sync_if_needed")
+        log.info("sync_if_needed() run_state: %r in sync_if_needed" % self.run_state)
         if self.run_state == ACQ_IS_RUNNING:
-            print("Syncing to real world")
+            log.info("Syncing to real world")
             self.zst.sync_to_real_world()
         else:
-            print("No sync, we are stopped")
+            log.info("No sync, we are stopped")
     
     def tick(self):
         self.zst.acquisition_tick()
@@ -602,7 +603,7 @@ class ScopeController(object):
             self.sync_if_needed()
     
     def acq_run(self):
-        print("acq_run() outer")
+        log.debug("acq_run() outer")
         self.zst.start_acquisition()
 
         """

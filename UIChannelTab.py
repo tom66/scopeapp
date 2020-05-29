@@ -33,7 +33,7 @@ probe_atten_options = [0.01, 0.02, 0.05, 0.1, 0.2, 0.5, 1, 2, 5, 10, 20, 50, 100
 # Supported channel names (long & short variants).  Translatable.
 # Short name: max 5 characters
 #
-# TODO: Maybe load this from a .cfg file.
+# TODO: This should be loaded from a .cfg file.
 user_channel_names = [
     [_('SPI and Serial'), [
         # SPI/serial
