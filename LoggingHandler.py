@@ -39,6 +39,7 @@ class BasicFileLogger(logging.StreamHandler):
         ev_time = record.created - self.start_time
         out = ""
 
+        print(record.msg, record.args)
         msg = (record.msg % record.args).replace("\r", "").replace("\n", "")
         loc = "~%s:%d" % (record.module, record.lineno)
         out += "[%s %10.3f] %-12s %-22s %s\r\n" % (short_levelname[record.levelname], ev_time, "@" + record.threadName, loc, msg)
