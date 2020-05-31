@@ -40,7 +40,7 @@ def shm_unlink(name):
     if result == -1:
         raise RuntimeError(os.strerror(ctypes.get_errno()))
 
-class ArmwaveRenderEngine(ZynqScope.RenderEngineBase):
+class ArmwaveRenderEngine(zs.BaseRenderEngine):
     def __init__(self):
         self._shm_name = b"scopeapp_aw_dispbuff"
         self._shm_id = None
