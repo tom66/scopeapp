@@ -9,6 +9,8 @@ from types import ModuleType
 import ZynqScope.ZynqScope as zs
 import ZynqScope.ZynqCommands as zc
 
+import ZynqScope.ArmwaveRenderEngine as awre
+
 # Rawcam library
 import ZynqScope.pirawcam.rawcam as rawcam
 
@@ -160,6 +162,8 @@ class ZynqScopeSubprocess(multiprocessing.Process):
 
     stats = ZynqScopeAcqStatsSender()
 
+    rengine = None
+
     def __init__(self, event_queue, response_queue, acq_response_queue, shared_dict, zs_init_args):
         super(ZynqScopeSubprocess, self).__init__()
         
@@ -174,12 +178,26 @@ class ZynqScopeSubprocess(multiprocessing.Process):
 
         self.stats.num_waves_sent = 0
         
+        # Prepare the render endigne (in future we'll support other render targets)
+        self.rengine = awre.ArmwaveRenderEngine()
+        self.init_render_buffer(2048, 1024)
+
         # we might want the capability to tune the period as time goes by
         self.task_period = 1.0 / DEFAULT_ZYNQ_TASK_RATE
         self.target_acq_period = 1.0 / DEFAULT_ACQUISITION_RATE
         
         log.info("ZynqScopeSubprocess __init__(): task_period=%2.6f, target_acq_period=%2.2f" % (self.task_period, self.target_acq_period))
         
+    def init_render_buffer(self, width, height):
+        """Initialise a shm and the render engine for a specified width and height, for the
+        software driven render engine ArmWave."""
+        self.rengine.set_channel_colour(1, (25, 170, 255), 10)
+        self.rengine.set_target_dimensions(width, height)
+
+    def do_render(self, resp):
+        print("do_render()")
+        self.rengine.render_block(self.buffers[0].data_ptr)
+
     def run(self):
         """Runs periodically to check the status of the Zynq.  Presently set to ping at 50Hz,
         but this can be changed."""
@@ -385,7 +403,7 @@ class ZynqScopeSubprocess(multiprocessing.Process):
                     self.buffers_working.append(buff)
                     self.buffers_freeable.append(fr_buffer)
 
-                    buff.dump_to_file("rxtest/sender%d.bin" % self.stats.num_waves_sent)
+                    #buff.dump_to_file("rxtest/sender%d.bin" % self.stats.num_waves_sent)
 
                     self.stats.num_waves_sent += 1
                     self.rawcam_seq += 1
@@ -402,9 +420,9 @@ class ZynqScopeSubprocess(multiprocessing.Process):
                     resp = ZynqScopeAcquisitionResponse()
                     resp.time = time.time()
                     resp.buffers = self.buffers_working
-                    #log.debug("ResponseBuffers: %r" % resp.buffers)
                     resp.status = self.acq_comp0_response['AcqStatus']
                     self.acq_response_queue.put(resp)
+                    self.do_render(resp)
                     #self.zs.rawcam_stop()
                     #self.acq_state = TSTATE_ACQ_IDLE
                     self.acq_state = TSTATE_ACQ_AUTO_WAIT

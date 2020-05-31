@@ -42,6 +42,8 @@ timebase_options = [1e-9, 2e-9, 5e-9, 10e-9, 20e-9, 50e-9, 100e-9, 200e-9, 500e-
 
 default_timebase = 12
 
+class RenderEngineBase(object): pass
+
 class ZynqScopeParameterRangeError(ValueError): pass
 
 class ZynqScopeCurrentParameters(object): 
