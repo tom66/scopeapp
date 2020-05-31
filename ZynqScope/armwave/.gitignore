@@ -1,8 +1,0 @@
-*.so
-*.py~
-*.pyc
-*.tar.gz
-__pycache__/
-build/
-rxtest/
-

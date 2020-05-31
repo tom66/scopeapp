@@ -4,3 +4,6 @@
 [submodule "armwave"]
 	path = ZynqScope/armwave
 	url = https://github.com/tom66/armwave.git
+[submodule "ZynqScope/armwave"]
+	path = ZynqScope/armwave
+	url = https://github.com/tom66/armwave.git
