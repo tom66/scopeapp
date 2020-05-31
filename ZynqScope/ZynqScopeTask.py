@@ -567,7 +567,7 @@ class ZynqScopeTaskController(object):
             for b in bufs:
                 log.debug("Buffer: %r" % b)
                 log.debug("Deref:  %r" % b.get_memoryview())
-                b.dump_to_file("rxtest/test%d.bin" % self.acqstat.num_waves_acqd)
+                #b.dump_to_file("rxtest/test%d.bin" % self.acqstat.num_waves_acqd)
                 self.acqstat.num_waves_acqd += 1
 
     # def acquisition_tick(self):
