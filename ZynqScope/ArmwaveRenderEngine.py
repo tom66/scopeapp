@@ -48,12 +48,12 @@ class ArmwaveRenderEngine(zs.BaseRenderEngine):
         self._mmap = None
 
         self.wave_params = (0, 2048, 64, 2048)
-        armwave.init()
+        aw.init()
 
     def set_channel_colour(self, index, colour, brightness):
         col = list(colour)
         col = map(lambda x: x * brightness, col)
-        armwave.set_channel_colour(index, *col)
+        aw.set_channel_colour(index, *col)
 
     def set_target_dimensions(self, width, height):
         # Free existing memory if present
@@ -67,14 +67,14 @@ class ArmwaveRenderEngine(zs.BaseRenderEngine):
         os.ftruncate(self._shm_id, self._shm_size)
         self._mmap = mmap.mmap(self._shm_id, self._shm_size)
 
-        # Setup Armwave
-        armwave.cleanup()
-        armwave.setup_render(self.wave_params[0], self.wave_params[1], self.wave_params[2], self.wave_params[3], width, height, 0)
+        # Setup armwave
+        aw.cleanup()
+        aw.setup_render(self.wave_params[0], self.wave_params[1], self.wave_params[2], self.wave_params[3], width, height, 0)
 
     def render_block(self, data_ptr):
-        armwave.clear_buffer(0)
-        armwave.set_wave_pointer(data_ptr)
-        armwave.fill_pixbuf_into_pybuffer(self._mmap)
+        aw.clear_buffer(0)
+        aw.set_wave_pointer(data_ptr)
+        aw.fill_pixbuf_into_pybuffer(self._mmap)
 
     def get_shm_name(self):
         return self._shm_name
