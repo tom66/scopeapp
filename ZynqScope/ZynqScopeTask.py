@@ -195,8 +195,8 @@ class ZynqScopeSubprocess(multiprocessing.Process):
         self.rengine.set_target_dimensions(width, height)
 
     def do_render(self, resp):
-        print("do_render()")
-        self.rengine.render_block(self.buffers[0].data_ptr)
+        print("do_render(%r)", resp)
+        self.rengine.render_block(resp.buffers[0].data_ptr)
 
     def run(self):
         """Runs periodically to check the status of the Zynq.  Presently set to ping at 50Hz,
