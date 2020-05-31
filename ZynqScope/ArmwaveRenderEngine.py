@@ -8,6 +8,9 @@ from ctypes import util, cdll
 import ZynqScope.ZynqScope as zs
 import ZynqScope.armwave.armwave as aw
 
+import logging
+log = logging.getLogger()
+
 # Portions based on:-
 # https://gist.github.com/jakirkham/100a7f5e86b0ff2a22de0850723a4c5c
 # ** Licence unclear **
@@ -77,9 +80,13 @@ class ArmwaveRenderEngine(zs.BaseRenderEngine):
         aw.setup_render(self.wave_params[0], self.wave_params[1], self.wave_params[2], self.wave_params[3], width, height, 0)
 
     def render_block(self, data_ptr):
+        log.info("clear_buffer")
         aw.clear_buffer(0)
+        log.info("set_wave_pointer_u32")
         aw.set_wave_pointer_u32(data_ptr)
+        log.info("fill_pixbuf_into_pybuffer(%r)" % self._mmap)
         aw.fill_pixbuf_into_pybuffer(self._mmap)
+        log.info("done")
 
     def get_shm_name(self):
         return self._shm_name
