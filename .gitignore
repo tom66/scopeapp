@@ -1,4 +1,5 @@
 *.gtkbuilder~
 __pycache__/*
+ZynqScope/__pycache__/*
 *.pyc
 *.py~
