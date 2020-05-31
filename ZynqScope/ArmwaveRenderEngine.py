@@ -11,10 +11,10 @@ import ZynqScope.armwave.armwave as aw
 # https://gist.github.com/jakirkham/100a7f5e86b0ff2a22de0850723a4c5c
 # ** Licence unclear **
 
-lib = util.find_library('rt')
-assert(lib)
+lib = ctypes.util.find_library('rt')
+assert(lib != None)
 
-rtld = cdll.LoadLibrary(lib)
+rtld = ctypes.cdll.LoadLibrary(lib)
 
 _shm_open = rtld.shm_open
 _shm_unlink = rtld.shm_unlink
