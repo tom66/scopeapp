@@ -61,9 +61,14 @@ class ArmwaveRenderEngine(zs.BaseRenderEngine):
             shm_unlink(self._shm_name)
             self._mmap.close()
 
-        self._shm_id = shm_open(self._shm_name)
-        self._shm_size = width * height * 4  # 4 bytes per pixel
+        try:
+            self._shm_id = shm_open(self._shm_name)
+        except RuntimeError:
+            # try again after unlinking the shm name, in case we didn't exit cleanly last time
+            shm_unlink(self._shm_name)
+            self._shm_id = shm_open(self._shm_name)  
 
+        self._shm_size = width * height * 4  # 4 bytes per pixel
         os.ftruncate(self._shm_id, self._shm_size)
         self._mmap = mmap.mmap(self._shm_id, self._shm_size)
 
