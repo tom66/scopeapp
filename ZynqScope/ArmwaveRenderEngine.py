@@ -78,7 +78,7 @@ class ArmwaveRenderEngine(zs.BaseRenderEngine):
 
     def render_block(self, data_ptr):
         aw.clear_buffer(0)
-        aw.set_wave_pointer(data_ptr)
+        aw.set_wave_pointer_u32(data_ptr)
         aw.fill_pixbuf_into_pybuffer(self._mmap)
 
     def get_shm_name(self):
