@@ -3,6 +3,7 @@ This file is part of YAOS and is licenced under the MIT Licence.
 """
 
 import sys, os, mmap, ctypes, stat
+from ctypes import util, cdll
 
 import ZynqScope.ZynqScope as zs
 import ZynqScope.armwave.armwave as aw
@@ -11,11 +12,10 @@ import ZynqScope.armwave.armwave as aw
 # https://gist.github.com/jakirkham/100a7f5e86b0ff2a22de0850723a4c5c
 # ** Licence unclear **
 
-lib = ctypes.util.find_library('rt')
+lib = util.find_library('rt')
 assert(lib != None)
 
-rtld = ctypes.cdll.LoadLibrary(lib)
-
+rtld = cdll.LoadLibrary(lib)
 _shm_open = rtld.shm_open
 _shm_unlink = rtld.shm_unlink
 
