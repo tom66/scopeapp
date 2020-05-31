@@ -2,16 +2,10 @@
 This file is part of YAOS and is licenced under the MIT Licence.
 """
 
-import sys, os, mmap, ctypes, stat
+import sys, os, mmap, ctypes, stat, util
 
 import ZynqScope.ZynqScope as zs
 import ZynqScope.armwave.armwave as aw
-
-import ctypes
-import mmap
-import os
-import stat
-import sys
 
 # Portions based on:-
 # https://gist.github.com/jakirkham/100a7f5e86b0ff2a22de0850723a4c5c
