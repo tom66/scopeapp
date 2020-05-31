@@ -1,9 +1,6 @@
 [submodule "pirawcam"]
 	path = ZynqScope/pirawcam
 	url = https://github.com/tom66/pirawcam
-[submodule "armwave"]
-	path = ZynqScope/armwave
-	url = https://github.com/tom66/armwave.git
 [submodule "ZynqScope/armwave"]
 	path = ZynqScope/armwave
 	url = https://github.com/tom66/armwave.git
