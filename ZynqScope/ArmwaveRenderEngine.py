@@ -84,8 +84,8 @@ class ArmwaveRenderEngine(zs.BaseRenderEngine):
         aw.clear_buffer(0)
         log.info("set_wave_pointer_u32")
         aw.set_wave_pointer_u32(data_ptr)
-        #log.info("fill_pixbuf_into_pybuffer(%r)" % self._mmap)
-        #aw.fill_pixbuf_into_pybuffer(self._mmap)
+        log.info("fill_pixbuf_into_pybuffer(%r)" % self._mmap)
+        aw.fill_pixbuf_into_pybuffer(self._mmap)
         log.info("done")
 
     def get_shm_name(self):
