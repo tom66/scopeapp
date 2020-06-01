@@ -80,6 +80,7 @@ class ArmwaveRenderEngine(zs.BaseRenderEngine):
         aw.setup_render(self.wave_params[0], self.wave_params[1], self.wave_params[2], self.wave_params[3], width, height, 0)
 
     def render_block(self, data_ptr):
+        log.info("src data_ptr=%d" % data_ptr)
         log.info("clear_buffer")
         aw.clear_buffer(0)
         log.info("set_wave_pointer_u32")
