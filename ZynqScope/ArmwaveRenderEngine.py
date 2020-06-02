@@ -86,7 +86,7 @@ class ArmwaveRenderEngine(zs.BaseRenderEngine):
         aw.set_wave_pointer_as_testbuf()
         log.info("test_generate")
         aw.test_generate()
-        log.info("test_dump_buffer_to_ppm(%s)")
+        log.info("test_dump_buffer_to_ppm(%s)" % fn)
         aw.test_dump_buffer_to_ppm(fn)
         log.info("done")
 
