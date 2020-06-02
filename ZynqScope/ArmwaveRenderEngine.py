@@ -82,6 +82,8 @@ class ArmwaveRenderEngine(zs.BaseRenderEngine):
     def render_test_to_ppm(self, fn):
         log.info("clear_buffer")
         aw.clear_buffer(0)
+        log.info("test_generate")
+        aw.test_create_am_sine(0.5f, 1e-6)
         log.info("set_wave_pointer_as_testbuf")
         aw.set_wave_pointer_as_testbuf()
         log.info("test_generate")
