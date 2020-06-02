@@ -27,7 +27,7 @@ def shm_open(name):
 
     result = _shm_open(
         name,
-        ctypes.c_int(os.O_RDWR | os.O_CREAT | os.O_EXCL),
+        ctypes.c_int(os.O_RDWR | os.O_CREAT),  #  | os.O_EXCL
         ctypes.c_ushort(stat.S_IRUSR | stat.S_IWUSR)
     )
 
