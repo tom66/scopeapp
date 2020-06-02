@@ -79,8 +79,29 @@ class ArmwaveRenderEngine(zs.BaseRenderEngine):
         aw.cleanup()
         aw.setup_render(self.wave_params[0], self.wave_params[1], self.wave_params[2], self.wave_params[3], width, height, 0)
 
+    def render_test_to_ppm(self, fn):
+        log.info("clear_buffer")
+        aw.clear_buffer(0)
+        log.info("set_wave_pointer_as_testbuf")
+        aw.set_wave_pointer_as_testbuf()
+        log.info("test_generate")
+        aw.test_generate()
+        log.info("test_dump_buffer_to_ppm(%s)")
+        aw.test_dump_buffer_to_ppm(fn)
+        log.info("done")
+
+    def render_test(self):
+        log.info("clear_buffer")
+        aw.clear_buffer(0)
+        log.info("set_wave_pointer_as_testbuf")
+        aw.set_wave_pointer_as_testbuf()
+        log.info("fill_pixbuf_into_pybuffer(%r)" % self._mmap)
+        aw.fill_pixbuf_into_pybuffer(self._mmap)
+        log.info("done")
+
     def render_block(self, data_ptr):
         log.info("src data_ptr=%d" % data_ptr)
+
         log.info("clear_buffer")
         aw.clear_buffer(0)
         log.info("set_wave_pointer_u32")
