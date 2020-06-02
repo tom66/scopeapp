@@ -86,7 +86,7 @@ class ArmwaveRenderEngine(zs.BaseRenderEngine):
 
         # create a test sine wave
         log.info("test_create_am_sine")
-        aw.test_create_am_sine(0.5, 1e-6)
+        aw.test_create_am_sine(0.25, 1e-6)
 
         # set the wavepointer
         log.info("set_wave_pointer_as_testbuf")
