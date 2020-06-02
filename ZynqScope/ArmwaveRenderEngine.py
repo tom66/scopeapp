@@ -80,29 +80,49 @@ class ArmwaveRenderEngine(zs.BaseRenderEngine):
         aw.setup_render(self.wave_params[0], self.wave_params[1], self.wave_params[2], self.wave_params[3], width, height, 0)
 
     def render_test_to_ppm(self, fn):
+        # clear the buffer to black
         log.info("clear_buffer")
         aw.clear_buffer(0)
+
+        # create a test sine wave
         log.info("test_create_am_sine")
         aw.test_create_am_sine(0.5, 1e-6)
+
+        # set the wavepointer
         log.info("set_wave_pointer_as_testbuf")
         aw.set_wave_pointer_as_testbuf()
+
+        # generate the rendered pre-targets
         log.info("test_generate")
         aw.test_generate()
+
+        # generate the final image into the working buffer
+        log.info("test_fill_outbuf")
+        aw.test_fill_outbuf()
+
+        # dump the working buffer into a ppm
         log.info("test_dump_buffer_to_ppm(%s)" % fn)
         aw.test_dump_buffer_to_ppm(fn)
+
         log.info("done")
 
     def render_test(self):
         log.info("clear_buffer")
         aw.clear_buffer(0)
+
         log.info("test_create_am_sine")
         aw.test_create_am_sine(0.5, 1e-6)
+
         log.info("set_wave_pointer_as_testbuf")
         aw.set_wave_pointer_as_testbuf()
+
         log.info("test_generate")
         aw.test_generate()
+
+        # filling the mmap pointer with the rendered buffer (renders into the buffer)
         log.info("fill_pixbuf_into_pybuffer(%r)" % self._mmap)
         aw.fill_pixbuf_into_pybuffer(self._mmap)
+
         log.info("done")
 
     def render_block(self, data_ptr):
@@ -110,12 +130,16 @@ class ArmwaveRenderEngine(zs.BaseRenderEngine):
 
         log.info("clear_buffer")
         aw.clear_buffer(0)
+
         log.info("set_wave_pointer_u32")
         aw.set_wave_pointer_u32(data_ptr)
+
         log.info("test_generate")
         aw.test_generate()
+
         log.info("fill_pixbuf_into_pybuffer(%r)" % self._mmap)
         aw.fill_pixbuf_into_pybuffer(self._mmap)
+
         log.info("done")
 
     def get_shm_name(self):
