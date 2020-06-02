@@ -13,6 +13,8 @@ LoggingHandler.set_console_logger(log, logging.DEBUG)
 aobj = awre.ArmwaveRenderEngine()
 
 def main():
+    print("aobj set_channel_colour")
+    aobj.set_channel_colour(1, (25, 180, 250), 10)
     print("aobj set_target_dimensions")
     aobj.set_target_dimensions(2048, 768)
     print("aobj render_test_to_ppm")
