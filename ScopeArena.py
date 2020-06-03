@@ -66,7 +66,8 @@ class ScopeArenaYTGraticuleRender(object):
             pass # TODO: Cleanup?
 
         self.cr = cr
-        self.cr.scale(1.0 / dims[0], 1.0 / dims[1])
+        log.info("New dims.: %d x %d" % (dims[0], dims[1])) 
+        self.cr.scale(dims[0], dims[1])
         self.dims = dims
 
     def apply_settings(self, hdiv, vdiv, xmarg, ymarg, grat_flags, grat_main_col, grat_sub_col, grat_brightness):
