@@ -60,8 +60,8 @@ UI_MIN_DELAY_MS = 5.0
 STATE_SYNC_WAIT = 10
 
 # UI space usage, estimated to set the waveform render target size
-UI_VERTICAL_SPACE = 64
-UI_HORIZONTAL_SPACE = 224
+UI_VERTICAL_SPACE = 48
+UI_HORIZONTAL_SPACE = 196
 
 def dialog_box(window, pri_text, sec_text, icon, buttons):
     """Helper function to make a dialog box appear and return the result."""
