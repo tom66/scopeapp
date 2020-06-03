@@ -56,9 +56,11 @@ def colour32_to_cairo(col):
 
 class ScopeArenaYTGraticuleRender(object):
     def __init__(self):
-        pass
+        self.cr = None
 
     def set_context(self, cr):
+        if self.cr != None:
+            self.cr.finish()
         self.cr = cr
 
     def apply_settings(self, hdiv, vdiv, xmarg, ymarg, grat_flags, grat_main_col, grat_sub_col, grat_brightness):
@@ -115,7 +117,6 @@ class ScopeArenaController(object):
     def notify_resize(self):
         # BUG: Since our widget expands to the requested size, it is difficult to resize the window.
         # We need to find a way to support resizing, at some point in the future.
-        rect = self.gtk_img.get_allocated_size().allocation
         log.info("New waveform zone size: %d x %d" % (rect.width, rect.height))
 
         # if no size allocated, don't change anything
@@ -123,10 +124,13 @@ class ScopeArenaController(object):
             log.warn("Waveform zone size is zero, not allocating yet")
             return
 
+        # request a large size, and read back the actual size
+        self.fixed.set_size_request(10000, 10000)
+        rect = self.fixed.get_allocated_size().allocation
+
         # create a Cairo surface which is similar to our window surface for best performance
         self.grat_cr = window.create_similar_surface(cairo.Content.COLOR_ALPHA, rect.width, rect.height)
-
-        self.fixed.set_size_request(rect.width, rect.height)
+        self.grat_rdr.set_context(self.grat_cr)
 
         #pb = GdkPixbuf.Pixbuf.new(GdkPixbuf.Colorspace.RGB, True, 8, rect.width, rect.height)
         #
