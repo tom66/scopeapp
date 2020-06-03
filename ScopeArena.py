@@ -126,7 +126,8 @@ class ScopeArenaController(object):
             return
 
         # create a Cairo surface which is similar to our window surface for best performance
-        self.grat_cr = self.window.create_similar_surface(cairo.Content.COLOR_ALPHA, rect.width, rect.height)
+        # we use get_window() to get the GdkWindow of the GtkWindow, and no, that's not confusing at all.
+        self.grat_cr = self.window.get_window().create_similar_surface(cairo.Content.COLOR_ALPHA, rect.width, rect.height)
         self.grat_rdr.set_context(self.grat_cr)
 
         #pb = GdkPixbuf.Pixbuf.new(GdkPixbuf.Colorspace.RGB, True, 8, rect.width, rect.height)
