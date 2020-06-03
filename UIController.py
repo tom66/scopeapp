@@ -269,7 +269,7 @@ class MainApplication(object):
 
     def setup_render_arena(self):
         # In future this could be other render targets
-        self.arena = ScopeArena.ScopeArenaController(self.hbox_main, 'pack_start')
+        self.arena = ScopeArena.ScopeArenaController(self.hbox_main, 'pack_start', (False, True))
 
     def restore_settings_last(self):
         """
