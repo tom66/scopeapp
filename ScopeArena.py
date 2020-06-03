@@ -26,7 +26,7 @@ class ScopeArenaGraticuleRender(object):
         self.grat_flags = grat_flags
         self.grat_main_col = grat_main_col
         self.grat_sub_col = grat_sub_col
-        print(self.grat_flags, self.grat_main_col, self.grat_sub_col)
+        log.info("Graticule: flags: 0x%02x, main colour: 0x%08x, sub colour: 0x%08x" % self.grat_flags, self.grat_main_col, self.grat_sub_col)
 
     def render_to_pixbuf(self, pb):
         pass
