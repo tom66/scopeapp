@@ -105,6 +105,7 @@ class ScopeArenaController(object):
         call_(self.fixed, *pack_args)
 
         self.cfg = cfg
+        self.window = window
 
         self.grat_rdr = ScopeArenaYTGraticuleRender()
         self.grat_rdr.apply_settings(\
@@ -125,7 +126,7 @@ class ScopeArenaController(object):
             return
 
         # create a Cairo surface which is similar to our window surface for best performance
-        self.grat_cr = window.create_similar_surface(cairo.Content.COLOR_ALPHA, rect.width, rect.height)
+        self.grat_cr = self.window.create_similar_surface(cairo.Content.COLOR_ALPHA, rect.width, rect.height)
         self.grat_rdr.set_context(self.grat_cr)
 
         #pb = GdkPixbuf.Pixbuf.new(GdkPixbuf.Colorspace.RGB, True, 8, rect.width, rect.height)
