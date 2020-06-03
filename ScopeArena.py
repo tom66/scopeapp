@@ -51,6 +51,9 @@ class ScopeArenaGraticuleRender(object):
         self.grat_flags = int(grat_flags, 0)
 
         # Compute actual main colour with brightness
+        log.info("%r" % grat_main_col)
+        log.info("%r" % grat_sub_col)
+
         self.grat_main_col = scale_gdkcolour_ignore_alpha(int(grat_main_col, 0), grat_brightness)
         self.grat_sub_col = scale_gdkcolour_ignore_alpha(int(grat_sub_col, 0), grat_brightness)
 
