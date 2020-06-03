@@ -268,7 +268,7 @@ class MainApplication(object):
 
     def setup_render_arena(self):
         # In future this could be other render targets
-        self.arena = ScopeArena.ScopeArenaWidgetController()
+        pass # self.arena = ScopeArena.ScopeArenaWidgetController()
 
     def restore_settings_last(self):
         """
