@@ -330,7 +330,7 @@ class MainApplication(object):
     
     def _wnd_config_event(self, *args):
         alloc = self.window.get_allocated_size()
-        log.error("resize: %s" % repr(alloc))
+        log.error("resize: %s" % repr(alloc.allocation))
         #log.error("window size: %d x %d" % (rect.width, rect.height))
 
     def _logo_clicked(self, *args):
