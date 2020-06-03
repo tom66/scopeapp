@@ -139,7 +139,7 @@ class ScopeArenaController(object):
         self.grat_rdr.set_context(self.grat_cr, (rect.width, rect.height))
         print(self.grat_cr)
 
-        self.grat_cr.render()
+        self.grat_rdr.render()
 
         #pb = GdkPixbuf.Pixbuf.new(GdkPixbuf.Colorspace.RGB, True, 8, rect.width, rect.height)
         #
