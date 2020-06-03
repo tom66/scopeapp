@@ -41,6 +41,10 @@ class ScopeArenaController(object):
         rect = self.gtk_img.get_allocated_size().allocation
         log.info("New waveform zone size: %d x %d" % (rect.width, rect.height))
 
+        # if no size allocated, don't generate pb
+        if rect.width <= 0or rect.height <= 0:
+            return
+
         pb = GdkPixbuf.Pixbuf()
         pb.new(GdkPixbuf.Colorspace.RGB, True, 8, rect.width, rect.height)
         pb.fill(0xffffffff)
