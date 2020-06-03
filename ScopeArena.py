@@ -9,6 +9,7 @@ from gi.repository import Gtk, GdkPixbuf
 import sys, os, time
 
 gi.require_foreign("cairo")
+import cairo
 
 GRAT_RENDER_FRAME = 0x01
 GRAT_RENDER_CROSSHAIR = 0x02
