@@ -27,7 +27,7 @@ def scale_gdkcolour_ignore_alpha(col, scale):
     blu = (col & 0x00ff0000) >> 16
     alp =  col & 0xff000000
 
-    log.info("%s" % repr([red, grn, blu, alp]))
+    log.info("%s" % repr([col, red, grn, blu, alp]))
 
     # scale values and clamp
     red *= scale
