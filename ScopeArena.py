@@ -49,4 +49,4 @@ class ScopeArenaController(object):
         pb = GdkPixbuf.Pixbuf.new(GdkPixbuf.Colorspace.RGB, True, 8, rect.width, rect.height)
         pb.fill(0xffffffff)
 
-        #self.gtk_img.set_from_pixbuf(pb)
+        self.gtk_img.set_from_pixbuf(pb)
