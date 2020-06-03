@@ -114,15 +114,11 @@ class ScopeArenaController(object):
 
         self.notify_resize()
 
-    def notify_resize(self):
-        # BUG: Since our widget expands to the requested size, it is difficult to resize the window.
-        # We need to find a way to support resizing, at some point in the future.
-        #
-        # One option to consider: delete/minimise widget during scaling and then snap back into place,
-        # as required.
-
-        # request the largest size, and read back the actual size
-        self.fixed.set_size_request(2048, 1024)
+    def notify_resize(self, size_available):
+        """Resize notifier.  The `size_available` parameter encodes the available space
+        for waveform rendering, after the menus and toolbars etc are removed."""
+        # request a size slightly smaller than the size_available figure
+        self.fixed.set_size_request(size_available[0] - 16, size_available[1] - 16)
         rect = self.fixed.get_allocated_size().allocation
 
         log.info("New waveform zone size: %d x %d" % (rect.width, rect.height))

@@ -59,6 +59,10 @@ UI_MIN_DELAY_MS = 5.0
 # How long to wait before syncing a last save state.
 STATE_SYNC_WAIT = 10
 
+# UI space usage, estimated to set the waveform render target size
+UI_VERTICAL_SPACE = 64
+UI_HORIZONTAL_SPACE = 224
+
 def dialog_box(window, pri_text, sec_text, icon, buttons):
     """Helper function to make a dialog box appear and return the result."""
     dlg = Gtk.MessageDialog(window, 0, icon, buttons, "")
@@ -331,9 +335,13 @@ class MainApplication(object):
     
     def _wnd_config_event(self, *args):
         rect = self.window.get_allocated_size().allocation
-        log.info("New window size: %d x %d" % (rect.width, rect.height))
+        w = rect.width - UI_HORIZONTAL_SPACE
+        h = rect.height - UI_VERTICAL_SPACE
 
-        self.arena.notify_resize()
+        log.info("New window size: %d x %d;  after removing mandatory space: %d x %d available for waveform" % \
+            (rect.width, rect.height, w, h))
+
+        self.arena.notify_resize((w, h))
 
     def _logo_clicked(self, *args):
         log.info("_logo_clicked %r" % list(args))
