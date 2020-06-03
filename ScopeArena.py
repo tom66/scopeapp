@@ -59,6 +59,7 @@ class ScopeArenaYTGraticuleRender(object):
         self.dims = (0, 0)
 
     def set_context(self, cr, dims):
+        dims = (dims.width, dims.height)
         log.warn(repr(dims))
 
         if self.cr != None:
