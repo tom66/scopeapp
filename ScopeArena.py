@@ -27,7 +27,7 @@ def scale_gdkcolour_ignore_alpha(col, scale):
     blu = (col & 0x00ff0000) >> 16
     alp =  col & 0xff000000
 
-    log.info("%s" % repr([col, red, grn, blu, alp]))
+    #log.info("%s" % repr([col, red, grn, blu, alp]))
 
     # scale values and clamp
     red *= scale
@@ -51,8 +51,8 @@ class ScopeArenaGraticuleRender(object):
         self.grat_flags = int(grat_flags, 0)
 
         # Compute actual main colour with brightness
-        log.info("%r" % grat_main_col)
-        log.info("%r" % grat_sub_col)
+        #log.info("%r" % grat_main_col)
+        #log.info("%r" % grat_sub_col)
 
         self.grat_main_col = scale_gdkcolour_ignore_alpha(int(grat_main_col, 0), grat_brightness)
         self.grat_sub_col = scale_gdkcolour_ignore_alpha(int(grat_sub_col, 0), grat_brightness)
@@ -61,7 +61,11 @@ class ScopeArenaGraticuleRender(object):
             (self.grat_flags, self.grat_main_col, self.grat_sub_col, grat_brightness))
 
     def render_to_pixbuf(self, pb):
-        pass
+        for n in range(10):
+            t0 = time.time()
+            pb.fill(0xff000000)
+            t1 = time.time()
+            print(t1 - t0)
 
 class ScopeArenaController(object):
     """
