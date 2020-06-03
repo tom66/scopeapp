@@ -215,7 +215,8 @@ class MainApplication(object):
         log.info("Done initialising GTK configuration")
 
         # Set the start signal.  It will start the acquisition automatically a few seconds after the application launches.
-        self.start_auto = time.time() + 6.0
+        #self.start_auto = time.time() + 6.0
+        self.start_auto = time.time() + 1e6
     
     def setup_settings_notebook(self):
         """Populate the settings notebook."""
