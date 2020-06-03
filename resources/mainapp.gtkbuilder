@@ -347,21 +347,14 @@ X wfms/s</property>
       </packing>
     </child>
     <child>
-      <object class="GtkBox">
+      <object class="GtkBox" id="hbox_main">
+        <property name="name">hbox_main</property>
         <property name="visible">True</property>
         <property name="can_focus">False</property>
         <property name="hexpand">True</property>
         <property name="vexpand">True</property>
         <child>
-          <object class="GtkDrawingArea">
-            <property name="visible">True</property>
-            <property name="can_focus">False</property>
-          </object>
-          <packing>
-            <property name="expand">False</property>
-            <property name="fill">True</property>
-            <property name="position">0</property>
-          </packing>
+          <placeholder/>
         </child>
         <child>
           <object class="GtkNotebook" id="nbk_main_settings">
