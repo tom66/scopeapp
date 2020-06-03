@@ -59,6 +59,8 @@ class ScopeArenaYTGraticuleRender(object):
         self.dims = (0, 0)
 
     def set_context(self, cr, dims):
+        log.warn(repr(dims))
+
         if self.cr != None:
             pass # TODO: Cleanup?
 
@@ -155,6 +157,6 @@ class ScopeArenaController(object):
         #self.gtk_img.set_from_pixbuf(pb)
         #self.gtk_img.queue_draw()
 
-    def _draw(self, *args):
-        print(args)
+    def _draw(self, wdg, cr):
+        self.grat_rdr.set_context(cr, wdg.get_allocated_size())
         self.grat_rdr.render()
