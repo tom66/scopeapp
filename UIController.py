@@ -323,16 +323,16 @@ class MainApplication(object):
         self.state_change_notify()
     
     def _wnd_key_press(self, *args):
-        log.info("_wnd_key_press %r" % args)
+        log.info("_wnd_key_press %r" % list(args))
 
     def _wnd_key_release(self, *args):
-        log.info("_wnd_key_release %r" % args)
+        log.info("_wnd_key_release %r" % list(args))
     
     def _wnd_draw(self, *args):
-        log.info("_wnd_draw %r" % args)
+        log.info("_wnd_draw %r" % list(args))
 
     def _logo_clicked(self, *args):
-        log.info("_logo_clicked", args)
+        log.info("_logo_clicked %r" % list(args))
         self.popdown_menu.show_all()
         self.popdown_menu.popup_at_widget(self.img_logo, Gdk.Gravity.SOUTH_WEST, Gdk.Gravity.NORTH_WEST, None)
     
