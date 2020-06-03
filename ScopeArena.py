@@ -21,7 +21,7 @@ import Utils
 import logging
 log = logging.getLogger()
 
-def scale_gdkcolour_ignore_alpha(col, scale):
+def scale_colour_ignore_alpha(col, scale):
     scale = Utils.clamp(scale, 0.0, 1.0)
      
     red =  col & 0x000000ff
@@ -41,9 +41,25 @@ def scale_gdkcolour_ignore_alpha(col, scale):
     
     return alp | (blu << 16) | (grn << 8) | red
 
+def colour32_to_cairo(col):
+    red  =  col & 0x000000ff
+    grn  = (col & 0x0000ff00) >> 8
+    blu  = (col & 0x00ff0000) >> 16
+    alp  = (col & 0xff000000) >> 24
+
+    red *= 1.0f / 255.0f
+    grn *= 1.0f / 255.0f
+    blu *= 1.0f / 255.0f
+    alp *= 1.0f / 255.0f
+
+    return (alp, red, grn, blu)
+
 class ScopeArenaYTGraticuleRender(object):
     def __init__(self):
         pass
+
+    def set_context(self, cr):
+        self.cr = cr
 
     def apply_settings(self, hdiv, vdiv, xmarg, ymarg, grat_flags, grat_main_col, grat_sub_col, grat_brightness):
         self.hdiv = hdiv
@@ -56,8 +72,8 @@ class ScopeArenaYTGraticuleRender(object):
         #log.info("%r" % grat_main_col)
         #log.info("%r" % grat_sub_col)
 
-        self.grat_main_col = scale_gdkcolour_ignore_alpha(int(grat_main_col, 0), grat_brightness)
-        self.grat_sub_col = scale_gdkcolour_ignore_alpha(int(grat_sub_col, 0), grat_brightness)
+        self.grat_main_col = scale_colour_ignore_alpha(int(grat_main_col, 0), grat_brightness)
+        self.grat_sub_col = scale_colour_ignore_alpha(int(grat_sub_col, 0), grat_brightness)
 
         log.info("Graticule: flags: 0x%02x, main colour: 0x%08x, sub colour: 0x%08x (computed from brightness %.1f)" % \
             (self.grat_flags, self.grat_main_col, self.grat_sub_col, grat_brightness))
@@ -80,15 +96,16 @@ class ScopeArenaController(object):
     atop this static image using X Window System compositing.  The static image is updated if user
     input requires, but generally stays the same.
     """
-    def __init__(self, cfg, pack_widget, pack_zone, pack_args=()):
-        self.gtk_img = Gtk.Image()
+    def __init__(self, cfg, window. pack_widget, pack_zone, pack_args=()):
+        self.fixed = Gtk.Fixed()
         call_ = getattr(pack_widget, pack_zone)
         assert(callable(call_))
-        call_(self.gtk_img, *pack_args)
+        call_(self.fixed, *pack_args)
 
         self.cfg = cfg
-        self.gratrdr = ScopeArenaYTGraticuleRender()
-        self.gratrdr.apply_settings(\
+
+        self.grat_rdr = ScopeArenaYTGraticuleRender()
+        self.grat_rdr.apply_settings(\
             cfg.Render.DisplayHDivisionsYT, cfg.Render.DisplayVDivisionsYT, \
             cfg.Render.XMargin, cfg.Render.YMargin, cfg.Render.GratFlags, \
             cfg.Render.GratMainColour, cfg.Render.GratSubColour, cfg.Render.GratBrightness)
@@ -101,16 +118,21 @@ class ScopeArenaController(object):
         rect = self.gtk_img.get_allocated_size().allocation
         log.info("New waveform zone size: %d x %d" % (rect.width, rect.height))
 
-        # if no size allocated, don't generate pb
+        # if no size allocated, don't change anything
         if rect.width <= 0 or rect.height <= 0:
             log.warn("Waveform zone size is zero, not allocating yet")
             return
 
-        pb = GdkPixbuf.Pixbuf.new(GdkPixbuf.Colorspace.RGB, True, 8, rect.width, rect.height)
+        # create a Cairo surface which is similar to our window surface for best performance
+        self.grat_cr = window.create_similar_surface(cairo.Content.COLOR_ALPHA, rect.width, rect.height)
 
-        self.gratrdr.render_to_pixbuf(pb)
+        self.fixed.set_size_request(rect.width, rect.height)
 
-        log.error("PixBuf: %r (%r)" % (repr(pb), rect))
-
-        self.gtk_img.set_from_pixbuf(pb)
-        self.gtk_img.queue_draw()
+        #pb = GdkPixbuf.Pixbuf.new(GdkPixbuf.Colorspace.RGB, True, 8, rect.width, rect.height)
+        #
+        #self.gratrdr.render_to_pixbuf(pb)
+        #
+        #log.error("PixBuf: %r (%r)" % (repr(pb), rect))
+        #
+        #self.gtk_img.set_from_pixbuf(pb)
+        #self.gtk_img.queue_draw()
