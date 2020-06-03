@@ -330,7 +330,9 @@ class MainApplication(object):
     
     def _wnd_config_event(self, *args):
         rect = self.window.get_allocated_size().allocation
-        log.error("window size: %d x %d" % (rect.width, rect.height))
+        log.info("New window size: %d x %d" % (rect.width, rect.height))
+
+        self.arena.notify_resize()
 
     def _logo_clicked(self, *args):
         log.info("_logo_clicked %r" % list(args))

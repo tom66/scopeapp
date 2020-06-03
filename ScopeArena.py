@@ -35,5 +35,6 @@ class ScopeArenaController(object):
         assert(callable(call_))
         call_(self.gtk_img, *pack_args)
 
-    def notify_resize(self, ndims):
-        log.info("notify_resize %r" % ndims)
+    def notify_resize(self):
+        rect = self.gtk_img.get_allocated_size().allocation
+        log.info("New waveform zone size: %d x %d" % (rect.width, rect.height))
