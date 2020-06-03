@@ -8,6 +8,10 @@ from gi.repository import Gtk
 
 gi.require_foreign("cairo")
 
+# Load debug logger
+import logging
+log = logging.getLogger()
+
 def draw_pixel_line(cr, sx, sy, ex, ey):
     pass
 
@@ -30,3 +34,6 @@ class ScopeArenaController(object):
         call_ = getattr(pack_widget, pack_zone)
         assert(callable(call_))
         call_(self.gtk_img, *pack_args)
+
+    def notify_resize(self, ndims):
+        log.info("notify_resize %r" % ndims)

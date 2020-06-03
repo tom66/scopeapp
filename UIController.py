@@ -197,11 +197,13 @@ class MainApplication(object):
         self.add_css_class_by_widget_name("grd_status_trigger_channel_container", "status_box_middle_horiz_common")
         self.add_css_class_by_widget_name("lbl_status_trigger_info", "status_box_right_horiz_common")
         
-        # Connect to the window exposed event to hook onto resize events.
         # Set the application title.
         self.window.set_title(_("BluePulse Oscilloscope - Main"))
+
+        # Connect window signals
         self.window.connect("key_press_event", self._wnd_key_press)
         self.window.connect("key_release_event", self._wnd_key_release)
+        self.window.connect("expose", self._wnd_expose)
         
         self.setup_settings_notebook()
         self.setup_channel_widgets()
@@ -268,7 +270,7 @@ class MainApplication(object):
             row += 1
 
     def setup_render_arena(self):
-        log.info("initialising ScopeArenaController")
+        log.info("Initialising ScopeArenaController")
 
         # In future this could be other render targets
         self.arena = ScopeArena.ScopeArenaController(self.hbox_main, 'pack_start', (False, True, 0))
@@ -326,6 +328,9 @@ class MainApplication(object):
     def _wnd_key_release(self, *args):
         log.info("_wnd_key_release", args)
     
+    def _wnd_expose(self, *args):
+        log.info("_wnd_expose", args)
+
     def _logo_clicked(self, *args):
         log.info("_logo_clicked", args)
         self.popdown_menu.show_all()
