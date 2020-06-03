@@ -50,3 +50,4 @@ class ScopeArenaController(object):
         pb.fill(0xffffffff)
 
         self.gtk_img.set_from_pixbuf(pb)
+        self.gtk_img.queue_draw()
