@@ -330,7 +330,7 @@ class MainApplication(object):
     
     def _wnd_config_event(self, *args):
         log.info("_wnd_config_event %r" % list(args))
-        log.error("window size: %r" % list(self.window.get_allocated_size()))
+        log.error("window size: %s" % repr(self.window.get_allocated_size()))
 
     def _logo_clicked(self, *args):
         log.info("_logo_clicked %r" % list(args))
