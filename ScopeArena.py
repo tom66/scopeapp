@@ -95,7 +95,7 @@ class ScopeArenaYTGraticuleRender(object):
         log.info("%r" % self.cr)
 
         self.cr.set_source_rgba(1.0, 0.0, 0.0, 1.0)
-        self.cr.set_line_width(.01)
+        self.cr.set_line_width(2)
         self.cr.new_path()
         self.cr.move_to(10, 10)
         self.cr.line_to(200, 10)
