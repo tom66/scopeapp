@@ -97,17 +97,23 @@ class ScopeArenaController(object):
     This module contains classes to render the "arena" of the instrument, which is the waveform and 
     graticule display.
     
-    Static content is rendered using Cairo and committed to a GdkBuffer.  The waveform data is rendered 
+    Static content is rendered using Cairo and committed to a surface.  The waveform data is rendered 
     atop this static image using X Window System compositing.  The static image is updated if user
-    input requires, but generally stays the same.
+    input requires, but generally stays the same if settings are not changed.  Side widgets and cursors
+    are added via another compositing layer.  The hope is that this maximises performance on limited
+    hardware.
     """
     def __init__(self, cfg, window, pack_widget, pack_zone, pack_args=()):
         self.fixed = Gtk.Fixed()
         call_ = getattr(pack_widget, pack_zone)
         assert(callable(call_))
         call_(self.fixed, *pack_args)
+        
+        self.grat_da = Gtk.DrawingArea()
+        self.grat_da.connect('draw', self._draw)
+        self.fixed.put(self.grat_da)
 
-        # self.grat_img = 
+        self.size_allocated = False
 
         self.cfg = cfg
         self.window = window
@@ -132,12 +138,13 @@ class ScopeArenaController(object):
 
         # create a Cairo surface which is similar to our window surface for best performance
         # we use get_window() to get the GdkWindow of the GtkWindow, and no, that's not confusing at all.
-        self.grat_surf = self.window.get_window().create_similar_surface(cairo.Content.COLOR_ALPHA, rect.width, rect.height)
-        self.grat_cr = cairo.Context(self.grat_surf)
-        self.grat_rdr.set_context(self.grat_cr, (rect.width, rect.height))
-        print(self.grat_cr)
+        self.grat_da.set_size_request(rect.width, rect.height)
+        #self.grat_surf = self.window.get_window().create_similar_surface(cairo.Content.COLOR_ALPHA, rect.width, rect.height)
+        #self.grat_cr = cairo.Context(self.grat_surf)
+        #self.grat_rdr.set_context(self.grat_cr, (rect.width, rect.height))
+        #print(self.grat_cr)
 
-        self.grat_rdr.render()
+        self.size_allocated = True
 
         #pb = GdkPixbuf.Pixbuf.new(GdkPixbuf.Colorspace.RGB, True, 8, rect.width, rect.height)
         #
@@ -147,3 +154,7 @@ class ScopeArenaController(object):
         #
         #self.gtk_img.set_from_pixbuf(pb)
         #self.gtk_img.queue_draw()
+
+    def _draw(self, *args):
+        print(args)
+        self.grat_rdr.render()
