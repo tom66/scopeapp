@@ -15,6 +15,7 @@ import sys, time, random, math
 from datetime import datetime
 
 import ScopeController as SC
+import ScopeArena
 import UIChannelTab
 import UIChannelWidget
 import UINotifier
@@ -201,8 +202,25 @@ class MainApplication(object):
         self.window.connect("key_press_event", self._wnd_key_press)
         self.window.connect("key_release_event", self._wnd_key_release)
         
+        self.setup_settings_notebook()
+        self.setup_channel_widgets()
+        self.setup_context_menu()
+        self.setup_render_arena()
+        self.restore_settings_last()
+
+        # Done initialisation of GUI stuff
+        log.info("Done initialising GTK configuration")
+
+        # Set the start signal.  It will start the acquisition automatically a few seconds after the application launches.
+        self.start_auto = time.time() + 6.0
+    
+    def setup_settings_notebook(self):
+        """Populate the settings notebook."""
         # Load the GtkBuilder resource for the channel tabs in the selection notebook, and
-        # add one tab for each channel
+        # add one tab for each channel.  
+        # XXX: Should we empty the notebook first?
+        log.info("Creating settings notebook")
+
         self.nbk_main_settings = self.builder.get_object("nbk_main_settings")
         self.nbk_main_settings.set_hexpand(False)
         self.nbk_main_settings.set_hexpand_set(True)
@@ -213,7 +231,11 @@ class MainApplication(object):
             ui_tab = UIChannelTab.ChannelTab(self, idx, self.nbk_main_settings, len(self.ui_tabs) + 1)
             ui_tab.append_to_notebook()
             self.ui_tabs.append(ui_tab)
-        
+
+    def setup_channel_widgets(self):
+        """Setup the channel widgets for the UI."""
+        log.info("Creating channel widgets")
+
         # Add a ChannelWidget for each channel to the channel widget container
         self.box_channel_info = self.builder.get_object("box_channel_info")
         
@@ -221,9 +243,10 @@ class MainApplication(object):
             wdg = UIChannelWidget.ChannelWidget(self, idx)
             self.box_channel_info.pack_start(wdg.get_embedded_container(), False, True, 0)
             self.ui_widgets.append(wdg)
-        
-        # Create the dropdown general purpose menu that is triggered by key press or clicking
-        # the application logo
+
+    def setup_context_menu(self):        
+        """Create the dropdown general purpose menu that is triggered by key press or clicking
+        the application logo."""
         self.popdown_menu = Gtk.Menu()
         self.popdown_menu.set_accel_group(self.agr)
         row = 0
@@ -242,11 +265,20 @@ class MainApplication(object):
                 
             self.popdown_menu.attach(item, 0, 1, row, row + 1)
             row += 1
-        
-        # Try to load the last settings file.
-        # If this fails load the default setting file and show an error.
-        # If *this* fails, then save a default setting file on the basis of default state
-        # configuration in the various objects.
+
+    def setup_render_arena(self):
+        # In future this could be other render targets
+        self.arena = ScopeArena.ScopeArenaWidgetController()
+
+    def restore_settings_last(self):
+        """
+        Try to load the last settings file.
+        If this fails load the default setting file and show an error.
+        If *this* fails, then save a default setting file on the basis of default state
+        configuration in the various objects.
+        """
+        log.info("Loading last settings file")
+
         try:
             self.ctrl.restore_settings_last()
         except:
@@ -255,19 +287,9 @@ class MainApplication(object):
                 self.notifier.push_notification(UINotifier.NotifyMessage(UINotifier.NOTIFY_WARNING, "Unable to load last configuration - reverting to default configuration"))
             except:
                 self.notifier.push_notification(UINotifier.NotifyMessage(UINotifier.NOTIFY_WARNING, "Unable to load last OR default configuration - configuration have errors"))
+        
         self.ui_sync_config()
-            
-        # Read the flash rate and calculate the flash period.
-        try:
-            self.flash_period = 1.0 / float(self.cfgmgr['UI']['FlashFreq'])
-        except:
-            self.flash_period = 0.4 # Default
-
-        # Done initialisation of GUI stuff
-        log.info("Done initialising GTK configuration")
-
-        # Set the start signal.  It will start the acquisition automatically a few seconds after the application launches.
-        self.start_auto = time.time() + 6.0
+        log.info("Done loading last settings file")
     
     def __user_exception_handler(func):
         def wrapper(self, *args):
@@ -609,7 +631,13 @@ class MainApplication(object):
             
         for wdg in self.ui_widgets:
             wdg.refresh_object_attach()
-    
+
+        # Read the flash rate and calculate the flash period.
+        try:
+            self.flash_period = 1.0 / float(self.cfgmgr.UI.FlashFreq)
+        except:
+            self.flash_period = 0.4 # Default
+
         log.info("Active tab index: %d" % self.ctrl.active_tab)
         self.nbk_main_settings.set_current_page(self.ctrl.active_tab)
     

@@ -353,10 +353,14 @@ X wfms/s</property>
         <property name="hexpand">True</property>
         <property name="vexpand">True</property>
         <child>
-          <object class="GtkDrawingArea">
+          <template class="bin_drawing_arena" parent="GtkBin">
+            <property name="name">bin_drawing_arena</property>
             <property name="visible">True</property>
             <property name="can_focus">False</property>
-          </object>
+            <child>
+              <placeholder/>
+            </child>
+          </template>
           <packing>
             <property name="expand">False</property>
             <property name="fill">True</property>
