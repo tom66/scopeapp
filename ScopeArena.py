@@ -112,7 +112,7 @@ class ScopeArenaController(object):
             cfg.Render.XMargin, cfg.Render.YMargin, cfg.Render.GratFlags, \
             cfg.Render.GratMainColour, cfg.Render.GratSubColour, cfg.Render.GratBrightness)
 
-        self.notify_resize()
+        self.notify_resize((0, 0))
 
     def notify_resize(self, size_available):
         """Resize notifier.  The `size_available` parameter encodes the available space
