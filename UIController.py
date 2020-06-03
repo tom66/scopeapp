@@ -203,7 +203,7 @@ class MainApplication(object):
         # Connect window signals
         self.window.connect("key_press_event", self._wnd_key_press)
         self.window.connect("key_release_event", self._wnd_key_release)
-        self.window.connect("configure-event", self._wnd_draw)
+        self.window.connect("configure-event", self._wnd_config_event)
         
         self.setup_settings_notebook()
         self.setup_channel_widgets()
@@ -328,8 +328,9 @@ class MainApplication(object):
     def _wnd_key_release(self, *args):
         log.info("_wnd_key_release %r" % list(args))
     
-    def _wnd_draw(self, *args):
-        log.info("_wnd_draw %r" % list(args))
+    def _wnd_config_event(self, *args):
+        log.info("_wnd_config_event %r" % list(args))
+        log.error("window size: %r" % self.window.get_allocated_size())
 
     def _logo_clicked(self, *args):
         log.info("_logo_clicked %r" % list(args))
