@@ -62,7 +62,8 @@ class ScopeArenaYTGraticuleRender(object):
 
     def set_context(self, cr, dims):
         if self.cr != None:
-            self.cr.finish()
+            pass # TODO: Cleanup?
+            
         self.cr = cr
         self.cr.scale(dims[0], dims[1])
         self.dims = dims
