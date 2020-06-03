@@ -268,6 +268,8 @@ class MainApplication(object):
             row += 1
 
     def setup_render_arena(self):
+        log.info("initialising ScopeArenaController")
+
         # In future this could be other render targets
         self.arena = ScopeArena.ScopeArenaController(self.hbox_main, 'pack_start', (False, True, 0))
 
