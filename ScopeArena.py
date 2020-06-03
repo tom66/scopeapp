@@ -4,7 +4,7 @@ This file is part of YAOS and is licenced under the MIT licence.
 
 import gi
 gi.require_version('Gtk', '3.0')
-from gi.repository import Gtk
+from gi.repository import Gtk, GdkPixbuf
 
 gi.require_foreign("cairo")
 
@@ -35,6 +35,13 @@ class ScopeArenaController(object):
         assert(callable(call_))
         call_(self.gtk_img, *pack_args)
 
+        self.notify_resize()
+
     def notify_resize(self):
         rect = self.gtk_img.get_allocated_size().allocation
         log.info("New waveform zone size: %d x %d" % (rect.width, rect.height))
+
+        pb = GdkPixbuf.Pixbuf()
+        pb.new(GdkPixbuf.Colorspace.RGB, True, 8, rect.width, rect.height)
+        pb.fill(0xffffffff)
+        self.gtk_img.set_from_pixbuf(pb)
