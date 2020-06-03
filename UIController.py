@@ -329,8 +329,9 @@ class MainApplication(object):
         log.info("_wnd_key_release %r" % list(args))
     
     def _wnd_config_event(self, *args):
-        rect = self.window.get_allocated_size()[1]
-        log.error("window size: %d x %d" % (rect.width, rect.height))
+        alloc = self.window.get_allocated_size()
+        log.error("resize: %s" % repr(alloc))
+        #log.error("window size: %d x %d" % (rect.width, rect.height))
 
     def _logo_clicked(self, *args):
         log.info("_logo_clicked %r" % list(args))
