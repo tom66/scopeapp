@@ -42,7 +42,8 @@ class ScopeArenaController(object):
         log.info("New waveform zone size: %d x %d" % (rect.width, rect.height))
 
         # if no size allocated, don't generate pb
-        if rect.width <= 0or rect.height <= 0:
+        if rect.width <= 0 or rect.height <= 0:
+            log.warn("Waveform zone size is zero, not allocating yet")
             return
 
         pb = GdkPixbuf.Pixbuf()
