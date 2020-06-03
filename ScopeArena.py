@@ -56,7 +56,7 @@ class ScopeArenaGraticuleRender(object):
             (self.grat_flags, self.grat_main_col, self.grat_sub_col, grat_brightness))
 
     def render_to_pixbuf(self, pb):
-
+        pass
 
 class ScopeArenaController(object):
     """
