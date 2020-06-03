@@ -329,7 +329,7 @@ class MainApplication(object):
         log.info("_wnd_key_release %r" % args)
     
     def _wnd_draw(self, *args):
-        log.info("_wnd_draw %r" args)
+        log.info("_wnd_draw %r" % args)
 
     def _logo_clicked(self, *args):
         log.info("_logo_clicked", args)
