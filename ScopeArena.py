@@ -88,13 +88,13 @@ class ScopeArenaYTGraticuleRender(object):
             (self.grat_flags, self.grat_main_col, self.grat_sub_col, grat_brightness))
 
     def render(self):
-        #self.cr.set_source_rgba(*self.grat_main_col)
-        self.cr.set_source_rgba(0.0, 0.0, 1.0, 1.0)
-        self.cr.paint()
+        self.cr.set_source_rgba(*self.grat_main_col)
+        #self.cr.set_source_rgba(0.0, 0.0, 1.0, 1.0)
+        #self.cr.paint()
 
-        log.info("%r" % self.cr)
+        #log.info("%r" % self.cr)
 
-        self.cr.set_source_rgba(1.0, 0.0, 0.0, 1.0)
+        #self.cr.set_source_rgba(1.0, 0.0, 0.0, 1.0)
         self.cr.set_line_width(1)
         self.cr.new_path()
         self.cr.move_to(self.xmarg, self.ymarg)
