@@ -100,7 +100,7 @@ class ScopeArenaYTGraticuleRender(object):
         self.cr.line_to(200, 200)
         self.cr.line_to(10, 200)
         self.cr.close_path()
-        self.cr.stroke()
+        self.cr.fill()
 
         #log.info("%r" % repr((self.xmarg, self.ymarg)))
         #self.cr.move_to(self.xmarg, self.ymarg)
