@@ -96,7 +96,7 @@ class ScopeArenaController(object):
     atop this static image using X Window System compositing.  The static image is updated if user
     input requires, but generally stays the same.
     """
-    def __init__(self, cfg, window. pack_widget, pack_zone, pack_args=()):
+    def __init__(self, cfg, window, pack_widget, pack_zone, pack_args=()):
         self.fixed = Gtk.Fixed()
         call_ = getattr(pack_widget, pack_zone)
         assert(callable(call_))
