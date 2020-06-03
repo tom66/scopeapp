@@ -6,6 +6,8 @@ import gi
 gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk, GdkPixbuf
 
+import sys, os, time
+
 gi.require_foreign("cairo")
 
 GRAT_RENDER_FRAME = 0x01
