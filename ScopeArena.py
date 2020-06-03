@@ -21,11 +21,13 @@ log = logging.getLogger()
 
 def scale_gdkcolour_ignore_alpha(col, scale):
     scale = Utils.clamp(scale, 0.0, 1.0)
-    
+     
     red =  col & 0x000000ff
     grn = (col & 0x0000ff00) >> 8
     blu = (col & 0x00ff0000) >> 16
     alp =  col & 0xff000000
+
+    log.info(red, grn, blu, alp)
 
     # scale values and clamp
     red *= scale
