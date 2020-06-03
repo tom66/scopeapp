@@ -110,7 +110,7 @@ class ScopeArenaYTGraticuleRender(object):
         self.cr.line_to(.1, .9)
 
         self.cr.close_path()
-        self.cr.fill()
+        self.cr.stroke()
 
         log.info("%s" % repr(self.cr.get_matrix()))
 
