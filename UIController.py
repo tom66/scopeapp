@@ -140,6 +140,7 @@ class MainApplication(object):
         self.builder.add_from_file(LAYOUT_FILE)
         self.overlay_main = Gtk.Overlay()
         self.vbox_main = self.builder.get_object("vbox_main")
+        self.hbox_main = self.builder.get_object("hbox_main")
         self.overlay_main.add(self.vbox_main)
         self.overlay_fixed = Gtk.Fixed()
         self.window = Gtk.Window()
@@ -268,7 +269,7 @@ class MainApplication(object):
 
     def setup_render_arena(self):
         # In future this could be other render targets
-        pass # self.arena = ScopeArena.ScopeArenaWidgetController()
+        self.arena = ScopeArena.ScopeArenaWidgetController(self.hbox_main, 'pack_start')
 
     def restore_settings_last(self):
         """

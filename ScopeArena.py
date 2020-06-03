@@ -14,7 +14,7 @@ def draw_pixel_line(cr, sx, sy, ex, ey):
 class ScopeArenaGraticuleRender(object):
     pass
 
-class ScopeArenaWidgetController(object):
+class ScopeArenaController(object):
     """
     ScopeArena:
     
@@ -25,6 +25,8 @@ class ScopeArenaWidgetController(object):
     atop this static image using X Window System compositing.  The static image is updated if user
     input requires, but generally stays the same.
     """
-    def __init__(self, pack_widget):
+    def __init__(self, pack_widget, pack_zone):
         self.gtk_img = Gtk.Image()
-        pack_widget.add(self.gtk_img)
+        call_ = getattr(pack_widget, pack_zone)
+        assert(callable(call_))
+        call_(self.gtk_img)
