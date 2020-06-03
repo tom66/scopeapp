@@ -53,16 +53,19 @@ def colour32_to_cairo(col):
     blu *= 1.0 / 255.0
     alp *= 1.0 / 255.0
 
-    return (alp, red, grn, blu)
+    return (red, grn, blu, alp)
 
 class ScopeArenaYTGraticuleRender(object):
     def __init__(self):
         self.cr = None
+        self.dims = (0, 0)
 
-    def set_context(self, cr):
+    def set_context(self, cr, dims):
         if self.cr != None:
             self.cr.finish()
         self.cr = cr
+        self.cr.scale(dims[0], dims[1])
+        self.dims = dims
 
     def apply_settings(self, hdiv, vdiv, xmarg, ymarg, grat_flags, grat_main_col, grat_sub_col, grat_brightness):
         self.hdiv = hdiv
@@ -75,18 +78,18 @@ class ScopeArenaYTGraticuleRender(object):
         #log.info("%r" % grat_main_col)
         #log.info("%r" % grat_sub_col)
 
-        self.grat_main_col = scale_colour_ignore_alpha(int(grat_main_col, 0), grat_brightness)
-        self.grat_sub_col = scale_colour_ignore_alpha(int(grat_sub_col, 0), grat_brightness)
+        self.grat_main_col = colour32_to_cairo(scale_colour_ignore_alpha(int(grat_main_col, 0), grat_brightness))
+        self.grat_sub_col = colour32_to_cairo(scale_colour_ignore_alpha(int(grat_sub_col, 0), grat_brightness))
 
-        log.info("Graticule: flags: 0x%02x, main colour: 0x%08x, sub colour: 0x%08x (computed from brightness %.1f)" % \
+        log.info("Graticule: flags: 0x%02x, main colour: %r, sub colour %r (computed from brightness %.1f)" % \
             (self.grat_flags, self.grat_main_col, self.grat_sub_col, grat_brightness))
 
-    def render_to_pixbuf(self, pb):
-        for n in range(10):
-            t0 = time.time()
-            pb.fill(0xff000000)
-            t1 = time.time()
-            print(t1 - t0)
+    def render(self):
+        self.cr.set_source_rgba(self.grat_main_col)
+        self.cr.set_line_width(1.0)
+        self.cr.move_to(self.xmarg, self.ymarg)
+        self.cr.line_to(self.dims[0] - self.xmarg, self.ymarg)
+        self.cr.stroke()
 
 class ScopeArenaController(object):
     """
@@ -104,6 +107,8 @@ class ScopeArenaController(object):
         call_ = getattr(pack_widget, pack_zone)
         assert(callable(call_))
         call_(self.fixed, *pack_args)
+
+        # self.grat_img = 
 
         self.cfg = cfg
         self.window = window
@@ -129,7 +134,10 @@ class ScopeArenaController(object):
         # create a Cairo surface which is similar to our window surface for best performance
         # we use get_window() to get the GdkWindow of the GtkWindow, and no, that's not confusing at all.
         self.grat_cr = self.window.get_window().create_similar_surface(cairo.Content.COLOR_ALPHA, rect.width, rect.height)
-        self.grat_rdr.set_context(self.grat_cr)
+        self.grat_rdr.set_context(self.grat_cr, (rect.width, rect.height))
+        print(self.grat_cr)
+
+        self.grat_cr.render()
 
         #pb = GdkPixbuf.Pixbuf.new(GdkPixbuf.Colorspace.RGB, True, 8, rect.width, rect.height)
         #
