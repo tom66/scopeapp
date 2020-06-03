@@ -39,7 +39,7 @@ def scale_gdkcolour_ignore_alpha(col, scale):
     
     return alp | (blu << 16) | (grn << 8) | red
 
-class ScopeArenaGraticuleRender(object):
+class ScopeArenaYTGraticuleRender(object):
     def __init__(self):
         pass
 
@@ -85,7 +85,7 @@ class ScopeArenaController(object):
         call_(self.gtk_img, *pack_args)
 
         self.cfg = cfg
-        self.gratrdr = ScopeArenaGraticuleRender()
+        self.gratrdr = ScopeArenaYTGraticuleRender()
         self.gratrdr.apply_settings(\
             cfg.Render.DisplayHDivisionsYT, cfg.Render.DisplayVDivisionsYT, \
             cfg.Render.XMargin, cfg.Render.YMargin, cfg.Render.GratFlags, \
@@ -105,7 +105,8 @@ class ScopeArenaController(object):
             return
 
         pb = GdkPixbuf.Pixbuf.new(GdkPixbuf.Colorspace.RGB, True, 8, rect.width, rect.height)
-        pb.fill(0xff0000ff)
+
+        self.gradrdr.render_to_pixbuf(pb)
 
         log.error("PixBuf: %r (%r)" % (repr(pb), rect))
 
