@@ -8,15 +8,28 @@ from gi.repository import Gtk, GdkPixbuf
 
 gi.require_foreign("cairo")
 
+GRAT_RENDER_FRAME = 0x01
+GRAT_RENDER_CROSSHAIR = 0x02
+GRAT_RENDER_DIVISIONS = 0x04
+GRAT_RENDER_SUBDIVISIONS = 0x08
+
 # Load debug logger
 import logging
 log = logging.getLogger()
 
-def draw_pixel_line(cr, sx, sy, ex, ey):
-    pass
-
 class ScopeArenaGraticuleRender(object):
-    pass
+    def __init__(self, hdiv, vdiv, xmarg, ymarg, grat_flags, grat_main_col, grat_sub_col):
+        self.hdiv = hdiv
+        self.vdiv = vdiv
+        self.xmarg = xmarg
+        self.ymarg = ymarg
+        self.grat_flags = grat_flags
+        self.grat_main_col = grat_main_col
+        self.grat_sub_col = grat_sub_col
+        print(self.grat_flags, self.grat_main_col, self.grat_sub_col)
+
+    def render_to_pixbuf(self, pb):
+        pass
 
 class ScopeArenaController(object):
     """
@@ -29,15 +42,23 @@ class ScopeArenaController(object):
     atop this static image using X Window System compositing.  The static image is updated if user
     input requires, but generally stays the same.
     """
-    def __init__(self, pack_widget, pack_zone, pack_args=()):
+    def __init__(self, cfg, pack_widget, pack_zone, pack_args=()):
         self.gtk_img = Gtk.Image()
         call_ = getattr(pack_widget, pack_zone)
         assert(callable(call_))
         call_(self.gtk_img, *pack_args)
 
+        self.cfg = cfg
+        self.gratrdr = ScopeArenaGraticuleRender(\
+            cfg.Render.DisplayHDivisionsYT, cfg.Render.DisplayVDivisionsYT, \
+            cfg.Render.XMargin, cfg.Render.YMargin, cfg.Render.GratFlags, \
+            cfg.Render.GratMainColour, cfg.Render.GratSubColour)
+
         self.notify_resize()
 
     def notify_resize(self):
+        # BUG: Since our widget expands to the requested size, it is difficult to resize the window.
+        # We need to find a way to support resizing, at some point in the future.
         rect = self.gtk_img.get_allocated_size().allocation
         log.info("New waveform zone size: %d x %d" % (rect.width, rect.height))
 
