@@ -47,7 +47,7 @@ class ScopeArenaController(object):
             return
 
         pb = GdkPixbuf.Pixbuf.new(GdkPixbuf.Colorspace.RGB, True, 8, rect.width, rect.height)
-        pb.fill(0xffffffff)
+        pb.fill(0xff0000ff)
 
         log.error("PixBuf: %r (%r)" % (repr(pb), rect))
 
