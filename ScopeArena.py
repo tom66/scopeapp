@@ -31,11 +31,11 @@ def scale_gdkcolour_ignore_alpha(col, scale):
 
     # scale values and clamp
     red *= scale
-    red  = Utils.clamp(red, 0, 255)
+    red  = int(Utils.clamp(red, 0, 255))
     grn *= scale
-    grn  = Utils.clamp(grn, 0, 255)
+    grn  = int(Utils.clamp(grn, 0, 255))
     blu *= scale
-    blu  = Utils.clamp(blu, 0, 255)
+    blu  = int(Utils.clamp(blu, 0, 255))
     
     return alp | (blu << 16) | (grn << 8) | red
 
