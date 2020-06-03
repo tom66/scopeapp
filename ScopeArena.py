@@ -105,8 +105,8 @@ class ScopeArenaYTGraticuleRender(object):
         self.cr.new_path()
         self.sharp_move_to(self.xmarg, self.ymarg)
         self.sharp_line_to(self.dims[0] - self.xmarg, self.ymarg)
-        self.sharp_line_to(self.dims[0] - self.xmarg, self.dims[1] - self.ymarg)
-        self.sharp_line_to(self.xmarg, self.dims[1] - self.ymarg)
+        self.sharp_line_to(self.dims[0] - self.xmarg, self.dims[1] - self.ymarg - 1)
+        self.sharp_line_to(self.xmarg, self.dims[1] - self.ymarg - 1)
 
         """
         self.cr.move_to(.1, .1)
