@@ -92,6 +92,8 @@ class ScopeArenaYTGraticuleRender(object):
         self.cr.move_to(self.xmarg, self.ymarg)
         self.cr.line_to(self.dims[0] - self.xmarg, self.ymarg)
         self.cr.stroke()
+        self.cr.set_source_rgba(1.0, 0.0, 0.0, 1.0)
+        self.cr.paint()
 
 class ScopeArenaController(object):
     """
