@@ -117,16 +117,19 @@ class ScopeArenaController(object):
     def notify_resize(self):
         # BUG: Since our widget expands to the requested size, it is difficult to resize the window.
         # We need to find a way to support resizing, at some point in the future.
+        # One option to consider: delete/minimise widget during scaling and then snap back into place,
+        # as required.
+
+        # request a large size, and read back the actual size
+        self.fixed.set_size_request(10000, 10000)
+        rect = self.fixed.get_allocated_size().allocation
+
         log.info("New waveform zone size: %d x %d" % (rect.width, rect.height))
 
         # if no size allocated, don't change anything
         if rect.width <= 0 or rect.height <= 0:
             log.warn("Waveform zone size is zero, not allocating yet")
             return
-
-        # request a large size, and read back the actual size
-        self.fixed.set_size_request(10000, 10000)
-        rect = self.fixed.get_allocated_size().allocation
 
         # create a Cairo surface which is similar to our window surface for best performance
         self.grat_cr = window.create_similar_surface(cairo.Content.COLOR_ALPHA, rect.width, rect.height)
