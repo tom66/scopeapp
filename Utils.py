@@ -238,4 +238,6 @@ def unpack_json(obj, json_dict, vars_):
         #print(obj, key, value)
         setattr(obj, str(key), value)
 
-        
+def clamp(y, lo, hi):
+    """Clip argument `y` so that it lies between the bounds `lo` and `hi` exclusively.  `lo` < `hi` for correct operation."""
+    return max(lo, min(y, hi))

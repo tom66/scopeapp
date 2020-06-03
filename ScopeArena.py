@@ -13,23 +13,50 @@ GRAT_RENDER_CROSSHAIR = 0x02
 GRAT_RENDER_DIVISIONS = 0x04
 GRAT_RENDER_SUBDIVISIONS = 0x08
 
+import Utils
+
 # Load debug logger
 import logging
 log = logging.getLogger()
 
+def scale_gdkcolour_ignore_alpha(col, scale):
+    scale = Utils.clamp(scale, 0.0, 1.0)
+    
+    red =  col & 0x000000ff
+    grn = (col & 0x0000ff00) >> 8
+    blu = (col & 0x00ff0000) >> 16
+    alp =  col & 0xff000000
+
+    # scale values and clamp
+    red *= scale
+    red  = Utils.clamp(red, 0, 255)
+    grn *= scale
+    grn  = Utils.clamp(grn, 0, 255)
+    blu *= scale
+    blu  = Utils.clamp(blu, 0, 255)
+    
+    return alp | (blu << 16) | (grn << 8) | red
+
 class ScopeArenaGraticuleRender(object):
-    def __init__(self, hdiv, vdiv, xmarg, ymarg, grat_flags, grat_main_col, grat_sub_col):
+    def __init__(self):
+        pass
+
+    def apply_settings(self, hdiv, vdiv, xmarg, ymarg, grat_flags, grat_main_col, grat_sub_col, grat_brightness):
         self.hdiv = hdiv
         self.vdiv = vdiv
         self.xmarg = xmarg
         self.ymarg = ymarg
         self.grat_flags = int(grat_flags, 0)
-        self.grat_main_col = int(grat_main_col, 0)
-        self.grat_sub_col = int(grat_sub_col, 0)
-        log.info("Graticule: flags: 0x%02x, main colour: 0x%08x, sub colour: 0x%08x" % (self.grat_flags, self.grat_main_col, self.grat_sub_col))
+
+        # Compute actual main colour with brightness
+        self.grat_main_col = scale_gdkcolour_ignore_alpha(grat_main_col, grat_brightness)
+        self.grat_sub_col = scale_gdkcolour_ignore_alpha(grat_sub_col, grat_brightness)
+
+        log.info("Graticule: flags: 0x%02x, main colour: 0x%08x, sub colour: 0x%08x (computed from brightness %.1f)" % \
+            (self.grat_flags, self.grat_main_col, self.grat_sub_col, grat_brightness))
 
     def render_to_pixbuf(self, pb):
-        pass
+
 
 class ScopeArenaController(object):
     """
@@ -49,10 +76,11 @@ class ScopeArenaController(object):
         call_(self.gtk_img, *pack_args)
 
         self.cfg = cfg
-        self.gratrdr = ScopeArenaGraticuleRender(\
+        self.gratrdr = ScopeArenaGraticuleRender()
+        self.gratrdr.apply_settings(\
             cfg.Render.DisplayHDivisionsYT, cfg.Render.DisplayVDivisionsYT, \
             cfg.Render.XMargin, cfg.Render.YMargin, cfg.Render.GratFlags, \
-            cfg.Render.GratMainColour, cfg.Render.GratSubColour)
+            cfg.Render.GratMainColour, cfg.Render.GratSubColour, cfg.Render.GratBrightness)
 
         self.notify_resize()
 
