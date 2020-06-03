@@ -104,6 +104,8 @@ class ScopeArenaYTGraticuleRender(object):
         self.cr.close_path()
         self.cr.fill()
 
+        log.info("%s" % repr(self.cr.get_matrix()))
+
         #log.info("%r" % repr((self.xmarg, self.ymarg)))
         #self.cr.move_to(self.xmarg, self.ymarg)
         #log.info("%r" % repr((self.dims[0] - self.xmarg, self.ymarg)))
