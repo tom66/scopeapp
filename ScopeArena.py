@@ -47,10 +47,10 @@ def colour32_to_cairo(col):
     blu  = (col & 0x00ff0000) >> 16
     alp  = (col & 0xff000000) >> 24
 
-    red *= 1.0f / 255.0f
-    grn *= 1.0f / 255.0f
-    blu *= 1.0f / 255.0f
-    alp *= 1.0f / 255.0f
+    red *= 1.0 / 255.0
+    grn *= 1.0 / 255.0
+    blu *= 1.0 / 255.0
+    alp *= 1.0 / 255.0
 
     return (alp, red, grn, blu)
 
