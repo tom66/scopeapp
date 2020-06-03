@@ -63,7 +63,7 @@ class ScopeArenaYTGraticuleRender(object):
     def set_context(self, cr, dims):
         if self.cr != None:
             pass # TODO: Cleanup?
-            
+
         self.cr = cr
         self.cr.scale(dims[0], dims[1])
         self.dims = dims
@@ -86,7 +86,7 @@ class ScopeArenaYTGraticuleRender(object):
             (self.grat_flags, self.grat_main_col, self.grat_sub_col, grat_brightness))
 
     def render(self):
-        self.cr.set_source_rgba(self.grat_main_col)
+        self.cr.set_source_rgba(*self.grat_main_col)
         self.cr.set_line_width(1.0)
         self.cr.move_to(self.xmarg, self.ymarg)
         self.cr.line_to(self.dims[0] - self.xmarg, self.ymarg)
