@@ -106,7 +106,7 @@ class ScopeArenaController(object):
 
         pb = GdkPixbuf.Pixbuf.new(GdkPixbuf.Colorspace.RGB, True, 8, rect.width, rect.height)
 
-        self.gradrdr.render_to_pixbuf(pb)
+        self.gratrdr.render_to_pixbuf(pb)
 
         log.error("PixBuf: %r (%r)" % (repr(pb), rect))
 
