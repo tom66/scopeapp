@@ -273,7 +273,7 @@ class MainApplication(object):
         log.info("Initialising ScopeArenaController")
 
         # In future this could be other render targets
-        self.arena = ScopeArena.ScopeArenaController(self.hbox_main, 'pack_start', (False, True, 0))
+        self.arena = ScopeArena.ScopeArenaController(self.hbox_main, 'pack_start', (True, True, 0))
 
     def restore_settings_last(self):
         """
