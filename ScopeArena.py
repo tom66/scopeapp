@@ -112,16 +112,12 @@ class ScopeArenaController(object):
             cfg.Render.XMargin, cfg.Render.YMargin, cfg.Render.GratFlags, \
             cfg.Render.GratMainColour, cfg.Render.GratSubColour, cfg.Render.GratBrightness)
 
-        self.notify_resize((0, 0))
-
     def notify_resize(self, size_available):
         """Resize notifier.  The `size_available` parameter encodes the available space
         for waveform rendering, after the menus and toolbars etc are removed."""
         # request a size slightly smaller than the size_available figure
         self.fixed.set_size_request(size_available[0] - 16, size_available[1] - 16)
         rect = self.fixed.get_allocated_size().allocation
-
-        log.info("New waveform zone size: %d x %d" % (rect.width, rect.height))
 
         # if no size allocated, don't change anything
         if rect.width <= 0 or rect.height <= 0:
