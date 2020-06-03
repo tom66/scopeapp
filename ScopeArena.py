@@ -46,8 +46,7 @@ class ScopeArenaController(object):
             log.warn("Waveform zone size is zero, not allocating yet")
             return
 
-        pb = GdkPixbuf.Pixbuf()
-        pb.new(GdkPixbuf.Colorspace.RGB, True, 8, rect.width, rect.height)
+        pb = GdkPixbuf.Pixbuf.new(GdkPixbuf.Colorspace.RGB, True, 8, rect.width, rect.height)
         pb.fill(0xffffffff)
-        
+
         #self.gtk_img.set_from_pixbuf(pb)
