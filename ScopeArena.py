@@ -87,6 +87,12 @@ class ScopeArenaYTGraticuleRender(object):
         log.info("Graticule: flags: 0x%02x, main colour: %r, sub colour %r (computed from brightness %.1f)" % \
             (self.grat_flags, self.grat_main_col, self.grat_sub_col, grat_brightness))
 
+    def sharp_line_to(self, x, y):
+        self.cr.line_to(x + 0.5, y + 0.5)
+
+    def sharp_move_to(self, x, y):
+        self.cr.move_to(x + 0.5, y + 0.5)
+
     def render(self):
         self.cr.set_source_rgba(*self.grat_main_col)
         #self.cr.set_source_rgba(0.0, 0.0, 1.0, 1.0)
@@ -97,10 +103,10 @@ class ScopeArenaYTGraticuleRender(object):
         #self.cr.set_source_rgba(1.0, 0.0, 0.0, 1.0)
         self.cr.set_line_width(1)
         self.cr.new_path()
-        self.cr.move_to(self.xmarg, self.ymarg)
-        self.cr.line_to(self.dims[0] - self.xmarg, self.ymarg)
-        self.cr.line_to(self.dims[0] - self.xmarg, self.dims[1] - self.ymarg)
-        self.cr.line_to(self.xmarg, self.dims[1] - self.ymarg)
+        self.sharp_move_to(self.xmarg, self.ymarg)
+        self.sharp_line_to(self.dims[0] - self.xmarg, self.ymarg)
+        self.sharp_line_to(self.dims[0] - self.xmarg, self.dims[1] - self.ymarg)
+        self.sharp_line_to(self.xmarg, self.dims[1] - self.ymarg)
 
         """
         self.cr.move_to(.1, .1)
