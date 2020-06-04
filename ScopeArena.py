@@ -70,7 +70,8 @@ class ScopeArenaYTGraticuleRender(object):
         #self.cr.scale(dims[0], dims[1])
         self.dims = dims
 
-    def apply_settings(self, hdiv, vdiv, hsubdiv, vsubdiv, xmarg, ymarg, grat_flags, grat_main_col, grat_sub_col, grat_div_col, grat_brightness):
+    def apply_settings(self, hdiv, vdiv, hsubdiv, vsubdiv, xmarg, ymarg, grat_flags, grat_main_col, grat_sub_col, \
+            grat_div_col, grat_brightness, grat_subsize):
         self.hdiv = int(hdiv)
         self.vdiv = int(vdiv)
         self.hsubdiv = hsubdiv
@@ -78,6 +79,7 @@ class ScopeArenaYTGraticuleRender(object):
         self.xmarg = xmarg
         self.ymarg = ymarg
         self.grat_flags = int(grat_flags, 0)
+        self.grat_subsize = grat_subsize
 
         if (self.hdiv % 2) != 0:
             raise ValueError("Horizontal division count must be even")
@@ -161,24 +163,21 @@ class ScopeArenaYTGraticuleRender(object):
             self.cr.close_path()
             self.cr.stroke()
 
+            if self.grat_flags & GRAT_RENDER_SUBDIVISIONS:
+                h_major_step = (x1 - x0) / self.hdiv
+                v_major_step = (y1 - y0) / self.vdiv
+                s = self.grat_subsize * 0.5
 
-        """
-        self.cr.move_to(.1, .1)
-        self.cr.line_to(.9, .1)
-        self.cr.line_to(.9, .9)
-        self.cr.line_to(.1, .9)
-        """
+                for vdiv in range(self.vdiv - 1):
+                    y = self.ymarg + ((v + 1) * v_major_step)
 
+                    for vsub in range(self.vsubdiv):
+                        yy = y + (vsub * (v_major_step / self.vsubdiv))
 
-        log.info("%s" % repr(self.cr.get_matrix()))
-
-        #log.info("%r" % repr((self.xmarg, self.ymarg)))
-        #self.cr.move_to(self.xmarg, self.ymarg)
-        #log.info("%r" % repr((self.dims[0] - self.xmarg, self.ymarg)))
-        #self.cr.line_to(self.dims[0] - self.xmarg, self.ymarg)
-        #self.cr.stroke()
-        #self.cr.set_source_rgba(1.0, 0.0, 0.0, 1.0)
-        #self.cr.paint()
+                        self.cr.new_path()
+                        self.sharp_move_to(xh - s, yy)
+                        self.sharp_line_to(xh + s, yy)
+                        self.cr.stroke()
 
 class ScopeArenaController(object):
     """
@@ -214,7 +213,7 @@ class ScopeArenaController(object):
             cfg.Render.DisplayHSubDivisionsYT, cfg.Render.DisplayVSubDivisionsYT, \
             cfg.Render.XMargin, cfg.Render.YMargin, cfg.Render.GratFlags, \
             cfg.Render.GratMainColour, cfg.Render.GratSubColour, cfg.Render.GratDivColour, \
-            cfg.Render.GratBrightness)
+            cfg.Render.GratBrightness, cfg.Render.GratSubTickSize)
 
     def notify_resize(self, size_available):
         """Resize notifier.  The `size_available` parameter encodes the available space
