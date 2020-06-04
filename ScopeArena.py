@@ -244,8 +244,8 @@ class ScopeArenaController(object):
         # we use get_window() to get the GdkWindow of the GtkWindow, and no, that's not confusing at all.
         self.grat_da.set_size_request(rect.width, rect.height)
 
-        alloc = self.grat_da.get_allocated_size()
-        log.info("Cairo arena state (alloc: %d x %d)" % (alloc.rect.width, alloc.rect.height))
+        sz = self.grat_da.get_allocated_size()
+        log.info("Cairo arena state (alloc: %d x %d)" % (sz.allocation.width, sz.allocation.height))
 
         #self.grat_surf = self.window.get_window().create_similar_surface(cairo.Content.COLOR_ALPHA, rect.width, rect.height)
         #self.grat_cr = cairo.Context(self.grat_surf)
