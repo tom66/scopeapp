@@ -168,7 +168,7 @@ class ScopeArenaYTGraticuleRender(object):
                 v_major_step = (y1 - y0) / self.vdiv
                 s = self.grat_subsize * 0.5
 
-                for v in range(self.vdiv - 1):
+                for v in range(self.vdiv):
                     y = self.ymarg + ((v + 1) * v_major_step)
 
                     for vsub in range(self.vsubdiv):
