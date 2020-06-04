@@ -104,7 +104,7 @@ class ScopeArenaYTGraticuleRender(object):
         self.cr.move_to(int(x) + 0.5, int(y) + 0.5)
 
     def render(self):
-        # Select main colour
+        t0 = time.time()
         self.cr.set_line_width(1)
 
         x0 = self.xmarg
@@ -188,6 +188,9 @@ class ScopeArenaYTGraticuleRender(object):
                         self.sharp_move_to(xx, yh - s)
                         self.sharp_line_to(xx, yh + s)
                         self.cr.stroke()
+
+        t1 = time.time()
+        log.info("Took %.1f ms to render graticule" % ((t1 - t0) * 1000))
 
 class ScopeArenaController(object):
     """
