@@ -230,7 +230,7 @@ class ScopeArenaController(object):
         """Resize notifier.  The `size_available` parameter encodes the available space
         for waveform rendering, after the menus and toolbars etc are removed."""
         # request a size slightly smaller than the size_available figure
-        self.fixed.set_size_request(size_available[0] - 16, size_available[1] - 16)
+        #self.fixed.set_size_request(size_available[0] - 16, size_available[1] - 16)
         rect = self.fixed.get_allocated_size().allocation
 
         # if no size allocated, don't change anything
@@ -240,7 +240,7 @@ class ScopeArenaController(object):
 
         # create a Cairo surface which is similar to our window surface for best performance
         # we use get_window() to get the GdkWindow of the GtkWindow, and no, that's not confusing at all.
-        self.grat_da.set_size_request(rect.width, rect.height)
+        #self.grat_da.set_size_request(rect.width, rect.height)
         #self.grat_surf = self.window.get_window().create_similar_surface(cairo.Content.COLOR_ALPHA, rect.width, rect.height)
         #self.grat_cr = cairo.Context(self.grat_surf)
         #self.grat_rdr.set_context(self.grat_cr, (rect.width, rect.height))
