@@ -285,6 +285,7 @@ class ScopeArenaController(object):
         # draw the pixbuf
         mmap_obj = mmap.mmap(self.test_aobj.get_shm_id(), self.test_aobj.get_shm_size())
         self.wave_pb = GdkPixbuf.Pixbuf.new_from_bytes(GLib.Bytes(bytes(mmap_obj)), GdkPixbuf.Colorspace.RGB, True, 8, width, height, width * 4)
+        del mmap_obj
 
         ox, oy = targ_dims[0]
         self.fixed.move(self.img, ox, oy)
