@@ -75,6 +75,12 @@ class ArmwaveRenderEngine(zs.BaseRenderEngine):
         except:
             pass
 
+        try:
+            self._mmap.close()
+            log.info("_mmap close()")
+        except:
+            pass
+
         self._shm_id = shm_open(self._shm_name)
         self._shm_size = width * height * 4  # 4 bytes per pixel
         os.ftruncate(self._shm_id, self._shm_size)
