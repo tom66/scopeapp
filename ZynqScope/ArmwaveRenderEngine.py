@@ -81,6 +81,7 @@ class ArmwaveRenderEngine(zs.BaseRenderEngine):
         self._mmap = mmap.mmap(self._shm_id, self._shm_size)
 
         log.info("available_wave_params: new %s" % repr(self.wave_params))
+        log.info("_shm_id: %d" % self._shm_id)
 
         # Setup armwave
         aw.cleanup()
