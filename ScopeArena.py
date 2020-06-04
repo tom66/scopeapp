@@ -179,6 +179,17 @@ class ScopeArenaYTGraticuleRender(object):
                         self.sharp_line_to(xh + s, yy)
                         self.cr.stroke()
 
+                for h in range(self.hdiv):
+                    x = self.xmarg + ((h + 1) * h_major_step)
+
+                    for hsub in range(self.hsubdiv):
+                        xx = x + (hsub * (h_major_step / self.hsubdiv))
+
+                        self.cr.new_path()
+                        self.sharp_move_to(xx, yh - s)
+                        self.sharp_line_to(xx, yh + s)
+                        self.cr.stroke()
+
 class ScopeArenaController(object):
     """
     ScopeArena:
