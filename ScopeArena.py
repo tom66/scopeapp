@@ -79,6 +79,12 @@ class ScopeArenaYTGraticuleRender(object):
         self.ymarg = ymarg
         self.grat_flags = int(grat_flags, 0)
 
+        if (self.hdiv % 2) != 0:
+            raise ValueError("Horizontal division count must be even")
+
+        if (self.vdiv % 2) != 0:
+            raise ValueError("Vertical division count must be even")
+
         # Compute actual main colour with brightness
         #log.info("%r" % grat_main_col)
         #log.info("%r" % grat_sub_col)
