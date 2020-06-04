@@ -261,4 +261,4 @@ class ScopeArenaController(object):
         self.update_size_allocation()
         self.grat_rdr.set_context(cr, self.size_alloc)
         self.grat_rdr.render()
-        log.info("Wave arena dimensions: %s" % repr(self.grad_rdr.get_wave_arena_dims()))
+        log.info("Wave arena dimensions: %s" % repr(self.grat_rdr.get_wave_arena_dims()))
