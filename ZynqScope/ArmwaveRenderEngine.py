@@ -57,6 +57,7 @@ class ArmwaveRenderEngine(zs.BaseRenderEngine):
 
     def update_wave_params(self, start_t, end_t, n_waves, wave_stride):
         self.wave_params = (start_t, end_t, n_waves, wave_stride)
+        log.info("update_wave_params: new %s" % repr(self.wave_params))
 
     def set_channel_colour(self, index, colour, brightness):
         col = list(colour)
@@ -77,6 +78,8 @@ class ArmwaveRenderEngine(zs.BaseRenderEngine):
         self._shm_size = width * height * 4  # 4 bytes per pixel
         os.ftruncate(self._shm_id, self._shm_size)
         self._mmap = mmap.mmap(self._shm_id, self._shm_size)
+
+        log.info("available_wave_params: new %s" % repr(self.wave_params))
 
         # Setup armwave
         aw.cleanup()
