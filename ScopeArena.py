@@ -226,11 +226,12 @@ class ScopeArenaController(object):
             cfg.Render.GratMainColour, cfg.Render.GratSubColour, cfg.Render.GratDivColour, \
             cfg.Render.GratBrightness, cfg.Render.GratSubTickSize)
 
-    def notify_resize(self, size_available):
-        """Resize notifier.  The `size_available` parameter encodes the available space
-        for waveform rendering, after the menus and toolbars etc are removed."""
-        # request a size slightly smaller than the size_available figure
-        #self.fixed.set_size_request(size_available[0] - 16, size_available[1] - 16)
+    def notify_resize(self):
+        """Resize notifier."""
+        self.update_size_allocation()
+        self.grat_da.queue_draw()
+
+    def update_size_allocation(self):
         rect = self.fixed.get_allocated_size().allocation
 
         # if no size allocated, don't change anything
@@ -238,27 +239,14 @@ class ScopeArenaController(object):
             log.warn("Waveform zone size is zero, not allocating yet")
             return
 
-        log.critical("Alloc: %d x %d" % (rect.width, rect.height))
-
-        # create a Cairo surface which is similar to our window surface for best performance
-        # we use get_window() to get the GdkWindow of the GtkWindow, and no, that's not confusing at all.
+        log.debug("Alloc: %d x %d" % (rect.width, rect.height))
         self.grat_da.set_size_request(rect.width, rect.height)
         self.size_alloc = (rect.width, rect.height)
-
-        #sz = self.grat_da.get_allocated_size()
-        #log.info("Cairo arena state (alloc: %d x %d)" % (sz.allocation.width, sz.allocation.height))
-        #log.info("Cairo arena state (alloc: %r)" % (repr(sz.allocation),))
-
-        #self.grat_surf = self.window.get_window().create_similar_surface(cairo.Content.COLOR_ALPHA, rect.width, rect.height)
-        #self.grat_cr = cairo.Context(self.grat_surf)
-        #self.grat_rdr.set_context(self.grat_cr, (rect.width, rect.height))
-        #print(self.grat_cr)
-
         self.size_allocated = True
-        self.grat_da.queue_draw()
 
     def _draw(self, wdg, cr):
         #alloc = wdg.get_allocated_size()
         log.info("Cairo redraw arena (alloc: %d x %d)" % (alloc.width, alloc.height))
+        self.update_size_allocation()
         self.grat_rdr.set_context(cr, self.size_alloc)
         self.grat_rdr.render()

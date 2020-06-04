@@ -338,10 +338,10 @@ class MainApplication(object):
         w = rect.width - UI_HORIZONTAL_SPACE
         h = rect.height - UI_VERTICAL_SPACE
 
-        log.info("New window size: %d x %d;  after removing mandatory space: %d x %d available for waveform" % \
+        log.info("New window size: %d x %d;  after removing mandatory space: %d x %d approx. available for waveform" % \
             (rect.width, rect.height, w, h))
 
-        self.arena.notify_resize((w, h))
+        self.arena.notify_resize()
 
     def _logo_clicked(self, *args):
         log.info("_logo_clicked %r" % list(args))
