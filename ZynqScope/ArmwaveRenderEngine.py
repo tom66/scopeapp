@@ -141,7 +141,7 @@ class ArmwaveRenderEngine(zs.BaseRenderEngine):
         if not aw.fill_pixbuf_into_pybuffer(self._mmap):
             raise RuntimeError("fail")
 
-        print(bytes(self._mmap))
+        #print(bytes(self._mmap))
 
         log.info("done")
 
@@ -166,3 +166,9 @@ class ArmwaveRenderEngine(zs.BaseRenderEngine):
 
     def get_shm_name(self):
         return self._shm_name
+
+    def get_shm_id(self):
+        return self._shm_id
+
+    def get_shm_size(self):
+        return self._shm_size

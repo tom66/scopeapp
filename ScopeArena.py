@@ -6,7 +6,7 @@ import gi
 gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk, GdkPixbuf
 
-import sys, os, time
+import sys, os, time, mmap
 
 gi.require_foreign("cairo")
 import cairo
@@ -236,6 +236,9 @@ class ScopeArenaController(object):
         self.grat_da.connect('draw', self._draw)
         self.fixed.put(self.grat_da, 0, 0)
 
+        self.img = Gtk.Image()
+        self.fixed.put(self.img, 0, 0)
+
         self.size_allocated = False
         self.size_alloc = (0, 0)
 
@@ -267,11 +270,20 @@ class ScopeArenaController(object):
         self.grat_rdr.render()
 
         targ_dims = self.grat_rdr.get_wave_arena_dims()
-        log.info("set_target_dimensions(%d x %d)" % (targ_dims[1][0], targ_dims[1][1]))
-        self.test_aobj.update_wave_params(0, targ_dims[1][0], 64, targ_dims[1][0])
-        self.test_aobj.set_target_dimensions(targ_dims[1][0], targ_dims[1][1])
+        width, height = targ_dims[1]
+        log.info("set_target_dimensions(%d x %d)" % (width, height))
+        self.test_aobj.update_wave_params(0, width, 64, width)
+        self.test_aobj.set_target_dimensions(width, height)
         
         log.info("render_test")
         self.test_aobj.render_test()
 
         log.info("Wave arena dimensions: %s" % repr(self.grat_rdr.get_wave_arena_dims()))
+
+        # draw the pixbuf
+        mmap_obj = mmap.mmap(self.test_aobj.get_shm_id(), self.test_aobj.get_shm_size())
+        self.wave_pb = GdkPixbuf.new_from_bytes(bytes(mmap_obj), GdkPixbuf.Colorspace.RGB, True, 8, width, height)
+
+        ox, oy = targ_dims[0]
+        self.fixed.move(self.img, ox, oy)
+        self.img.set_from_pixbuf(self.wave_pb)
