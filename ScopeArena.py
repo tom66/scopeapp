@@ -139,14 +139,14 @@ class ScopeArenaYTGraticuleRender(object):
             xx = 0
             yy = 0
 
-            for h in range(self.hdiv):
+            for h in range(self.hdiv - 1):
                 xx = self.xmarg + ((h + 1) * h_major_step)
                 self.cr.new_path()
                 self.sharp_move_to(xx, y0)
                 self.sharp_line_to(xx, y1)
                 self.cr.stroke()
 
-            for v in range(self.vdiv):
+            for v in range(self.vdiv - 1):
                 yy = self.ymarg + ((v + 1) * v_major_step)
                 self.cr.new_path()
                 self.sharp_move_to(x0, yy)
