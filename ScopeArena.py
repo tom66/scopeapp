@@ -218,6 +218,14 @@ class ScopeArenaController(object):
         call_ = getattr(pack_widget, pack_zone)
         assert(callable(call_))
         call_(self.fixed, *pack_args)
+
+        self.grat_rdr = ScopeArenaYTGraticuleRender()
+        self.grat_rdr.apply_settings(\
+            cfg.Render.DisplayHDivisionsYT, cfg.Render.DisplayVDivisionsYT, \
+            cfg.Render.DisplayHSubDivisionsYT, cfg.Render.DisplayVSubDivisionsYT, \
+            cfg.Render.XMargin, cfg.Render.YMargin, cfg.Render.GratFlags, \
+            cfg.Render.GratMainColour, cfg.Render.GratSubColour, cfg.Render.GratDivColour, \
+            cfg.Render.GratBrightness, cfg.Render.GratSubTickSize)
         
         self.grat_da = Gtk.DrawingArea()
         self.grat_da.connect('draw', self._draw)
@@ -228,14 +236,6 @@ class ScopeArenaController(object):
 
         self.cfg = cfg
         self.window = window
-
-        self.grat_rdr = ScopeArenaYTGraticuleRender()
-        self.grat_rdr.apply_settings(\
-            cfg.Render.DisplayHDivisionsYT, cfg.Render.DisplayVDivisionsYT, \
-            cfg.Render.DisplayHSubDivisionsYT, cfg.Render.DisplayVSubDivisionsYT, \
-            cfg.Render.XMargin, cfg.Render.YMargin, cfg.Render.GratFlags, \
-            cfg.Render.GratMainColour, cfg.Render.GratSubColour, cfg.Render.GratDivColour, \
-            cfg.Render.GratBrightness, cfg.Render.GratSubTickSize)
 
     def notify_resize(self):
         """Resize notifier."""
