@@ -103,6 +103,14 @@ class ScopeArenaYTGraticuleRender(object):
     def sharp_move_to(self, x, y):
         self.cr.move_to(int(x) + 0.5, int(y) + 0.5)
 
+    def get_wave_arena_dims(self):
+        """Return the x,y origin for the wave arena, plus the width and height, as a 2-2-tuple."""
+        x = self.xmarg
+        y = self.ymarg
+        w = self.dims[0] - self.xmarg - x
+        h = self.dims[1] - self.ymarg - y
+        return ((x, y), (w, h))
+
     def render(self):
         t0 = time.time()
         self.cr.set_line_width(1)
@@ -252,3 +260,4 @@ class ScopeArenaController(object):
         self.update_size_allocation()
         self.grat_rdr.set_context(cr, self.size_alloc)
         self.grat_rdr.render()
+        log.info("Wave arena dimensions: %s" % repr(self.grad_rdr.get_wave_arena_dims()))
