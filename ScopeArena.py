@@ -269,6 +269,7 @@ class ScopeArenaController(object):
         targ_dims = self.grat_rdr.get_wave_arena_dims()
         log.info("set_target_dimensions(%d x %d)" % (targ_dims[1][0], targ_dims[1][1]))
         self.test_aobj.set_target_dimensions(targ_dims[1][0], targ_dims[1][1])
+        self.test_aobj.update_wave_params(0, targ_dims[1][0], 64, targ_dims[1][0])
         
         log.info("render_test")
         self.test_aobj.render_test()

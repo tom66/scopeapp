@@ -44,14 +44,19 @@ def shm_unlink(name):
         raise RuntimeError(os.strerror(ctypes.get_errno()))
 
 class ArmwaveRenderEngine(zs.BaseRenderEngine):
+    """Default Y-T Render Engine using ArmWave."""
     def __init__(self):
         self._shm_name = b"scopeapp_aw_dispbuff"
         self._shm_id = None
         self._shm_size = 0
         self._mmap = None
 
+        # default wave parameters
         self.wave_params = (0, 2048, 64, 2048)
         aw.init()
+
+    def update_wave_params(self, start_t, end_t, n_waves, wave_stride):
+        self.wave_params = (start_t, end_t, n_waves, wave_stride)
 
     def set_channel_colour(self, index, colour, brightness):
         col = list(colour)
