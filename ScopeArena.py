@@ -70,7 +70,7 @@ class ScopeArenaYTGraticuleRender(object):
         #self.cr.scale(dims[0], dims[1])
         self.dims = dims
 
-    def apply_settings(self, hdiv, vdiv, hsubdiv, vsubdiv, xmarg, ymarg, grat_flags, grat_main_col, grat_sub_col, grat_brightness):
+    def apply_settings(self, hdiv, vdiv, hsubdiv, vsubdiv, xmarg, ymarg, grat_flags, grat_main_col, grat_sub_col, grat_div_col, grat_brightness):
         self.hdiv = int(hdiv)
         self.vdiv = int(vdiv)
         self.hsubdiv = hsubdiv
@@ -90,6 +90,7 @@ class ScopeArenaYTGraticuleRender(object):
         #log.info("%r" % grat_sub_col)
 
         self.grat_main_col = colour32_to_cairo(scale_colour_ignore_alpha(int(grat_main_col, 0), grat_brightness))
+        self.grat_div_col = colour32_to_cairo(scale_colour_ignore_alpha(int(grat_div_col, 0), grat_brightness))
         self.grat_sub_col = colour32_to_cairo(scale_colour_ignore_alpha(int(grat_sub_col, 0), grat_brightness))
 
         log.info("Graticule: flags: 0x%02x, main colour: %r, sub colour %r (computed from brightness %.1f)" % \
@@ -103,7 +104,6 @@ class ScopeArenaYTGraticuleRender(object):
 
     def render(self):
         # Select main colour
-        self.cr.set_source_rgba(*self.grat_main_col)
         self.cr.set_line_width(1)
 
         x0 = self.xmarg
@@ -115,6 +115,7 @@ class ScopeArenaYTGraticuleRender(object):
 
         # Draw outer frame
         if self.grat_flags & GRAT_RENDER_FRAME:
+            self.cr.set_source_rgba(*self.grat_main_col)
             self.cr.new_path()
             self.sharp_move_to(x0, y0)
             self.sharp_line_to(x1, y0)
@@ -123,22 +124,9 @@ class ScopeArenaYTGraticuleRender(object):
             self.cr.close_path()
             self.cr.stroke()
 
-        # Draw inner crosshair
-        if self.grat_flags & GRAT_RENDER_CROSSHAIR:
-            self.cr.new_path()
-            self.sharp_move_to(xh, y0)
-            self.sharp_line_to(xh, y1)
-            self.cr.close_path()
-            self.cr.stroke()
-            self.cr.new_path()
-            self.sharp_move_to(x0, yh)
-            self.sharp_line_to(x1, yh)
-            self.cr.close_path()
-            self.cr.stroke()
-
         # Draw major grids
         if self.grat_flags & GRAT_RENDER_DIVISIONS:
-            self.cr.set_source_rgba(1.0, 0, 0, 1)
+            self.cr.set_source_rgba(*self.grat_div_col)
 
             h_major_step = (x1 - x0) / self.hdiv
             v_major_step = (y1 - y0) / self.vdiv
@@ -158,6 +146,21 @@ class ScopeArenaYTGraticuleRender(object):
                 self.sharp_move_to(x0, yy)
                 self.sharp_line_to(x1, yy)
                 self.cr.stroke()
+
+        # Draw inner crosshair
+        if self.grat_flags & GRAT_RENDER_CROSSHAIR:
+            self.cr.set_source_rgba(*self.grat_main_col)
+            self.cr.new_path()
+            self.sharp_move_to(xh, y0)
+            self.sharp_line_to(xh, y1)
+            self.cr.close_path()
+            self.cr.stroke()
+            self.cr.new_path()
+            self.sharp_move_to(x0, yh)
+            self.sharp_line_to(x1, yh)
+            self.cr.close_path()
+            self.cr.stroke()
+
 
         """
         self.cr.move_to(.1, .1)
@@ -210,7 +213,8 @@ class ScopeArenaController(object):
             cfg.Render.DisplayHDivisionsYT, cfg.Render.DisplayVDivisionsYT, \
             cfg.Render.DisplayHSubDivisionsYT, cfg.Render.DisplayVSubDivisionsYT, \
             cfg.Render.XMargin, cfg.Render.YMargin, cfg.Render.GratFlags, \
-            cfg.Render.GratMainColour, cfg.Render.GratSubColour, cfg.Render.GratBrightness)
+            cfg.Render.GratMainColour, cfg.Render.GratSubColour, cfg.Render.GratDivColour, \
+            cfg.Render.GratBrightness)
 
     def notify_resize(self, size_available):
         """Resize notifier.  The `size_available` parameter encodes the available space
