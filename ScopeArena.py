@@ -69,7 +69,7 @@ class ScopeArenaYTGraticuleRender(object):
         #self.cr.scale(dims[0], dims[1])
         self.dims = dims
 
-    def apply_settings(self, hdiv, vdiv, hsubdiv, vsubdiv, xmarg, ymarg, grat_flags, grat_main_col, grat_sub_col, \
+    def apply_settings(self, hdiv, vdiv, hsubdiv, vsubdiv, xmarg, ymarg, ytopoff, grat_flags, grat_main_col, grat_sub_col, \
             grat_div_col, grat_brightness, grat_subsize):
         self.hdiv = int(hdiv)
         self.vdiv = int(vdiv)
@@ -77,6 +77,7 @@ class ScopeArenaYTGraticuleRender(object):
         self.vsubdiv = int(vsubdiv)
         self.xmarg = xmarg
         self.ymarg = ymarg
+        self.ytopoff = ytopoff
         self.grat_flags = int(grat_flags, 0)
         self.grat_subsize = grat_subsize
 
@@ -223,7 +224,7 @@ class ScopeArenaController(object):
         self.grat_rdr.apply_settings(\
             cfg.Render.DisplayHDivisionsYT, cfg.Render.DisplayVDivisionsYT, \
             cfg.Render.DisplayHSubDivisionsYT, cfg.Render.DisplayVSubDivisionsYT, \
-            cfg.Render.XMargin, cfg.Render.YMargin, cfg.Render.GratFlags, \
+            cfg.Render.XMargin, cfg.Render.YMargin, cfg.Render.YTopOffset, cfg.Render.GratFlags, \
             cfg.Render.GratMainColour, cfg.Render.GratSubColour, cfg.Render.GratDivColour, \
             cfg.Render.GratBrightness, cfg.Render.GratSubTickSize)
         
