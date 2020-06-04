@@ -59,7 +59,6 @@ class ScopeArenaYTGraticuleRender(object):
         self.dims = (0, 0)
 
     def set_context(self, cr, dims):
-        dims = (dims[0].width, dims[0].height)
         log.warn(repr(dims))
 
         if self.cr != None:
@@ -214,6 +213,7 @@ class ScopeArenaController(object):
         self.fixed.put(self.grat_da, 0, 0)
 
         self.size_allocated = False
+        self.size_alloc = (0, 0)
 
         self.cfg = cfg
         self.window = window
@@ -243,9 +243,10 @@ class ScopeArenaController(object):
         # create a Cairo surface which is similar to our window surface for best performance
         # we use get_window() to get the GdkWindow of the GtkWindow, and no, that's not confusing at all.
         self.grat_da.set_size_request(rect.width, rect.height)
+        self.size_alloc = (rect.width, rect.height)
 
-        sz = self.grat_da.get_allocated_size()
-        log.info("Cairo arena state (alloc: %d x %d)" % (sz.allocation.width, sz.allocation.height))
+        #sz = self.grat_da.get_allocated_size()
+        #log.info("Cairo arena state (alloc: %d x %d)" % (sz.allocation.width, sz.allocation.height))
         #log.info("Cairo arena state (alloc: %r)" % (repr(sz.allocation),))
 
         #self.grat_surf = self.window.get_window().create_similar_surface(cairo.Content.COLOR_ALPHA, rect.width, rect.height)
@@ -266,7 +267,7 @@ class ScopeArenaController(object):
         #self.gtk_img.queue_draw()
 
     def _draw(self, wdg, cr):
-        alloc = wdg.get_allocated_size()
-        log.info("Cairo redraw arena (alloc: %d x %d)" % (alloc.width, alloc.height))
-        self.grat_rdr.set_context(cr, alloc)
+        #alloc = wdg.get_allocated_size()
+        #log.info("Cairo redraw arena (alloc: %d x %d)" % (alloc.width, alloc.height))
+        self.grat_rdr.set_context(cr, self.size_alloc)
         self.grat_rdr.render()
