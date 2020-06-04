@@ -257,17 +257,8 @@ class ScopeArenaController(object):
         self.size_allocated = True
         self.grat_da.queue_draw()
 
-        #pb = GdkPixbuf.Pixbuf.new(GdkPixbuf.Colorspace.RGB, True, 8, rect.width, rect.height)
-        #
-        #self.gratrdr.render_to_pixbuf(pb)
-        #
-        #log.error("PixBuf: %r (%r)" % (repr(pb), rect))
-        #
-        #self.gtk_img.set_from_pixbuf(pb)
-        #self.gtk_img.queue_draw()
-
     def _draw(self, wdg, cr):
         #alloc = wdg.get_allocated_size()
-        #log.info("Cairo redraw arena (alloc: %d x %d)" % (alloc.width, alloc.height))
+        log.info("Cairo redraw arena (alloc: %d x %d)" % (alloc.width, alloc.height))
         self.grat_rdr.set_context(cr, self.size_alloc)
         self.grat_rdr.render()
