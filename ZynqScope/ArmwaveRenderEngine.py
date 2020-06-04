@@ -71,6 +71,7 @@ class ArmwaveRenderEngine(zs.BaseRenderEngine):
 
         try:
             shm_unlink(self._shm_name)
+            log.info("shm_unlinked")
         except:
             pass
 
