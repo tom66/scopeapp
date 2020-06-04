@@ -242,7 +242,7 @@ class ScopeArenaController(object):
 
         # create a Cairo surface which is similar to our window surface for best performance
         # we use get_window() to get the GdkWindow of the GtkWindow, and no, that's not confusing at all.
-        self.grat_da.set_size_request(rect.width, rect.height)
+        #self.grat_da.set_size_request(rect.width, rect.height)
         self.size_alloc = (rect.width, rect.height)
 
         #sz = self.grat_da.get_allocated_size()
