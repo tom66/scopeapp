@@ -246,7 +246,7 @@ class ScopeArenaController(object):
 
         sz = self.grat_da.get_allocated_size()
         #log.info("Cairo arena state (alloc: %d x %d)" % (sz.allocation[0].width, sz.allocation[0].height))
-        log.info("Cairo arena state (alloc: %r)" % (repr(sz),))
+        log.info("Cairo arena state (alloc: %r)" % (repr(sz.allocation),))
 
         #self.grat_surf = self.window.get_window().create_similar_surface(cairo.Content.COLOR_ALPHA, rect.width, rect.height)
         #self.grat_cr = cairo.Context(self.grat_surf)
