@@ -107,9 +107,9 @@ class ScopeArenaYTGraticuleRender(object):
     def get_wave_arena_dims(self):
         """Return the x,y origin for the wave arena, plus the width and height, as a 2-2-tuple."""
         x = self.xmarg
-        y = self.ymarg
+        y = self.ymarg + self.ytopoff
         w = self.dims[0] - self.xmarg - x
-        h = self.dims[1] - self.ymarg - y
+        h = self.dims[1] - self.ymarg - y - self.ytopoff
         return ((x, y), (w, h))
 
     def render(self):
@@ -119,7 +119,7 @@ class ScopeArenaYTGraticuleRender(object):
         x0 = self.xmarg
         x1 = self.dims[0] - self.xmarg
         xh = (x0 + x1) / 2
-        y0 = self.ymarg
+        y0 = self.ymarg + self.ytopoff
         y1 = self.dims[1] - self.ymarg - 1
         yh = (y0 + y1) / 2
 
