@@ -4,7 +4,7 @@ This file is part of YAOS and is licenced under the MIT licence.
 
 import gi
 gi.require_version('Gtk', '3.0')
-from gi.repository import Gtk, GdkPixbuf
+from gi.repository import Gtk, GdkPixbuf, GLib
 
 import sys, os, time, mmap
 
@@ -282,7 +282,7 @@ class ScopeArenaController(object):
 
         # draw the pixbuf
         mmap_obj = mmap.mmap(self.test_aobj.get_shm_id(), self.test_aobj.get_shm_size())
-        self.wave_pb = GdkPixbuf.Pixbuf.new_from_bytes(bytes(mmap_obj), GdkPixbuf.Colorspace.RGB, True, 8, width, height, width)
+        self.wave_pb = GdkPixbuf.Pixbuf.new_from_bytes(GLib.Bytes(bytes(mmap_obj)), GdkPixbuf.Colorspace.RGB, True, 8, width, height, width)
 
         ox, oy = targ_dims[0]
         self.fixed.move(self.img, ox, oy)
