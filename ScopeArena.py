@@ -70,9 +70,11 @@ class ScopeArenaYTGraticuleRender(object):
         #self.cr.scale(dims[0], dims[1])
         self.dims = dims
 
-    def apply_settings(self, hdiv, vdiv, xmarg, ymarg, grat_flags, grat_main_col, grat_sub_col, grat_brightness):
+    def apply_settings(self, hdiv, vdiv, hsubdiv, vsubdiv, xmarg, ymarg, grat_flags, grat_main_col, grat_sub_col, grat_brightness):
         self.hdiv = hdiv
         self.vdiv = vdiv
+        self.hsubdiv = hsubdiv
+        self.vsubdiv = vsubdiv
         self.xmarg = xmarg
         self.ymarg = ymarg
         self.grat_flags = int(grat_flags, 0)
@@ -128,6 +130,27 @@ class ScopeArenaYTGraticuleRender(object):
             self.cr.close_path()
             self.cr.stroke()
 
+        # Draw major grids
+        if self.grat_flags & GRAT_RENDER_DIVISIONS:
+            h_major_step = (x1 - x0) / self.hdiv
+            v_major_step = (y1 - y0) / self.vdiv
+            xx = 0
+            yy = 0
+
+            for h in range(self.hdiv):
+                self.cr.new_path()
+                self.sharp_move_to(xx, y0)
+                self.sharp_line_to(xx, y1)
+                self.cr.close_path()
+                self.cr.stroke()
+
+            for v in range(self.vdiv):
+                self.cr.new_path()
+                self.sharp_move_to(x0, yy)
+                self.sharp_line_to(x1, yy)
+                self.cr.close_path()
+                self.cr.stroke()
+
         """
         self.cr.move_to(.1, .1)
         self.cr.line_to(.9, .1)
@@ -177,6 +200,7 @@ class ScopeArenaController(object):
         self.grat_rdr = ScopeArenaYTGraticuleRender()
         self.grat_rdr.apply_settings(\
             cfg.Render.DisplayHDivisionsYT, cfg.Render.DisplayVDivisionsYT, \
+            cfg.Render.DisplayHSubDivisionsYT, cfg.Render.DisplayVSubDivisionsYT, \
             cfg.Render.XMargin, cfg.Render.YMargin, cfg.Render.GratFlags, \
             cfg.Render.GratMainColour, cfg.Render.GratSubColour, cfg.Render.GratBrightness)
 
