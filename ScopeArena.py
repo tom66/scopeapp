@@ -71,8 +71,8 @@ class ScopeArenaYTGraticuleRender(object):
         self.dims = dims
 
     def apply_settings(self, hdiv, vdiv, hsubdiv, vsubdiv, xmarg, ymarg, grat_flags, grat_main_col, grat_sub_col, grat_brightness):
-        self.hdiv = hdiv
-        self.vdiv = vdiv
+        self.hdiv = int(hdiv)
+        self.vdiv = int(vdiv)
         self.hsubdiv = hsubdiv
         self.vsubdiv = vsubdiv
         self.xmarg = xmarg
