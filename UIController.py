@@ -563,7 +563,7 @@ class MainApplication(object):
         # Not all OSes support %n in strftime, so split and generate timestrings for each
         if (time.time() - self.last_clock_time) > 1.0:
             time_strs = []
-            time_format = str(self.cfgmgr['UI']['TimeFormat']).split('%n')
+            time_format = str(self.cfgmgr.UI.TimeFormat).split('%n')
 
             for line in time_format:
                 time_strs.append(datetime.now().strftime(line.strip()))

@@ -238,6 +238,8 @@ class ScopeArenaController(object):
             log.warn("Waveform zone size is zero, not allocating yet")
             return
 
+        log.critical("Alloc: %d x %d" % (rect.width, rect.height))
+
         # create a Cairo surface which is similar to our window surface for best performance
         # we use get_window() to get the GdkWindow of the GtkWindow, and no, that's not confusing at all.
         #self.grat_da.set_size_request(rect.width, rect.height)
