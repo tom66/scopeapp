@@ -245,8 +245,7 @@ class ScopeArenaController(object):
         self.size_allocated = True
 
     def _draw(self, wdg, cr):
-        #alloc = wdg.get_allocated_size()
-        log.info("Cairo redraw arena (alloc: %d x %d)" % (alloc.width, alloc.height))
+        """Draw/expose callback"""
         self.update_size_allocation()
         self.grat_rdr.set_context(cr, self.size_alloc)
         self.grat_rdr.render()
