@@ -90,10 +90,10 @@ class ScopeArenaYTGraticuleRender(object):
             (self.grat_flags, self.grat_main_col, self.grat_sub_col, grat_brightness))
 
     def sharp_line_to(self, x, y):
-        self.cr.line_to(x + 0.5, y + 0.5)
+        self.cr.line_to(int(x) + 0.5, int(y) + 0.5)
 
     def sharp_move_to(self, x, y):
-        self.cr.move_to(x + 0.5, y + 0.5)
+        self.cr.move_to(int(x) + 0.5, int(y) + 0.5)
 
     def render(self):
         # Select main colour
