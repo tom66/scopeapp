@@ -94,19 +94,39 @@ class ScopeArenaYTGraticuleRender(object):
         self.cr.move_to(x + 0.5, y + 0.5)
 
     def render(self):
+        # Select main colour
         self.cr.set_source_rgba(*self.grat_main_col)
-        #self.cr.set_source_rgba(0.0, 0.0, 1.0, 1.0)
-        #self.cr.paint()
-
-        #log.info("%r" % self.cr)
-
-        #self.cr.set_source_rgba(1.0, 0.0, 0.0, 1.0)
         self.cr.set_line_width(1)
-        self.cr.new_path()
-        self.sharp_move_to(self.xmarg, self.ymarg)
-        self.sharp_line_to(self.dims[0] - self.xmarg, self.ymarg)
-        self.sharp_line_to(self.dims[0] - self.xmarg, self.dims[1] - self.ymarg - 1)
-        self.sharp_line_to(self.xmarg, self.dims[1] - self.ymarg - 1)
+
+        x0 = self.xmarg
+        x1 = self.dims[0] - self.xmarg
+        xh = (x0 + x1) / 2
+        y0 = self.ymarg
+        y1 = self.dims[1] - self.ymarg - 1
+        yh = (y0 + y1) / 2
+
+        # Draw outer frame
+        if self.grat_flags & GRAT_RENDER_FRAME:
+            self.cr.new_path()
+            self.sharp_move_to(x0, y0)
+            self.sharp_line_to(x1, y0)
+            self.sharp_line_to(x1, y1)
+            self.sharp_line_to(x0, y1)
+            self.cr.close_path()
+            self.cr.stroke()
+
+        # Draw inner crosshair
+        if self.grat_flags & GRAT_RENDER_CROSSHAIR:
+            self.cr.new_path()
+            self.sharp_move_to(xh, y0)
+            self.sharp_line_to(xh, y1)
+            self.cr.close_path()
+            self.cr.stroke()
+            self.cr.new_path()
+            self.sharp_move_to(x0, yh)
+            self.sharp_line_to(x1, yh)
+            self.cr.close_path()
+            self.cr.stroke()
 
         """
         self.cr.move_to(.1, .1)
@@ -115,8 +135,6 @@ class ScopeArenaYTGraticuleRender(object):
         self.cr.line_to(.1, .9)
         """
 
-        self.cr.close_path()
-        self.cr.stroke()
 
         log.info("%s" % repr(self.cr.get_matrix()))
 
