@@ -132,6 +132,8 @@ class ScopeArenaYTGraticuleRender(object):
 
         # Draw major grids
         if self.grat_flags & GRAT_RENDER_DIVISIONS:
+            self.cr.set_source_rgba((1.0, 0, 0, 1))
+
             h_major_step = (x1 - x0) / self.hdiv
             v_major_step = (y1 - y0) / self.vdiv
             xx = 0
@@ -142,7 +144,6 @@ class ScopeArenaYTGraticuleRender(object):
                 self.cr.new_path()
                 self.sharp_move_to(xx, y0)
                 self.sharp_line_to(xx, y1)
-                self.cr.close_path()
                 self.cr.stroke()
 
             for v in range(self.vdiv):
@@ -150,7 +151,6 @@ class ScopeArenaYTGraticuleRender(object):
                 self.cr.new_path()
                 self.sharp_move_to(x0, yy)
                 self.sharp_line_to(x1, yy)
-                self.cr.close_path()
                 self.cr.stroke()
 
         """
