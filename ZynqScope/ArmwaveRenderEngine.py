@@ -91,6 +91,10 @@ class ArmwaveRenderEngine(zs.BaseRenderEngine):
         log.info("clear_buffer")
         aw.clear_buffer(0)
 
+        # allocate buffer for test waveform
+        log.info("test_buffer_alloc")
+        aw.test_buffer_alloc()
+
         # create a test sine wave
         log.info("test_create_am_sine")
         aw.test_create_am_sine(0.25, 1e-6)
@@ -116,6 +120,9 @@ class ArmwaveRenderEngine(zs.BaseRenderEngine):
     def render_test(self):
         log.info("clear_buffer")
         aw.clear_buffer(0)
+
+        log.info("test_buffer_alloc")
+        aw.test_buffer_alloc()
 
         log.info("test_create_am_sine")
         aw.test_create_am_sine(0.25, 1e-6)
