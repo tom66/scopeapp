@@ -1,146 +1,276 @@
 """
-This file is part of YAOS and is licenced under the MIT Licence.
+This file is part of YAOS and is licenced under the MIT licence.
 """
 
-import sys, os, mmap, ctypes, stat
-from ctypes import util, cdll
+import gi
+gi.require_version('Gtk', '3.0')
+from gi.repository import Gtk, GdkPixbuf
 
-import ZynqScope.ZynqScope as zs
-import ZynqScope.armwave.armwave as aw
+import sys, os, time
 
+gi.require_foreign("cairo")
+import cairo
+
+GRAT_RENDER_FRAME = 0x01
+GRAT_RENDER_CROSSHAIR = 0x02
+GRAT_RENDER_DIVISIONS = 0x04
+GRAT_RENDER_SUBDIVISIONS = 0x08
+
+import Utils
+import ZynqScope.ArmwaveRenderEngine as awre
+
+# Load debug logger
 import logging
 log = logging.getLogger()
 
-# Portions based on:-
-# https://gist.github.com/jakirkham/100a7f5e86b0ff2a22de0850723a4c5c
-# ** Licence unclear **
+def scale_colour_ignore_alpha(col, scale):
+    scale = Utils.clamp(scale, 0.0, 1.0)
+     
+    red =  col & 0x000000ff
+    grn = (col & 0x0000ff00) >> 8
+    blu = (col & 0x00ff0000) >> 16
+    alp =  col & 0xff000000
 
-lib = util.find_library('rt')
-assert(lib != None)
+    # scale values and clamp
+    red *= scale
+    red  = int(Utils.clamp(red, 0, 255))
+    grn *= scale
+    grn  = int(Utils.clamp(grn, 0, 255))
+    blu *= scale
+    blu  = int(Utils.clamp(blu, 0, 255))
+    
+    return alp | (blu << 16) | (grn << 8) | red
 
-rtld = cdll.LoadLibrary(lib)
-_shm_open = rtld.shm_open
-_shm_unlink = rtld.shm_unlink
+def colour32_to_cairo(col):
+    red  =  col & 0x000000ff
+    grn  = (col & 0x0000ff00) >> 8
+    blu  = (col & 0x00ff0000) >> 16
+    alp  = (col & 0xff000000) >> 24
 
-def shm_open(name):
-    name = ctypes.create_string_buffer(name)
+    red *= 1.0 / 255.0
+    grn *= 1.0 / 255.0
+    blu *= 1.0 / 255.0
+    alp *= 1.0 / 255.0
 
-    result = _shm_open(
-        name,
-        ctypes.c_int(os.O_RDWR | os.O_CREAT),  #  | os.O_EXCL
-        ctypes.c_ushort(stat.S_IRUSR | stat.S_IWUSR)
-    )
+    return (red, grn, blu, alp)
 
-    if result == -1:
-        raise RuntimeError(os.strerror(ctypes.get_errno()))
-
-    return result
-
-def shm_unlink(name):
-    name = ctypes.create_string_buffer(name)
-    result = _shm_unlink(name)
-
-    if result == -1:
-        raise RuntimeError(os.strerror(ctypes.get_errno()))
-
-class ArmwaveRenderEngine(zs.BaseRenderEngine):
+class ScopeArenaYTGraticuleRender(object):
     def __init__(self):
-        self._shm_name = b"scopeapp_aw_dispbuff"
-        self._shm_id = None
-        self._shm_size = 0
-        self._mmap = None
+        self.cr = None
+        self.dims = (0, 0)
 
-        self.wave_params = (0, 2048, 64, 2048)
-        aw.init()
+    def set_context(self, cr, dims):
+        log.warn(repr(dims))
 
-    def set_channel_colour(self, index, colour, brightness):
-        col = list(colour)
-        col = map(lambda x: x * brightness, col)
-        aw.set_channel_colour(index, *col)
+        if self.cr != None:
+            pass # TODO: Cleanup?
 
-    def set_target_dimensions(self, width, height):
-        # Free existing memory if present
-        if self._shm_id != None:
-            self._mmap.close()
+        self.cr = cr
+        log.info("New dims.: %d x %d" % (dims[0], dims[1])) 
+        #self.cr.scale(dims[0], dims[1])
+        self.dims = dims
 
-        try:
-            shm_unlink(self._shm_name)
-        except:
-            pass
+    def apply_settings(self, hdiv, vdiv, hsubdiv, vsubdiv, xmarg, ymarg, ytopoff, grat_flags, grat_main_col, grat_sub_col, \
+            grat_div_col, grat_brightness, grat_subsize):
+        self.hdiv = int(hdiv)
+        self.vdiv = int(vdiv)
+        self.hsubdiv = int(hsubdiv)
+        self.vsubdiv = int(vsubdiv)
+        self.xmarg = int(xmarg)
+        self.ymarg = int(ymarg)
+        self.ytopoff = int(ytopoff)
+        self.grat_flags = int(grat_flags, 0)
+        self.grat_subsize = grat_subsize
 
-        self._shm_id = shm_open(self._shm_name)
-        self._shm_size = width * height * 4  # 4 bytes per pixel
-        os.ftruncate(self._shm_id, self._shm_size)
-        self._mmap = mmap.mmap(self._shm_id, self._shm_size)
+        if (self.hdiv % 2) != 0:
+            raise ValueError("Horizontal division count must be even")
 
-        # Setup armwave
-        aw.cleanup()
-        aw.setup_render(self.wave_params[0], self.wave_params[1], self.wave_params[2], self.wave_params[3], width, height, 0)
-        log.info("setup_render done")
+        if (self.vdiv % 2) != 0:
+            raise ValueError("Vertical division count must be even")
 
-    def render_test_to_ppm(self, fn):
-        # clear the buffer to black
-        log.info("clear_buffer")
-        aw.clear_buffer(0)
+        # Compute actual main colour with brightness
+        #log.info("%r" % grat_main_col)
+        #log.info("%r" % grat_sub_col)
 
-        # create a test sine wave
-        log.info("test_create_am_sine")
-        aw.test_create_am_sine(0.25, 1e-6)
+        self.grat_main_col = colour32_to_cairo(scale_colour_ignore_alpha(int(grat_main_col, 0), grat_brightness))
+        self.grat_div_col = colour32_to_cairo(scale_colour_ignore_alpha(int(grat_div_col, 0), grat_brightness))
+        self.grat_sub_col = colour32_to_cairo(scale_colour_ignore_alpha(int(grat_sub_col, 0), grat_brightness))
 
-        # set the wavepointer
-        log.info("set_wave_pointer_as_testbuf")
-        aw.set_wave_pointer_as_testbuf()
+        log.info("Graticule: flags: 0x%02x, main colour: %r, sub colour %r (computed from brightness %.1f)" % \
+            (self.grat_flags, self.grat_main_col, self.grat_sub_col, grat_brightness))
 
-        # generate the rendered pre-targets
-        log.info("test_generate")
-        aw.test_generate()
+    def sharp_line_to(self, x, y):
+        self.cr.line_to(int(x) + 0.5, int(y) + 0.5)
 
-        # generate the final image into the working buffer
-        log.info("test_fill_outbuf")
-        aw.test_fill_outbuf()
+    def sharp_move_to(self, x, y):
+        self.cr.move_to(int(x) + 0.5, int(y) + 0.5)
 
-        # dump the working buffer into a ppm
-        log.info("test_dump_buffer_to_ppm(%s)" % fn)
-        aw.test_dump_buffer_to_ppm(fn)
+    def get_wave_arena_dims(self):
+        """Return the x,y origin for the wave arena, plus the width and height, as a 2-2-tuple."""
+        x = self.xmarg
+        y = self.ymarg + self.ytopoff
+        w = self.dims[0] - self.xmarg - x
+        h = self.dims[1] - self.ymarg - y - self.ytopoff
+        return ((x, y), (w, h))
 
-        log.info("done")
+    def render(self):
+        t0 = time.time()
+        self.cr.set_line_width(1)
 
-    def render_test(self):
-        log.info("clear_buffer")
-        aw.clear_buffer(0)
+        x0 = self.xmarg
+        x1 = self.dims[0] - self.xmarg
+        xh = (x0 + x1) / 2
+        y0 = self.ymarg + self.ytopoff
+        y1 = self.dims[1] - self.ymarg - 1
+        yh = (y0 + y1) / 2
 
-        log.info("test_create_am_sine")
-        #aw.test_create_am_sine(0.25, 1e-6)
+        # Draw outer frame
+        if self.grat_flags & GRAT_RENDER_FRAME:
+            self.cr.set_source_rgba(*self.grat_main_col)
+            self.cr.new_path()
+            self.sharp_move_to(x0, y0)
+            self.sharp_line_to(x1, y0)
+            self.sharp_line_to(x1, y1)
+            self.sharp_line_to(x0, y1)
+            self.cr.close_path()
+            self.cr.stroke()
 
-        log.info("set_wave_pointer_as_testbuf")
-        #aw.set_wave_pointer_as_testbuf()
+        # Draw major grids
+        if self.grat_flags & GRAT_RENDER_DIVISIONS:
+            self.cr.set_source_rgba(*self.grat_div_col)
 
-        log.info("test_generate")
-        aw.test_generate()
+            h_major_step = (x1 - x0) / self.hdiv
+            v_major_step = (y1 - y0) / self.vdiv
+            xx = 0
+            yy = 0
 
-        # filling the mmap pointer with the rendered buffer (renders into the buffer)
-        log.info("fill_pixbuf_into_pybuffer(%r)" % self._mmap)
-        if not aw.fill_pixbuf_into_pybuffer(self._mmap):
-            raise RuntimeError("fail")
+            for h in range(self.hdiv - 1):
+                xx = x0 + ((h + 1) * h_major_step)
+                self.cr.new_path()
+                self.sharp_move_to(xx, y0)
+                self.sharp_line_to(xx, y1)
+                self.cr.stroke()
 
-        log.info("done")
+            for v in range(self.vdiv - 1):
+                yy = y0 + ((v + 1) * v_major_step)
+                self.cr.new_path()
+                self.sharp_move_to(x0, yy)
+                self.sharp_line_to(x1, yy)
+                self.cr.stroke()
 
-    def render_block(self, data_ptr):
-        log.info("src data_ptr=%d" % data_ptr)
+        # Draw inner crosshair
+        if self.grat_flags & GRAT_RENDER_CROSSHAIR:
+            self.cr.set_source_rgba(*self.grat_main_col)
+            self.cr.new_path()
+            self.sharp_move_to(xh, y0)
+            self.sharp_line_to(xh, y1)
+            self.cr.close_path()
+            self.cr.stroke()
+            self.cr.new_path()
+            self.sharp_move_to(x0, yh)
+            self.sharp_line_to(x1, yh)
+            self.cr.close_path()
+            self.cr.stroke()
 
-        log.info("clear_buffer")
-        aw.clear_buffer(0)
+            if self.grat_flags & GRAT_RENDER_SUBDIVISIONS:
+                h_major_step = (x1 - x0) / self.hdiv
+                v_major_step = (y1 - y0) / self.vdiv
+                s = self.grat_subsize * 0.5
 
-        log.info("set_wave_pointer_u32")
-        aw.set_wave_pointer_u32(data_ptr)
+                for v in range(self.vdiv):
+                    y = y0 + (v * v_major_step)
 
-        log.info("test_generate")
-        aw.test_generate()
+                    for vsub in range(self.vsubdiv):
+                        yy = y + (vsub * (v_major_step / self.vsubdiv))
 
-        log.info("fill_pixbuf_into_pybuffer(%r)" % self._mmap)
-        aw.fill_pixbuf_into_pybuffer(self._mmap)
+                        self.cr.new_path()
+                        self.sharp_move_to(xh - s, yy)
+                        self.sharp_line_to(xh + s, yy)
+                        self.cr.stroke()
 
-        log.info("done")
+                for h in range(self.hdiv):
+                    x = x0 + (h * h_major_step)
 
-    def get_shm_name(self):
-        return self._shm_name
+                    for hsub in range(self.hsubdiv):
+                        xx = x + (hsub * (h_major_step / self.hsubdiv))
+
+                        self.cr.new_path()
+                        self.sharp_move_to(xx, yh - s)
+                        self.sharp_line_to(xx, yh + s)
+                        self.cr.stroke()
+
+        t1 = time.time()
+        log.info("Took %.1f ms to render graticule" % ((t1 - t0) * 1000))
+
+class ScopeArenaController(object):
+    """
+    ScopeArena:
+    
+    This module contains classes to render the "arena" of the instrument, which is the waveform and 
+    graticule display.
+    
+    Static content is rendered using Cairo and committed to a surface.  The waveform data is rendered 
+    atop this static image using X Window System compositing.  The static image is updated if user
+    input requires, but generally stays the same if settings are not changed.  Side widgets and cursors
+    are added via another compositing layer.  The hope is that this maximises performance on limited
+    hardware.
+    """
+    def __init__(self, cfg, window, pack_widget, pack_zone, pack_args=()):
+        self.fixed = Gtk.Layout()
+        call_ = getattr(pack_widget, pack_zone)
+        assert(callable(call_))
+        call_(self.fixed, *pack_args)
+
+        self.test_aobj = awre.ArmwaveRenderEngine()
+        self.test_aobj.set_channel_colour(1, (25, 180, 250), 10)
+
+        self.grat_rdr = ScopeArenaYTGraticuleRender()
+        self.grat_rdr.apply_settings(\
+            cfg.Render.DisplayHDivisionsYT, cfg.Render.DisplayVDivisionsYT, \
+            cfg.Render.DisplayHSubDivisionsYT, cfg.Render.DisplayVSubDivisionsYT, \
+            cfg.Render.XMargin, cfg.Render.YMargin, cfg.Render.YTopOffset, cfg.Render.GratFlags, \
+            cfg.Render.GratMainColour, cfg.Render.GratSubColour, cfg.Render.GratDivColour, \
+            cfg.Render.GratBrightness, cfg.Render.GratSubTickSize)
+        
+        self.grat_da = Gtk.DrawingArea()
+        self.grat_da.connect('draw', self._draw)
+        self.fixed.put(self.grat_da, 0, 0)
+
+        self.size_allocated = False
+        self.size_alloc = (0, 0)
+
+        self.cfg = cfg
+        self.window = window
+
+    def notify_resize(self):
+        """Resize notifier."""
+        self.update_size_allocation()
+        self.grat_da.queue_draw()
+
+    def update_size_allocation(self):
+        rect = self.fixed.get_allocated_size().allocation
+
+        # if no size allocated, don't change anything
+        if rect.width <= 0 or rect.height <= 0:
+            log.warn("Waveform zone size is zero, not allocating yet")
+            return
+
+        log.debug("Alloc: %d x %d" % (rect.width, rect.height))
+        self.grat_da.set_size_request(rect.width, rect.height)
+        self.size_alloc = (rect.width, rect.height)
+        self.size_allocated = True
+
+    def _draw(self, wdg, cr):
+        """Draw/expose callback"""
+        self.update_size_allocation()
+        self.grat_rdr.set_context(cr, self.size_alloc)
+        self.grat_rdr.render()
+
+        targ_dims = self.grat_rdr.get_wave_arena_dims()
+        log.info("set_target_dimensions(%d x %d)" % (targ_dims[1][0], targ_dims[1][1]))
+        self.test_aobj.set_target_dimensions(targ_dims[1][0], targ_dims[1][1])
+        
+        log.info("render_test")
+        self.test_aobj.render_test()
+
+        log.info("Wave arena dimensions: %s" % repr(self.grat_rdr.get_wave_arena_dims()))

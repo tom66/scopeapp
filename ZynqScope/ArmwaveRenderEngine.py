@@ -61,16 +61,14 @@ class ArmwaveRenderEngine(zs.BaseRenderEngine):
     def set_target_dimensions(self, width, height):
         # Free existing memory if present
         if self._shm_id != None:
-            shm_unlink(self._shm_name)
             self._mmap.close()
 
         try:
-            self._shm_id = shm_open(self._shm_name)
-        except RuntimeError:
-            # try again after unlinking the shm name, in case we didn't exit cleanly last time
             shm_unlink(self._shm_name)
-            self._shm_id = shm_open(self._shm_name)  
+        except:
+            pass
 
+        self._shm_id = shm_open(self._shm_name)
         self._shm_size = width * height * 4  # 4 bytes per pixel
         os.ftruncate(self._shm_id, self._shm_size)
         self._mmap = mmap.mmap(self._shm_id, self._shm_size)
@@ -78,7 +76,7 @@ class ArmwaveRenderEngine(zs.BaseRenderEngine):
         # Setup armwave
         aw.cleanup()
         aw.setup_render(self.wave_params[0], self.wave_params[1], self.wave_params[2], self.wave_params[3], width, height, 0)
-        log.info("set_target_dimensions done")
+        log.info("setup_render done")
 
     def render_test_to_ppm(self, fn):
         # clear the buffer to black
@@ -112,17 +110,18 @@ class ArmwaveRenderEngine(zs.BaseRenderEngine):
         aw.clear_buffer(0)
 
         log.info("test_create_am_sine")
-        aw.test_create_am_sine(0.25, 1e-6)
+        #aw.test_create_am_sine(0.25, 1e-6)
 
         log.info("set_wave_pointer_as_testbuf")
-        aw.set_wave_pointer_as_testbuf()
+        #aw.set_wave_pointer_as_testbuf()
 
         log.info("test_generate")
         aw.test_generate()
 
         # filling the mmap pointer with the rendered buffer (renders into the buffer)
         log.info("fill_pixbuf_into_pybuffer(%r)" % self._mmap)
-        aw.fill_pixbuf_into_pybuffer(self._mmap)
+        if not aw.fill_pixbuf_into_pybuffer(self._mmap):
+            raise RuntimeError("fail")
 
         log.info("done")
 
