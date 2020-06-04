@@ -261,6 +261,7 @@ class ScopeArenaController(object):
         #self.gtk_img.queue_draw()
 
     def _draw(self, wdg, cr):
-        log.info("Cairo redraw arena")
-        self.grat_rdr.set_context(cr, wdg.get_allocated_size())
+        alloc = wdg.get_allocated_size()
+        log.info("Cairo redraw arena (alloc: %d x %d)" % (alloc.width, alloc.height))
+        self.grat_rdr.set_context(cr, alloc)
         self.grat_rdr.render()
