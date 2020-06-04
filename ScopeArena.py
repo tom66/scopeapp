@@ -17,6 +17,7 @@ GRAT_RENDER_DIVISIONS = 0x04
 GRAT_RENDER_SUBDIVISIONS = 0x08
 
 import Utils
+import ZynqScope.ArmwaveRenderEngine as awre
 
 # Load debug logger
 import logging
@@ -220,6 +221,9 @@ class ScopeArenaController(object):
         assert(callable(call_))
         call_(self.fixed, *pack_args)
 
+        self.test_aobj = awre.ArmwaveRenderEngine()
+        self.test_aobj.set_channel_colour(1, (25, 180, 250), 10)
+
         self.grat_rdr = ScopeArenaYTGraticuleRender()
         self.grat_rdr.apply_settings(\
             cfg.Render.DisplayHDivisionsYT, cfg.Render.DisplayVDivisionsYT, \
@@ -261,4 +265,9 @@ class ScopeArenaController(object):
         self.update_size_allocation()
         self.grat_rdr.set_context(cr, self.size_alloc)
         self.grat_rdr.render()
+
+        targ_dims = self.grat_rdr.get_wave_arena_dims()
+        self.test_aobj.set_target_dimensions(targ_dims[0], targ_dims[1])
+        self.test_aobj.render_test()
+
         log.info("Wave arena dimensions: %s" % repr(self.grat_rdr.get_wave_arena_dims()))
