@@ -169,7 +169,7 @@ class ScopeArenaYTGraticuleRender(object):
                 s = self.grat_subsize * 0.5
 
                 for v in range(self.vdiv):
-                    y = self.ymarg + ((v + 1) * v_major_step)
+                    y = self.ymarg + (v * v_major_step)
 
                     for vsub in range(self.vsubdiv):
                         yy = y + (vsub * (v_major_step / self.vsubdiv))
@@ -180,7 +180,7 @@ class ScopeArenaYTGraticuleRender(object):
                         self.cr.stroke()
 
                 for h in range(self.hdiv):
-                    x = self.xmarg + ((h + 1) * h_major_step)
+                    x = self.xmarg + (h * h_major_step)
 
                     for hsub in range(self.hsubdiv):
                         xx = x + (hsub * (h_major_step / self.hsubdiv))
