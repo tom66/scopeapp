@@ -75,9 +75,9 @@ class ScopeArenaYTGraticuleRender(object):
         self.vdiv = int(vdiv)
         self.hsubdiv = int(hsubdiv)
         self.vsubdiv = int(vsubdiv)
-        self.xmarg = xmarg
-        self.ymarg = ymarg
-        self.ytopoff = ytopoff
+        self.xmarg = int(xmarg)
+        self.ymarg = int(ymarg)
+        self.ytopoff = int(ytopoff)
         self.grat_flags = int(grat_flags, 0)
         self.grat_subsize = grat_subsize
 
