@@ -203,7 +203,7 @@ class ScopeArenaController(object):
     hardware.
     """
     def __init__(self, cfg, window, pack_widget, pack_zone, pack_args=()):
-        self.fixed = Gtk.Fixed()
+        self.fixed = Gtk.Layout()
         call_ = getattr(pack_widget, pack_zone)
         assert(callable(call_))
         call_(self.fixed, *pack_args)
