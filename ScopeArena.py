@@ -273,7 +273,7 @@ class ScopeArenaController(object):
         width, height = targ_dims[1]
         log.info("set_target_dimensions(%d x %d)" % (width, height))
 
-        self.test_aobj.set_channel_colour(1, 250, 1800, 2500)
+        self.test_aobj.set_channel_colour(1, (25, 180, 250), 10)
         self.test_aobj.update_wave_params(0, width, 64, width)
         self.test_aobj.set_target_dimensions(width, height)
         
