@@ -120,7 +120,7 @@ class ScopeArenaYTGraticuleRender(object):
         x1 = self.dims[0] - self.xmarg
         xh = (x0 + x1) / 2
         y0 = self.ymarg + self.ytopoff
-        y1 = self.dims[1] - self.ymarg - 1 + self.ytopoff
+        y1 = self.dims[1] - self.ymarg - 1
         yh = (y0 + y1) / 2
 
         # Draw outer frame
