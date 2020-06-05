@@ -110,7 +110,7 @@ class ArmwaveRenderEngine(zs.BaseRenderEngine):
         self.test_waveset_count = 64
         log.info("start generating %d wavesets" % self.test_waveset_count)
 
-        aw.test_create_am_sine(mod, noise, self.test_waveset_count)
+        aw.test_create_am_sine(0.4, 20e-6, self.test_waveset_count)
         log.info("done generating %d wavesets" % self.test_waveset_count)
 
     """
