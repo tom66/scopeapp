@@ -76,7 +76,7 @@ class ArmwaveRenderEngine(zs.BaseRenderEngine):
         self.done_test_wave = False
 
     def update_wave_params(self, start_t, end_t, n_waves, wave_stride):
-        self.wave_params = (start_t, end_t * 1, n_waves, wave_stride * 1)
+        self.wave_params = (start_t, end_t * 1.25, n_waves, wave_stride * 1.25)
         #log.info("update_wave_params: new %s" % repr(self.wave_params))
 
     def set_channel_colour(self, index, colour, brightness):
