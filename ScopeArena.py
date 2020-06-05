@@ -241,11 +241,9 @@ class ScopeArenaController(object):
         #self.grat_da.connect('draw', self._draw)
         #self.fixed.put(self.grat_da, 0, 0)
 
-        self.test_wnd = Gtk.Window()
         self.img = Gtk.Image()
         #self.fixed.put(self.img, 0, 0)
-        self.test_wnd.add(self.img)
-        self.test_wnd.show_all()
+        self.fixed.add(self.img)
 
         self.size_allocated = False
         self.size_alloc = (0, 0)
