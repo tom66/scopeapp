@@ -509,8 +509,8 @@ class MainApplication(object):
         
         t0 = time.time()
         self.notifier.update_overlay(self.window.get_size()[0])
-        log.debug("update_overlay: %.1f ms" % ((t1 - t0) * 1000))
         t1 = time.time()
+        log.debug("update_overlay: %.1f ms" % ((t1 - t0) * 1000))
         
         self.last_ui_time = time.time()
         self.ticks += 1
