@@ -221,6 +221,9 @@ class ScopeArenaController(object):
         assert(callable(call_))
         call_(self.fixed, *pack_args)
 
+        self.cfg = cfg
+        self.window = window
+
         self.test_aobj = awre.ArmwaveRenderEngine()
         self.test_aobj.set_channel_colour(1, (25, 180, 250), 2)
 
@@ -241,14 +244,9 @@ class ScopeArenaController(object):
 
         self.size_allocated = False
         self.size_alloc = (0, 0)
-
         self.first_draw = False
-
         self.test_mod = 0.0
         self.stat_waves = 0
-
-        self.cfg = cfg
-        self.window = window
 
     def notify_resize(self):
         """Resize notifier."""
@@ -277,6 +275,7 @@ class ScopeArenaController(object):
 
     def update(self):
         log.info(repr(self.fixed.get_window()))
+        log.info(repr(self.window.get_window()))
         #log.info("update()")
 
         if not self.first_draw:
