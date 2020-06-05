@@ -245,6 +245,7 @@ class ScopeArenaController(object):
         self.first_draw = False
 
         self.test_mod = 0.0
+        self.stat_waves = 0
 
         self.cfg = cfg
         self.window = window
@@ -282,7 +283,7 @@ class ScopeArenaController(object):
             return
 
         log.info("render_test")
-        self.test_aobj.render_test_pb(gdkbuf=self.wave_pb, mod=self.test_mod)
+        self.test_aobj.render_test_pb(gdkbuf=self.wave_pb, index=self.stat_waves)
         self.test_mod += 0.01
 
         if self.test_mod > 1.0:
@@ -301,6 +302,8 @@ class ScopeArenaController(object):
         ox, oy = targ_dims[0]
         self.fixed.move(self.img, ox, oy)
         self.img.set_from_pixbuf(self.wave_pb)
+
+        self.stat_waves += 1
 
     def _draw(self, wdg, cr):
         """Draw/expose callback"""
