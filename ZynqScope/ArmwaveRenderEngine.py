@@ -106,7 +106,12 @@ class ArmwaveRenderEngine(zs.BaseRenderEngine):
         aw.setup_render(self.wave_params[0], self.wave_params[1], self.wave_params[2], self.wave_params[3], width, height, 0)
         log.info("setup_render done")
 
-        self.done_test_wave = False
+        # setup test wavesets
+        self.test_waveset_count = 64
+        log.info("start generating %d wavesets" % self.test_waveset_count)
+
+        aw.test_create_am_sine(mod, noise, self.test_waveset_count)
+        log.info("done generating %d wavesets" % self.test_waveset_count)
 
     """
     def render_test_to_ppm(self, fn):
@@ -141,7 +146,7 @@ class ArmwaveRenderEngine(zs.BaseRenderEngine):
         log.info("done")
     """
 
-    def render_test(self, mod=0.4, noise=10e-6):
+    def render_test(self, index):
         log.info("clear_buffer")
         aw.clear_buffer(0)
 
@@ -149,10 +154,9 @@ class ArmwaveRenderEngine(zs.BaseRenderEngine):
         #aw.test_buffer_alloc()
 
         #log.info("test_create_am_sine")
-        aw.test_create_am_sine(mod, noise)
 
-        log.info("set_wave_pointer_as_testbuf")
-        aw.set_wave_pointer_as_testbuf()
+        log.info("set_wave_pointer_as_testbuf %d" % index)
+        aw.set_wave_pointer_as_testbuf(index % self.test_waveset_count)
 
         log.info("test_generate")
         aw.test_generate()
@@ -167,7 +171,7 @@ class ArmwaveRenderEngine(zs.BaseRenderEngine):
 
         log.info("done")
 
-    def render_test_pb(self, gdkbuf, mod=0.4, noise=10e-6):
+    def render_test_pb(self, gdkbuf, index):
         log.info("clear_buffer")
         aw.clear_buffer(0)
 
@@ -175,12 +179,12 @@ class ArmwaveRenderEngine(zs.BaseRenderEngine):
         #aw.test_buffer_alloc()
 
         #log.info("test_create_am_sine")
-        if not self.done_test_wave:
-            aw.test_create_am_sine(mod, noise)
-            self.done_test_wave = True
+        #if not self.done_test_wave:
+        #    aw.test_create_am_sine(mod, noise)
+        #    self.done_test_wave = True
 
-        log.info("set_wave_pointer_as_testbuf")
-        aw.set_wave_pointer_as_testbuf()
+        log.info("set_wave_pointer_as_testbuf %d" % index)
+        aw.set_wave_pointer_as_testbuf(index % self.test_waveset_count)
 
         log.info("test_generate")
         aw.test_generate()
