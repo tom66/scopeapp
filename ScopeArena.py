@@ -221,6 +221,8 @@ class ScopeArenaController(object):
         assert(callable(call_))
         call_(self.fixed, *pack_args)
 
+        self.wnd = self.fixed.get_window()
+
         self.cfg = cfg
         self.window = window
 
@@ -277,10 +279,10 @@ class ScopeArenaController(object):
         if self.wnd is None:
             self.wnd = self.fixed.get_window()
             return
-        
-        gc = self.fixed_wnd.begin_draw_frame(cairo.Region(cairo.RectangleInt(0, 0, 1024, 1024)))
+
+        gc = self.wnd.begin_draw_frame(cairo.Region(cairo.RectangleInt(0, 0, 1024, 1024)))
         log.info(repr(gc))
-        self.fixed_wnd.end_draw_frame(gc)
+        self.wnd.end_draw_frame(gc)
 
         #log.info(repr(self.window.get_window()))
         #log.info("update()")
