@@ -106,6 +106,8 @@ class ArmwaveRenderEngine(zs.BaseRenderEngine):
         aw.setup_render(self.wave_params[0], self.wave_params[1], self.wave_params[2], self.wave_params[3], width, height, 0)
         log.info("setup_render done")
 
+        self.done_test_wave = False
+
     """
     def render_test_to_ppm(self, fn):
         # clear the buffer to black
