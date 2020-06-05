@@ -237,9 +237,9 @@ class ScopeArenaController(object):
             cfg.Render.GratMainColour, cfg.Render.GratSubColour, cfg.Render.GratDivColour, \
             cfg.Render.GratBrightness, cfg.Render.GratSubTickSize)
         
-        self.grat_da = Gtk.DrawingArea()
-        self.grat_da.connect('draw', self._draw)
-        self.fixed.put(self.grat_da, 0, 0)
+        #self.grat_da = Gtk.DrawingArea()
+        #self.grat_da.connect('draw', self._draw)
+        #self.fixed.put(self.grat_da, 0, 0)
 
         self.img = Gtk.Image()
         self.fixed.put(self.img, 0, 0)
@@ -280,9 +280,9 @@ class ScopeArenaController(object):
             self.wnd = self.fixed.get_window()
             return
 
-        gc = self.wnd.begin_draw_frame(cairo.Region(cairo.RectangleInt(0, 0, 1024, 1024)))
-        log.info(repr(gc))
-        self.wnd.end_draw_frame(gc)
+        #gc = self.wnd.begin_draw_frame(cairo.Region(cairo.RectangleInt(0, 0, 1024, 1024)))
+        #log.info(repr(gc))
+        #self.wnd.end_draw_frame(gc)
 
         #log.info(repr(self.window.get_window()))
         #log.info("update()")
@@ -327,8 +327,8 @@ class ScopeArenaController(object):
             return
 
         # Redraw graticule if size has changed
-        self.grat_rdr.set_context(cr, self.size_alloc)
-        self.grat_rdr.render()
+        #self.grat_rdr.set_context(cr, self.size_alloc)
+        #self.grat_rdr.render()
 
         targ_dims = self.grat_rdr.get_wave_arena_dims()
         width, height = targ_dims[1]
@@ -345,5 +345,5 @@ class ScopeArenaController(object):
 
         # Make a new pixbuf and force a redraw(?)
         #self.wave_pb = GdkPixbuf.Pixbuf.new_from_bytes(GLib.Bytes(bytes(mmap_obj)), GdkPixbuf.Colorspace.RGB, True, 8, width, height, width * 4)
-        self.wave_pb = GdkPixbuf.Pixbuf.new(GdkPixbuf.Colorspace.RGB, False, 8, width, height)
+        self.wave_pb = GdkPixbuf.Pixbuf.new(GdkPixbuf.Colorspace.RGB, True, 8, width, height)
         self.update()
