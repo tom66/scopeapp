@@ -163,6 +163,32 @@ class ArmwaveRenderEngine(zs.BaseRenderEngine):
 
         log.info("done")
 
+    def render_test_pb(self, gdkbuf, mod=0.4, noise=10e-6):
+        log.info("clear_buffer")
+        aw.clear_buffer(0)
+
+        #log.info("test_buffer_alloc")
+        #aw.test_buffer_alloc()
+
+        #log.info("test_create_am_sine")
+        aw.test_create_am_sine(mod, noise)
+
+        log.info("set_wave_pointer_as_testbuf")
+        aw.set_wave_pointer_as_testbuf()
+
+        log.info("test_generate")
+        aw.test_generate()
+
+        # filling the mmap pointer with the rendered buffer (renders into the buffer)
+        log.info("fill_pixbuf_into_pybuffer(%r)" % self._mmap)
+
+        if not aw.test_fill_gdkbuf(gdkbuf):
+            raise RuntimeError("fail")
+
+        #print(bytes(self._mmap))
+
+        log.info("done")
+
     """
     def render_block(self, data_ptr):
         log.info("src data_ptr=%d" % data_ptr)
