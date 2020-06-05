@@ -497,13 +497,20 @@ class MainApplication(object):
             self.flash_state = not self.flash_state
         
         # Run helper functions
+        t0 = time.time()
         self.ui_update_clock()
         self.ui_update_run_state()
         self.ui_update_acq_parameters()
         self.ui_update_tabs()
         self.ui_update_widgets()
+        t1 = time.time()
+
+        log.debug("widget_update: %.1f ms" % ((t1 - t0) * 1000))
         
+        t0 = time.time()
         self.notifier.update_overlay(self.window.get_size()[0])
+        log.debug("update_overlay: %.1f ms" % ((t1 - t0) * 1000))
+        t1 = time.time()
         
         self.last_ui_time = time.time()
         self.ticks += 1
