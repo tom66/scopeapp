@@ -300,7 +300,7 @@ class ScopeArenaController(object):
 
         ox, oy = targ_dims[0]
         self.fixed.move(self.img, ox, oy)
-        #self.img.set_from_pixbuf(self.wave_pb)
+        self.img.set_from_pixbuf(self.wave_pb)
 
     def _draw(self, wdg, cr):
         """Draw/expose callback"""
@@ -308,7 +308,7 @@ class ScopeArenaController(object):
 
         # need to also check for general invalidation
         if not self.update_size_allocation():
-            log.warn("Skip redraw - no size change")
+            log.warn("Skip grat. redraw - no size change")
             return
 
         # Redraw graticule if size has changed
