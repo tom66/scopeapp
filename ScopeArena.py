@@ -222,7 +222,7 @@ class ScopeArenaController(object):
         call_(self.fixed, *pack_args)
 
         self.test_aobj = awre.ArmwaveRenderEngine()
-        self.test_aobj.set_channel_colour(1, (25, 180, 250), 10)
+        self.test_aobj.set_channel_colour(1, (25, 180, 250), 4)
 
         self.grat_rdr = ScopeArenaYTGraticuleRender()
         self.grat_rdr.apply_settings(\
