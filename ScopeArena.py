@@ -250,6 +250,8 @@ class ScopeArenaController(object):
         self.test_mod = 0.0
         self.stat_waves = 0
 
+        self.wave_pb = GdkPixbuf.Pixbuf.new(GdkPixbuf.Colorspace.RGB, True, 8, width, height)
+
     def notify_resize(self):
         """Resize notifier."""
         log.warn("notify_resize")
