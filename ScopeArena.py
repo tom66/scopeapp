@@ -114,6 +114,8 @@ class ScopeArenaYTGraticuleRender(object):
         return ((x, y), (w, h))
 
     def render(self):
+        log.critical("ScopeArenaYTGraticuleRender render()")
+
         t0 = time.time()
         self.cr.set_line_width(1)
 
@@ -279,25 +281,9 @@ class ScopeArenaController(object):
             return False
 
     def update(self):
-        #if self.wnd is None:
-        #    self.wnd = self.fixed.get_window()
-        #    return
-
-        #gc = self.wnd.begin_draw_frame(cairo.Region(cairo.RectangleInt(0, 0, 1024, 1024)))
-        #log.info(repr(gc))
-        #self.wnd.end_draw_frame(gc)
-
-        #log.info(repr(self.window.get_window()))
-        #log.info("update()")
-
         if not self.first_draw:
             log.warn("Not done first redraw, skipping update")
             return
-
-        #if not self.wave_pb:
-        #    targ_dims = self.grat_rdr.get_wave_arena_dims()
-        #    width, height = 1000, 1000
-        #    self.wave_pb = GdkPixbuf.Pixbuf.new(GdkPixbuf.Colorspace.RGB, True, 8, width, height)
 
         #log.info("render_test")
         t0 = time.time()
