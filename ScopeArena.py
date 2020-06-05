@@ -274,7 +274,7 @@ class ScopeArenaController(object):
 
         if self.size_alloc != new_alloc:
             #log.debug("New alloc: %d x %d" % new_alloc)
-            self.grat_da.set_size_request(rect.width, rect.height)
+            #self.grat_da.set_size_request(rect.width, rect.height)
             self.size_alloc = (rect.width, rect.height)
             self.size_allocated = True
             return True
