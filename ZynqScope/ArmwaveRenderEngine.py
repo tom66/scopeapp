@@ -127,15 +127,15 @@ class ArmwaveRenderEngine(zs.BaseRenderEngine):
         log.info("done")
     """
 
-    def render_test(self):
+    def render_test(self, mod=0.4, noise=10e-6):
         log.info("clear_buffer")
         aw.clear_buffer(0)
 
         #log.info("test_buffer_alloc")
         #aw.test_buffer_alloc()
 
-        log.info("test_create_am_sine")
-        aw.test_create_am_sine(0.4, 10e-6)
+        #log.info("test_create_am_sine")
+        aw.test_create_am_sine(mod, noise)
 
         log.info("set_wave_pointer_as_testbuf")
         aw.set_wave_pointer_as_testbuf()
