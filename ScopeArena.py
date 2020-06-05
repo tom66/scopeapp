@@ -239,12 +239,12 @@ class ScopeArenaController(object):
             cfg.Render.GratMainColour, cfg.Render.GratSubColour, cfg.Render.GratDivColour, \
             cfg.Render.GratBrightness, cfg.Render.GratSubTickSize)
         
+        self.img = Gtk.Image()
+        self.fixed.put(self.img, 0, 0)
+
         self.grat_da = Gtk.DrawingArea()
         self.grat_da.connect('draw', self._draw)
         self.fixed.put(self.grat_da, 0, 0)
-
-        self.img = Gtk.Image()
-        self.fixed.put(self.img, 0, 0)
 
         self.size_allocated = False
         self.size_alloc = (0, 0)
