@@ -276,6 +276,7 @@ class ScopeArenaController(object):
             return False
 
     def update(self):
+        log.info(repr(self.fixed.get_window()))
         #log.info("update()")
 
         if not self.first_draw:
