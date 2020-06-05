@@ -287,7 +287,7 @@ class ScopeArenaController(object):
         self.test_aobj.render_test_pb(gdkbuf=self.wave_pb, index=self.stat_waves)
         t1 = time.time()
 
-        log.info("render_test_pb %.1f ms" % ((t1 - t0) * 1000))
+        #log.info("render_test_pb %.1f ms" % ((t1 - t0) * 1000))
 
         #log.info("Wave arena dimensions: %s" % repr(self.grat_rdr.get_wave_arena_dims()))
 
@@ -303,7 +303,7 @@ class ScopeArenaController(object):
         self.img.set_from_pixbuf(self.wave_pb)
         t1 = time.time()
 
-        log.info("set_from_pixbuf %.1f ms" % ((t1 - t0) * 1000))
+        #log.info("set_from_pixbuf %.1f ms" % ((t1 - t0) * 1000))
 
         self.stat_waves += 1
 
