@@ -72,8 +72,8 @@ class ArmwaveRenderEngine(zs.BaseRenderEngine):
         # default wave parameters
         self.wave_params = (0, 2048, 64, 2048)
         aw.init()
-        
-        aw.test_create_am_sine(mod, noise)
+
+        aw.test_create_am_sine(0.4, 1e-6)
 
     def update_wave_params(self, start_t, end_t, n_waves, wave_stride):
         self.wave_params = (start_t, end_t, n_waves, wave_stride)
