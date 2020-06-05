@@ -271,6 +271,8 @@ class ScopeArenaController(object):
             self.size_allocated = True
 
     def update(self):
+        log.info("update()")
+
         if not self.first_draw:
             log.warn("Not done first redraw, skipping update")
             return
@@ -298,6 +300,8 @@ class ScopeArenaController(object):
 
     def _draw(self, wdg, cr):
         """Draw/expose callback"""
+        log.info("_draw()")
+
         self.update_size_allocation()
         self.grat_rdr.set_context(cr, self.size_alloc)
         self.grat_rdr.render()

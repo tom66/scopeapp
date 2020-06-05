@@ -77,7 +77,7 @@ class ArmwaveRenderEngine(zs.BaseRenderEngine):
 
         try:
             self._mmap.close()
-            #os.close(self._shm_id)
+            os.close(self._shm_id)
             log.info("_mmap close()")
         except:
             pass
