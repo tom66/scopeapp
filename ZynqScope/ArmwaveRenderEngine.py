@@ -168,10 +168,10 @@ class ArmwaveRenderEngine(zs.BaseRenderEngine):
         aw.clear_buffer(0)
 
         #log.info("test_buffer_alloc")
-        #aw.test_buffer_alloc()
+        aw.test_buffer_alloc()
 
         #log.info("test_create_am_sine")
-        aw.test_create_am_sine(mod, noise)
+        #aw.test_create_am_sine(mod, noise)
 
         log.info("set_wave_pointer_as_testbuf")
         aw.set_wave_pointer_as_testbuf()
