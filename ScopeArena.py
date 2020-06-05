@@ -221,8 +221,6 @@ class ScopeArenaController(object):
         assert(callable(call_))
         call_(self.fixed, *pack_args)
 
-        self.fixed_wnd = self.fixed.get_window()
-
         self.cfg = cfg
         self.window = window
 
@@ -244,7 +242,6 @@ class ScopeArenaController(object):
         self.img = Gtk.Image()
         self.fixed.put(self.img, 0, 0)
 
-        w = self.fixed.get_window()
         self.size_allocated = False
         self.size_alloc = (0, 0)
         self.first_draw = False
@@ -277,6 +274,10 @@ class ScopeArenaController(object):
             return False
 
     def update(self):
+        if self.wnd is None:
+            self.wnd = self.fixed.get_window()
+            return
+        
         gc = self.fixed_wnd.begin_draw_frame(cairo.Region(cairo.RectangleInt(0, 0, 1024, 1024)))
         log.info(repr(gc))
         self.fixed_wnd.end_draw_frame(gc)
