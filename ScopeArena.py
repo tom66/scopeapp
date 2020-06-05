@@ -276,9 +276,9 @@ class ScopeArenaController(object):
             return False
 
     def update(self):
-        if self.wnd is None:
-            self.wnd = self.fixed.get_window()
-            return
+        #if self.wnd is None:
+        #    self.wnd = self.fixed.get_window()
+        #    return
 
         #gc = self.wnd.begin_draw_frame(cairo.Region(cairo.RectangleInt(0, 0, 1024, 1024)))
         #log.info(repr(gc))
