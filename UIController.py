@@ -112,6 +112,9 @@ class MainApplication(object):
     last_state_sync_time = time.time()
     state_sync_pending = True
     
+    # Used for UI caching
+    last_acq_params = None
+
     def __init__(self, cfgmgr):
         """
         Init function.  This loads the GUI configuration, the application configurator,
@@ -499,7 +502,7 @@ class MainApplication(object):
         # Run helper functions
         t0 = time.time()
         self.ui_update_clock()
-        self.ui_update_run_state()
+        #self.ui_update_run_state()
         self.ui_update_acq_parameters()
         self.ui_update_tabs()
         self.ui_update_widgets()
@@ -578,8 +581,9 @@ class MainApplication(object):
         """
         Update the date and time on the user interface.
         """
-        # Not all OSes support %n in strftime, so split and generate timestrings for each
+        # Only update if more than 1 second has elapsed...
         if (time.time() - self.last_clock_time) > 1.0:
+            # Not all OSes support %n in strftime, so split and generate timestrings for each
             time_strs = []
             time_format = str(self.cfgmgr.UI.TimeFormat).split('%n')
 
@@ -594,30 +598,36 @@ class MainApplication(object):
         """
         Update acquisition parameters: memory depth, waves/sec, bit depth, etc.
         """
+        # TODO: Only update these on change...
         waveforms_per_second = round(self.ctrl.get_waves_per_second(), 2)
         memory_depth = self.ctrl.get_memory_depth()
         sample_rate = self.ctrl.get_sample_rate()
         bits = self.ctrl.get_sample_depth()
-        
-        # TRANSLATORS: lbl_status_bits_samplerate contains a bit depth (8-bit; compare 'audio' and 'graphics' bit depths, for instance)
-        # and a sample rate (samples per second, compare with frequency or repetitiveness.)  This label probably should not be translated,
-        # or altered.  Only translate the units if they are not commonly understood in engineering fields in your locale.
-        self.lbl_status_bits_samplerate.set_markup(\
-            _("{bits_value}-bit\n{samplerate_string}").format(
-                bits_value=bits, \
-                samplerate_string=Utils.unit_format_suffix_handle_exc(sample_rate, _("Sa/s"), precision=3) \
-            ))
-        
-        # TRANSLATORS: lbl_status_npoints_nwaves contains the number of points per waveform and the number of waveforms per second
-        # that the instrument is acquiring (or is targeting for acquisition.) The base label is not translatable.
-        #
-        # pts = points,  wfm/s = waveforms per second;  only translate the units if they are not commonly understood in engineering 
-        # fields in your locale.
-        self.lbl_status_npoints_nwaves.set_markup(\
-            "{points_string}\n{nwaves_string}".format(\
-                points_string=Utils.unit_format_suffix_handle_exc(memory_depth, _("pts"), precision=2), \
-                nwaves_string=Utils.unit_format_suffix_handle_exc(waveforms_per_second, _("wfm/s"), precision=1) \
-            ))
+
+        _acq_params = (waveforms_per_second, memory_depth, sample_rate, rate)
+
+        if _acq_params != self.last_acq_params:
+            # TRANSLATORS: lbl_status_bits_samplerate contains a bit depth (8-bit; compare 'audio' and 'graphics' bit depths, for instance)
+            # and a sample rate (samples per second, compare with frequency or repetitiveness.)  This label probably should not be translated,
+            # or altered.  Only translate the units if they are not commonly understood in engineering fields in your locale.
+            self.lbl_status_bits_samplerate.set_markup(\
+                _("{bits_value}-bit\n{samplerate_string}").format(
+                    bits_value=bits, \
+                    samplerate_string=Utils.unit_format_suffix_handle_exc(sample_rate, _("Sa/s"), precision=3) \
+                ))
+            
+            # TRANSLATORS: lbl_status_npoints_nwaves contains the number of points per waveform and the number of waveforms per second
+            # that the instrument is acquiring (or is targeting for acquisition.) The base label is not translatable.
+            #
+            # pts = points,  wfm/s = waveforms per second;  only translate the units if they are not commonly understood in engineering 
+            # fields in your locale.
+            self.lbl_status_npoints_nwaves.set_markup(\
+                "{points_string}\n{nwaves_string}".format(\
+                    points_string=Utils.unit_format_suffix_handle_exc(memory_depth, _("pts"), precision=2), \
+                    nwaves_string=Utils.unit_format_suffix_handle_exc(waveforms_per_second, _("wfm/s"), precision=1) \
+                ))
+
+            self.last_acq_params = _acq_params
     
     def ui_update_run_state(self):
         """
@@ -660,8 +670,9 @@ class MainApplication(object):
             tab.refresh_tab()
     
     def ui_update_widgets(self):
-        for wdg in self.ui_widgets:
-            wdg.refresh_widget()
+        pass
+        #for wdg in self.ui_widgets:
+        #    wdg.refresh_widget()
     
     def ui_sync_config(self):
         for tab in self.ui_tabs:
