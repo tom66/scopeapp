@@ -300,7 +300,7 @@ class ScopeArenaController(object):
         #mmap_obj.close()
 
         t0 = time.time()
-        #self.img.set_from_pixbuf(self.wave_pb)
+        self.img.queue_draw()
         t1 = time.time()
 
         #log.info("set_from_pixbuf %.1f ms" % ((t1 - t0) * 1000))
@@ -336,4 +336,5 @@ class ScopeArenaController(object):
         # Make a new pixbuf and force a redraw(?)
         #self.wave_pb = GdkPixbuf.Pixbuf.new_from_bytes(GLib.Bytes(bytes(mmap_obj)), GdkPixbuf.Colorspace.RGB, True, 8, width, height, width * 4)
         self.wave_pb = GdkPixbuf.Pixbuf.new(GdkPixbuf.Colorspace.RGB, True, 8, width, height)
+        self.img.set_from_pixbuf(self.wave_pb)
         self.update()
