@@ -289,9 +289,9 @@ class ScopeArenaController(object):
         #log.info(repr(self.window.get_window()))
         #log.info("update()")
 
-        if not self.first_draw:
-            log.warn("Not done first redraw, skipping update")
-            return
+        #if not self.first_draw:
+        #    log.warn("Not done first redraw, skipping update")
+        #    return
 
         if not self.wave_pb:
             targ_dims = self.grat_rdr.get_wave_arena_dims()
