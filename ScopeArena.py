@@ -297,8 +297,10 @@ class ScopeArenaController(object):
 
         #mmap_obj.madvise(mmap.MADV_REMOVE)
         #mmap_obj.close()
-        
-        self.img.set_from_pixbuf(self.wave_pb)
+
+        ox, oy = targ_dims[0]
+        self.fixed.move(self.img, ox, oy)
+        #self.img.set_from_pixbuf(self.wave_pb)
 
     def _draw(self, wdg, cr):
         """Draw/expose callback"""
@@ -327,6 +329,3 @@ class ScopeArenaController(object):
         #self.wave_pb = GdkPixbuf.Pixbuf.new_from_bytes(GLib.Bytes(bytes(mmap_obj)), GdkPixbuf.Colorspace.RGB, True, 8, width, height, width * 4)
         self.wave_pb = GdkPixbuf.Pixbuf.new(GdkPixbuf.Colorspace.RGB, True, 8, width, height)
         self.update()
-
-        ox, oy = targ_dims[0]
-        self.fixed.move(self.img, ox, oy)
