@@ -296,6 +296,7 @@ class ScopeArenaController(object):
         if not self.wave_pb:
             targ_dims = self.grat_rdr.get_wave_arena_dims()
             width, height = targ_dims[1]
+            log.info("%d x %d" % (width, height))
             self.wave_pb = GdkPixbuf.Pixbuf.new(GdkPixbuf.Colorspace.RGB, True, 8, width, height)
 
         #log.info("render_test")
