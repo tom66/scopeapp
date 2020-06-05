@@ -261,7 +261,7 @@ class ScopeArenaController(object):
         # if no size allocated, don't change anything
         if rect.width <= 0 or rect.height <= 0:
             log.warn("Waveform zone size is zero, not allocating yet")
-            return
+            return False
 
         new_alloc = (rect.width, rect.height)
 
@@ -270,6 +270,9 @@ class ScopeArenaController(object):
             self.grat_da.set_size_request(rect.width, rect.height)
             self.size_alloc = (rect.width, rect.height)
             self.size_allocated = True
+            return True
+        else:
+            return False
 
     def update(self):
         log.info("update()")
@@ -299,9 +302,11 @@ class ScopeArenaController(object):
         """Draw/expose callback"""
         log.info("_draw()")
 
-        self.update_size_allocation()
+        if not self.update_size_allocation():
+            log.warn("Skip redraw - no size change")
+            return
 
-        # Redraw graticule
+        # Redraw graticule if size has changed
         self.grat_rdr.set_context(cr, self.size_alloc)
         self.grat_rdr.render()
 
