@@ -329,7 +329,7 @@ class ScopeArenaController(object):
         
         # Drive the renderer
         self.test_aobj.set_channel_colour(1, (25, 180, 250), 40)
-        self.test_aobj.update_wave_params(0, width, 128, width)
+        self.test_aobj.update_wave_params(0, width, 512, width)
         self.test_aobj.set_target_dimensions(width, height)
         self.first_draw = True
 
