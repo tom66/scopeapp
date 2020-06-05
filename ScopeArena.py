@@ -314,7 +314,7 @@ class ScopeArenaController(object):
         # make a new pixbuf and force a redraw
         #self.wave_pb = GdkPixbuf.Pixbuf.new_from_bytes(GLib.Bytes(bytes(mmap_obj)), GdkPixbuf.Colorspace.RGB, True, 8, width, height, width * 4)
         self.wave_pb = GdkPixbuf.Pixbuf.new(GdkPixbuf.Colorspace.RGB, True, 8, width, height)
-        self.update()
+        #self.update()
 
         ox, oy = targ_dims[0]
         self.fixed.move(self.img, ox, oy)
