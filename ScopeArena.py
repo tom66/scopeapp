@@ -56,15 +56,17 @@ def colour32_to_cairo(col):
 
 class ScopeArenaYTGraticuleRender(object):
     def __init__(self):
-        self.cr = None
+        self.render_cr = None
+        self.output_cr = None
         self.dims = (0, 0)
+        self.render_queued = False
 
     def set_context(self, cr, dims):
         """Set the Cairo context; if source dimensions have changed then True is returned, otherwise False."""
-        if self.cr != None:
+        if self.output_cr != None:
             pass # TODO: Cleanup?
 
-        self.cr = cr
+        self.output_cr = cr
         log.info("New dims.: %d x %d (cr:%r)" % (dims[0], dims[1], cr)) 
 
         if dims != self.dims:
@@ -102,6 +104,8 @@ class ScopeArenaYTGraticuleRender(object):
         log.info("Graticule: flags: 0x%02x, main colour: %r, sub colour %r (computed from brightness %.1f)" % \
             (self.grat_flags, self.grat_main_col, self.grat_sub_col, grat_brightness))
 
+        self.render_queued = True
+
     def sharp_line_to(self, x, y):
         self.cr.line_to(int(x) + 0.5, int(y) + 0.5)
 
@@ -117,6 +121,17 @@ class ScopeArenaYTGraticuleRender(object):
         return ((x, y), (w, h))
 
     def render(self):
+        #if self.render_queued:
+        #    self.cr = cairo.Context(cairo.Surface.create_similar(cairo.CONTENT_COLOR, self.dims[0], self.dims[1]))
+        #    self._int_render()
+        #    self.render_queued = False
+
+        # copy working cr into output cr
+        if self.render_queued:
+            self._int_render()
+            self.render_queued = False
+
+    def _int_render(self):
         #log.critical("ScopeArenaYTGraticuleRender render()")
 
         t0 = time.time()
