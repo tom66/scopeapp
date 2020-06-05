@@ -337,7 +337,7 @@ class ScopeArenaController(object):
 
         # Redraw graticule if size has changed
         if cr != None:
-            self.grat_rdr.set_context(cr, self.size_alloc):
+            self.grat_rdr.set_context(cr, self.size_alloc)
             self.grat_da.set_size_request(self.size_alloc[0], self.size_alloc[1])
             self.grat_rdr.render()
             #self.grat_da.queue_draw()
