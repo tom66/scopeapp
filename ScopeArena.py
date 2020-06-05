@@ -283,11 +283,11 @@ class ScopeArenaController(object):
             return
 
         log.info("render_test")
+        t0 = time.time()
         self.test_aobj.render_test_pb(gdkbuf=self.wave_pb, index=self.stat_waves)
-        self.test_mod += 0.01
+        t1 = time.time()
 
-        if self.test_mod > 1.0:
-            self.test_mod = 0.0
+        log.info("render_test_pb %.1f ms" % ((t1 - t0) * 1000))
 
         log.info("Wave arena dimensions: %s" % repr(self.grat_rdr.get_wave_arena_dims()))
 
@@ -301,7 +301,12 @@ class ScopeArenaController(object):
 
         ox, oy = targ_dims[0]
         self.fixed.move(self.img, ox, oy)
+        
+        t0 = time.time()
         self.img.set_from_pixbuf(self.wave_pb)
+        t1 = time.time()
+
+        log.info("set_from_pixbuf %.1f ms" % ((t1 - t0) * 1000))
 
         self.stat_waves += 1
 
