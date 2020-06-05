@@ -276,13 +276,13 @@ class ScopeArenaController(object):
             return False
 
     def update(self):
-        log.info("update()")
+        #log.info("update()")
 
         if not self.first_draw:
             log.warn("Not done first redraw, skipping update")
             return
 
-        log.info("render_test")
+        #log.info("render_test")
         t0 = time.time()
         self.test_aobj.render_test_pb(gdkbuf=self.wave_pb, index=self.stat_waves)
         t1 = time.time()
@@ -309,7 +309,7 @@ class ScopeArenaController(object):
 
     def _draw(self, wdg, cr):
         """Draw/expose callback"""
-        log.info("_draw()")
+        #log.info("_draw()")
 
         # need to also check for general invalidation
         if not self.update_size_allocation():
