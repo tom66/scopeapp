@@ -313,7 +313,7 @@ class ScopeArenaController(object):
 
         # need to also check for general invalidation
         if not self.update_size_allocation():
-            log.warn("Skip grat. redraw - no size change")
+            #log.warn("Skip grat. redraw - no size change")
             return
 
         # Redraw graticule if size has changed
