@@ -127,9 +127,8 @@ class ScopeArenaYTGraticuleRender(object):
         #    self.render_queued = False
 
         # copy working cr into output cr
-        if self.render_queued:
-            self._int_render()
-            self.render_queued = False
+        self._int_render()
+        #self.render_queued = False
 
     def _int_render(self):
         #log.critical("ScopeArenaYTGraticuleRender render()")
