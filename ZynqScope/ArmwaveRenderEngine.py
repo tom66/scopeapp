@@ -187,9 +187,9 @@ class ArmwaveRenderEngine(zs.BaseRenderEngine):
         aw.set_wave_pointer_as_testbuf(index % self.test_waveset_count)
 
         #log.info("test_generate")
-        xindex = (index / 100) % 8
-        log.info("test_generate %d" % (xindex % 8))
-        aw.test_generate(xindex % 8)
+        xindex = int((index / 100) % 8)
+        log.info("test_generate %d" % (xindex))
+        aw.test_generate(xindex)
 
         # filling the mmap pointer with the rendered buffer (renders into the buffer)
         #log.info("fill_pixbuf_into_pybuffer(%r)" % self._mmap)
