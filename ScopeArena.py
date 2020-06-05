@@ -243,7 +243,7 @@ class ScopeArenaController(object):
         self.fixed.put(self.img, 0, 0)
 
         self.grat_da = Gtk.DrawingArea()
-        self.grat_da.connect('expose', self._draw)
+        self.grat_da.connect('draw', self._draw)
         self.fixed.put(self.grat_da, 0, 0)
 
         self.size_allocated = False
