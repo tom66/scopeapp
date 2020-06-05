@@ -294,7 +294,6 @@ class ScopeArenaController(object):
         #log.info("Wave arena dimensions: %s" % repr(self.grat_rdr.get_wave_arena_dims()))
 
         # draw the pixbuf
-        #mmap_obj = mmap.mmap(self.test_aobj.get_shm_id(), self.test_aobj.get_shm_size())
         targ_dims = self.grat_rdr.get_wave_arena_dims()
         width, height = targ_dims[1]
 
@@ -308,6 +307,7 @@ class ScopeArenaController(object):
 
         #log.info("set_from_pixbuf %.1f ms" % ((t1 - t0) * 1000))
 
+        self.grat_da.queue_draw()
         self.stat_waves += 1
 
     def _draw(self, wdg, cr):
@@ -340,4 +340,4 @@ class ScopeArenaController(object):
         # Make a new pixbuf and force a redraw(?)
         #self.wave_pb = GdkPixbuf.Pixbuf.new_from_bytes(GLib.Bytes(bytes(mmap_obj)), GdkPixbuf.Colorspace.RGB, True, 8, width, height, width * 4)
         self.wave_pb = GdkPixbuf.Pixbuf.new(GdkPixbuf.Colorspace.RGB, True, 8, width, height)
-        self.update()
+
