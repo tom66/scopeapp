@@ -251,8 +251,8 @@ class ScopeArenaController(object):
         self.stat_waves = 0
 
         self.test_aobj.set_channel_colour(1, (25, 180, 250), 40)
-        self.test_aobj.update_wave_params(0, 500, 96, 500)
-        self.test_aobj.set_target_dimensions(500, 500)
+        self.test_aobj.update_wave_params(0, 1000, 96, 1000)
+        self.test_aobj.set_target_dimensions(1000, 1000)
 
         self.wave_pb = None
 
@@ -299,7 +299,7 @@ class ScopeArenaController(object):
 
         if not self.wave_pb:
             targ_dims = self.grat_rdr.get_wave_arena_dims()
-            width, height = 500, 500
+            width, height = 1000, 1000
             self.wave_pb = GdkPixbuf.Pixbuf.new(GdkPixbuf.Colorspace.RGB, True, 8, width, height)
 
         #log.info("render_test")
