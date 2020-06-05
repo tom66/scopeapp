@@ -60,7 +60,7 @@ class ScopeArenaYTGraticuleRender(object):
         self.dims = (0, 0)
 
     def set_context(self, cr, dims):
-        log.warn(repr(dims))
+        #log.warn(repr(dims))
 
         if self.cr != None:
             pass # TODO: Cleanup?
@@ -114,7 +114,7 @@ class ScopeArenaYTGraticuleRender(object):
         return ((x, y), (w, h))
 
     def render(self):
-        log.critical("ScopeArenaYTGraticuleRender render()")
+        #log.critical("ScopeArenaYTGraticuleRender render()")
 
         t0 = time.time()
         self.cr.set_line_width(1)
@@ -327,7 +327,7 @@ class ScopeArenaController(object):
 
         targ_dims = self.grat_rdr.get_wave_arena_dims()
         width, height = targ_dims[1]
-        log.info("set_target_dimensions(%d x %d)" % (width, height))
+        #log.info("set_target_dimensions(%d x %d)" % (width, height))
 
         ox, oy = targ_dims[0]
         self.fixed.move(self.img, ox, oy)
