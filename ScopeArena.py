@@ -260,7 +260,7 @@ class ScopeArenaController(object):
         """Resize notifier."""
         log.warn("notify_resize")
         self.update_size_allocation()
-        self.grat_da.queue_draw()
+        #self.grat_da.queue_draw()
 
     def update_size_allocation(self):
         rect = self.fixed.get_allocated_size().allocation
