@@ -322,7 +322,7 @@ class ScopeArenaController(object):
         # Redraw graticule if size has changed
         if cr != None:
             self.grat_rdr.set_context(cr, self.size_alloc)
-            self.grat_da.set_size_request(200, 200)
+            self.grat_da.set_size_request(self.size_alloc[0], self.size_alloc[1])
         self.grat_rdr.render()
 
         targ_dims = self.grat_rdr.get_wave_arena_dims()
