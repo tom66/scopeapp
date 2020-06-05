@@ -73,6 +73,8 @@ class ArmwaveRenderEngine(zs.BaseRenderEngine):
         self.wave_params = (0, 2048, 64, 2048)
         aw.init()
 
+        self.done_test_wave = False
+
     def update_wave_params(self, start_t, end_t, n_waves, wave_stride):
         self.wave_params = (start_t, end_t, n_waves, wave_stride)
         log.info("update_wave_params: new %s" % repr(self.wave_params))
@@ -168,10 +170,12 @@ class ArmwaveRenderEngine(zs.BaseRenderEngine):
         aw.clear_buffer(0)
 
         #log.info("test_buffer_alloc")
-        aw.test_buffer_alloc()
+        #aw.test_buffer_alloc()
 
         #log.info("test_create_am_sine")
-        #aw.test_create_am_sine(mod, noise)
+        if not self.done_test_wave:
+            aw.test_create_am_sine(mod, noise)
+            self.done_test_wave = True
 
         log.info("set_wave_pointer_as_testbuf")
         aw.set_wave_pointer_as_testbuf()
