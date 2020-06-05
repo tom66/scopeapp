@@ -284,7 +284,7 @@ class ScopeArenaController(object):
 
         #log.info("render_test")
         t0 = time.time()
-        self.test_aobj.render_test_pb(gdkbuf=self.img.get_pixbuf(), index=self.stat_waves)
+        self.test_aobj.render_test_pb(gdkbuf=self.wave_pb, index=self.stat_waves)
         t1 = time.time()
 
         #log.info("render_test_pb %.1f ms" % ((t1 - t0) * 1000))
