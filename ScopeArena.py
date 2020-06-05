@@ -244,8 +244,7 @@ class ScopeArenaController(object):
         self.fixed.put(self.grat_da, 0, 0)
 
         self.img = Gtk.Image()
-        #self.fixed.put(self.img, 0, 0)
-        self.fixed.add(self.img)
+        self.fixed.put(self.img, 0, 0)
 
         self.size_allocated = False
         self.size_alloc = (0, 0)
