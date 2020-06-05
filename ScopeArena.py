@@ -257,7 +257,7 @@ class ScopeArenaController(object):
         """Resize notifier."""
         log.warn("notify_resize")
         self.update_size_allocation()
-        #self.grat_da.queue_draw()
+        self.grat_da.queue_draw()
 
     def update_size_allocation(self):
         rect = self.fixed.get_allocated_size().allocation
@@ -337,7 +337,7 @@ class ScopeArenaController(object):
         # Redraw graticule if size has changed
         if cr != None:
             self.grat_rdr.set_context(cr, self.size_alloc)
-        #self.grat_rdr.render()
+        self.grat_rdr.render()
 
         targ_dims = self.grat_rdr.get_wave_arena_dims()
         width, height = targ_dims[1]
