@@ -251,6 +251,7 @@ class ScopeArenaController(object):
 
     def notify_resize(self):
         """Resize notifier."""
+        log.warn("notify_resize")
         self.update_size_allocation()
         self.grat_da.queue_draw()
 
@@ -299,6 +300,8 @@ class ScopeArenaController(object):
         log.info("_draw()")
 
         self.update_size_allocation()
+
+        # Redraw graticule
         self.grat_rdr.set_context(cr, self.size_alloc)
         self.grat_rdr.render()
 
@@ -306,15 +309,16 @@ class ScopeArenaController(object):
         width, height = targ_dims[1]
         log.info("set_target_dimensions(%d x %d)" % (width, height))
 
+        # Drive the renderer
         self.test_aobj.set_channel_colour(1, (25, 180, 250), 40)
         self.test_aobj.update_wave_params(0, width, 64, width)
         self.test_aobj.set_target_dimensions(width, height)
         self.first_draw = True
 
-        # make a new pixbuf and force a redraw
+        # Make a new pixbuf and force a redraw(?)
         #self.wave_pb = GdkPixbuf.Pixbuf.new_from_bytes(GLib.Bytes(bytes(mmap_obj)), GdkPixbuf.Colorspace.RGB, True, 8, width, height, width * 4)
         self.wave_pb = GdkPixbuf.Pixbuf.new(GdkPixbuf.Colorspace.RGB, True, 8, width, height)
-        #self.update()
+        self.update()
 
         ox, oy = targ_dims[0]
         self.fixed.move(self.img, ox, oy)
