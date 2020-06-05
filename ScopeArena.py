@@ -65,7 +65,7 @@ class ScopeArenaYTGraticuleRender(object):
             pass # TODO: Cleanup?
 
         self.cr = cr
-        log.info("New dims.: %d x %d (cr:0x%08x)" % (dims[0], dims[1], cr)) 
+        log.info("New dims.: %d x %d (cr:%r)" % (dims[0], dims[1], cr)) 
 
         if dims != self.dims:
             self.dims = dims
