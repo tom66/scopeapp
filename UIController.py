@@ -558,11 +558,11 @@ class MainApplication(object):
         return False
     
     def ui_tick_scope(self):
-        t0 = time.time()
+        #t0 = time.time()
         self.ctrl.tick()
-        t1 = time.time()
+        #t1 = time.time()
 
-        log.info("ctrl_tick %.1f ms" % ((t1 - t0) * 1000))
+        #log.info("ctrl_tick %.1f ms" % ((t1 - t0) * 1000))
 
         # Should we start acquisition automatically?
         if self.start_auto != None and time.time() > self.start_auto:
