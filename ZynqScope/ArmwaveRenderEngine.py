@@ -50,6 +50,24 @@ class ArmwaveRenderEngine(zs.BaseRenderEngine):
         self._shm_id = None
         self._shm_size = 0
         self._mmap = None
+        # Free existing memory if present
+        #if self._shm_id != None:
+        #    self._mmap.close()
+
+        try:
+            shm_unlink(self._shm_name)
+            log.info("shm_unlinked")
+        except:
+            pass
+
+        #try:
+        #    self._mmap.close()
+        #    os.close(self._shm_id)
+        #    log.info("_mmap close()")
+        #except:
+        #    pass
+
+        self._shm_id = shm_open(self._shm_name)
 
         # default wave parameters
         self.wave_params = (0, 2048, 64, 2048)
@@ -65,30 +83,21 @@ class ArmwaveRenderEngine(zs.BaseRenderEngine):
         aw.set_channel_colour(index, *col)
 
     def set_target_dimensions(self, width, height):
-        # Free existing memory if present
-        if self._shm_id != None:
-            self._mmap.close()
-
-        try:
-            shm_unlink(self._shm_name)
-            log.info("shm_unlinked")
-        except:
-            pass
-
+        new_size = width * height * 4  # 4 bytes per pixel
+        if self._shm_size == new_size:
+            return
+        self._shm_size = new_size
         try:
             self._mmap.close()
-            os.close(self._shm_id)
+            #os.close(self._shm_id)
             log.info("_mmap close()")
         except:
             pass
-
-        self._shm_id = shm_open(self._shm_name)
-        self._shm_size = width * height * 4  # 4 bytes per pixel
         os.ftruncate(self._shm_id, self._shm_size)
         self._mmap = mmap.mmap(self._shm_id, self._shm_size)
 
         log.info("available_wave_params: new %s" % repr(self.wave_params))
-        log.info("_shm_id: %d" % self._shm_id)
+        #log.info("_shm_id: %d" % self._shm_id)
 
         # Setup armwave
         aw.cleanup()
