@@ -243,7 +243,7 @@ class ScopeArenaController(object):
         self.fixed.put(self.img, 0, 0)
 
         self.grat_da = Gtk.DrawingArea()
-        self.grat_da.connect('draw', self._draw)
+        self.grat_da.connect('expose', self._draw)
         self.fixed.put(self.grat_da, 0, 0)
 
         self.size_allocated = False
@@ -315,9 +315,9 @@ class ScopeArenaController(object):
         #log.info("_draw()")
 
         # need to also check for general invalidation
-        if not self.update_size_allocation():
-            #log.warn("Skip grat. redraw - no size change")
-            return
+        #if not self.update_size_allocation():
+        #   log.warn("Skip grat. redraw - no size change")
+        #    return
 
         # Redraw graticule if size has changed
         if cr != None:
