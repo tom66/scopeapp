@@ -292,6 +292,7 @@ class ScopeArenaController(object):
         width, height = targ_dims[1]
 
         self.wave_pb = GdkPixbuf.Pixbuf.new_from_bytes(GLib.Bytes(bytes(mmap_obj)), GdkPixbuf.Colorspace.RGB, True, 8, width, height, width * 4)
+        mmap_obj.madvise(mmap.MADV_REMOVE)
         #mmap_obj.close()
 
         ox, oy = targ_dims[0]
