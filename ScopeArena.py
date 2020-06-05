@@ -301,8 +301,8 @@ class ScopeArenaController(object):
         #mmap_obj.close()
 
         t0 = time.time()
-        self.img.set_from_pixbuf(self.wave_pb)
-        self.img.queue_draw()
+        #self.img.set_from_pixbuf(self.wave_pb)
+        #self.img.queue_draw()
         t1 = time.time()
 
         #log.info("set_from_pixbuf %.1f ms" % ((t1 - t0) * 1000))
