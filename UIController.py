@@ -50,7 +50,7 @@ popdown_menu_options = [
 ]
 
 # How often to refresh UI data.  Lower number = more CPU, faster refresh.
-UI_REFRESH_MS = 40
+UI_REFRESH_MS = 10
 
 # Minimum delay between refreshes; as load in a tick increases the delay might reduce to keep the UI
 # responsive (& above rate consistent), but we don't want to steal all of GTK's time
