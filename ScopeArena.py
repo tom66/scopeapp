@@ -237,9 +237,9 @@ class ScopeArenaController(object):
             cfg.Render.GratMainColour, cfg.Render.GratSubColour, cfg.Render.GratDivColour, \
             cfg.Render.GratBrightness, cfg.Render.GratSubTickSize)
         
-        #self.grat_da = Gtk.DrawingArea()
-        #self.grat_da.connect('draw', self._draw)
-        #self.fixed.put(self.grat_da, 0, 0)
+        self.grat_da = Gtk.DrawingArea()
+        self.grat_da.connect('draw', self._draw)
+        self.fixed.put(self.grat_da, 0, 0)
 
         self.img = Gtk.Image()
         #self.fixed.put(self.img, 0, 0)
@@ -250,10 +250,6 @@ class ScopeArenaController(object):
         self.first_draw = False
         self.test_mod = 0.0
         self.stat_waves = 0
-
-        self.test_aobj.set_channel_colour(1, (25, 180, 250), 40)
-        self.test_aobj.update_wave_params(0, 1000, 96, 1000)
-        self.test_aobj.set_target_dimensions(1000, 1000)
 
         self.wave_pb = None
 
@@ -294,14 +290,14 @@ class ScopeArenaController(object):
         #log.info(repr(self.window.get_window()))
         #log.info("update()")
 
-        #if not self.first_draw:
-        #    log.warn("Not done first redraw, skipping update")
-        #    return
+        if not self.first_draw:
+            log.warn("Not done first redraw, skipping update")
+            return
 
-        if not self.wave_pb:
-            targ_dims = self.grat_rdr.get_wave_arena_dims()
-            width, height = 1000, 1000
-            self.wave_pb = GdkPixbuf.Pixbuf.new(GdkPixbuf.Colorspace.RGB, True, 8, width, height)
+        #if not self.wave_pb:
+        #    targ_dims = self.grat_rdr.get_wave_arena_dims()
+        #    width, height = 1000, 1000
+        #    self.wave_pb = GdkPixbuf.Pixbuf.new(GdkPixbuf.Colorspace.RGB, True, 8, width, height)
 
         #log.info("render_test")
         t0 = time.time()
