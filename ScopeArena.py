@@ -299,9 +299,6 @@ class ScopeArenaController(object):
         #mmap_obj.madvise(mmap.MADV_REMOVE)
         #mmap_obj.close()
 
-        ox, oy = targ_dims[0]
-        self.fixed.move(self.img, ox, oy)
-        
         t0 = time.time()
         self.img.set_from_pixbuf(self.wave_pb)
         t1 = time.time()
@@ -327,6 +324,9 @@ class ScopeArenaController(object):
         width, height = targ_dims[1]
         log.info("set_target_dimensions(%d x %d)" % (width, height))
 
+        ox, oy = targ_dims[0]
+        self.fixed.move(self.img, ox, oy)
+        
         # Drive the renderer
         self.test_aobj.set_channel_colour(1, (25, 180, 250), 40)
         self.test_aobj.update_wave_params(0, width, 64, width)
