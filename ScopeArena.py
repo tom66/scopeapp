@@ -297,11 +297,14 @@ class ScopeArenaController(object):
 
         #mmap_obj.madvise(mmap.MADV_REMOVE)
         #mmap_obj.close()
+        
+        self.img.set_from_pixbuf(self.wave_pb)
 
     def _draw(self, wdg, cr):
         """Draw/expose callback"""
         log.info("_draw()")
 
+        # need to also check for general invalidation
         if not self.update_size_allocation():
             log.warn("Skip redraw - no size change")
             return
@@ -327,4 +330,3 @@ class ScopeArenaController(object):
 
         ox, oy = targ_dims[0]
         self.fixed.move(self.img, ox, oy)
-        self.img.set_from_pixbuf(self.wave_pb)
