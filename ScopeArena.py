@@ -250,8 +250,6 @@ class ScopeArenaController(object):
         self.test_mod = 0.0
         self.stat_waves = 0
 
-        self.wave_pb = GdkPixbuf.Pixbuf.new(GdkPixbuf.Colorspace.RGB, True, 8, width, height)
-
     def notify_resize(self):
         """Resize notifier."""
         log.warn("notify_resize")
@@ -288,6 +286,11 @@ class ScopeArenaController(object):
 
         #log.info(repr(self.window.get_window()))
         #log.info("update()")
+
+        if not self.wave_pb:
+            targ_dims = self.grat_rdr.get_wave_arena_dims()
+            width, height = targ_dims[1]
+            self.wave_pb = GdkPixbuf.Pixbuf.new(GdkPixbuf.Colorspace.RGB, True, 8, width, height)
 
         if not self.first_draw:
             log.warn("Not done first redraw, skipping update")
