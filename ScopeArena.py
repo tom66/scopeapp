@@ -60,15 +60,18 @@ class ScopeArenaYTGraticuleRender(object):
         self.dims = (0, 0)
 
     def set_context(self, cr, dims):
-        #log.warn(repr(dims))
-
+        """Set the Cairo context; if source dimensions have changed then True is returned, otherwise False."""
         if self.cr != None:
             pass # TODO: Cleanup?
 
         self.cr = cr
         log.info("New dims.: %d x %d" % (dims[0], dims[1])) 
-        #self.cr.scale(dims[0], dims[1])
-        self.dims = dims
+
+        if dims != self.dims:
+            self.dims = dims
+            return True
+        else:
+            return False
 
     def apply_settings(self, hdiv, vdiv, hsubdiv, vsubdiv, xmarg, ymarg, ytopoff, grat_flags, grat_main_col, grat_sub_col, \
             grat_div_col, grat_brightness, grat_subsize):
@@ -321,9 +324,9 @@ class ScopeArenaController(object):
 
         # Redraw graticule if size has changed
         if cr != None:
-            self.grat_rdr.set_context(cr, self.size_alloc)
-            self.grat_da.set_size_request(self.size_alloc[0], self.size_alloc[1])
-            self.grat_rdr.render()
+            if self.grat_rdr.set_context(cr, self.size_alloc):
+                self.grat_da.set_size_request(self.size_alloc[0], self.size_alloc[1])
+                self.grat_rdr.render()
 
         targ_dims = self.grat_rdr.get_wave_arena_dims()
         width, height = targ_dims[1]
