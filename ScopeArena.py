@@ -242,6 +242,8 @@ class ScopeArenaController(object):
         self.size_allocated = False
         self.size_alloc = (0, 0)
 
+        self.first_draw = False
+
         self.cfg = cfg
         self.window = window
 
@@ -258,24 +260,18 @@ class ScopeArenaController(object):
             log.warn("Waveform zone size is zero, not allocating yet")
             return
 
-        log.debug("Alloc: %d x %d" % (rect.width, rect.height))
-        self.grat_da.set_size_request(rect.width, rect.height)
-        self.size_alloc = (rect.width, rect.height)
-        self.size_allocated = True
+        new_alloc = (rect.width, rect.height)
 
-    def _draw(self, wdg, cr):
-        """Draw/expose callback"""
-        self.update_size_allocation()
-        self.grat_rdr.set_context(cr, self.size_alloc)
-        self.grat_rdr.render()
+        if self.size_alloc != new_alloc:
+            log.debug("New alloc: %d x %d" % new_alloc)
+            self.grat_da.set_size_request(rect.width, rect.height)
+            self.size_alloc = (rect.width, rect.height)
+            self.size_allocated = True
 
-        targ_dims = self.grat_rdr.get_wave_arena_dims()
-        width, height = targ_dims[1]
-        log.info("set_target_dimensions(%d x %d)" % (width, height))
-
-        self.test_aobj.set_channel_colour(1, (25, 180, 250), 40)
-        self.test_aobj.update_wave_params(0, width, 64, width)
-        self.test_aobj.set_target_dimensions(width, height)
+    def update(self):
+        if not self.first_draw:
+            log.warn("Not done first redraw, skipping update")
+            return
         
         log.info("render_test")
         self.test_aobj.render_test()
@@ -290,3 +286,18 @@ class ScopeArenaController(object):
         ox, oy = targ_dims[0]
         self.fixed.move(self.img, ox, oy)
         self.img.set_from_pixbuf(self.wave_pb)
+
+    def _draw(self, wdg, cr):
+        """Draw/expose callback"""
+        self.update_size_allocation()
+        self.grat_rdr.set_context(cr, self.size_alloc)
+        self.grat_rdr.render()
+
+        targ_dims = self.grat_rdr.get_wave_arena_dims()
+        width, height = targ_dims[1]
+        log.info("set_target_dimensions(%d x %d)" % (width, height))
+
+        self.test_aobj.set_channel_colour(1, (25, 180, 250), 40)
+        self.test_aobj.update_wave_params(0, width, 64, width)
+        self.test_aobj.set_target_dimensions(width, height)
+        self.first_draw = True

@@ -555,6 +555,9 @@ class MainApplication(object):
             log.info("Automatically starting acquisition on power up...")
             self.start_auto = None
             self.ctrl.acq_run()
+
+        # Update waveform arena (including loading next frame)
+        self.arena.update()
     
     def ui_update_clock(self):
         """
