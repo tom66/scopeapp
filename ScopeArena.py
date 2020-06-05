@@ -267,7 +267,7 @@ class ScopeArenaController(object):
         new_alloc = (rect.width, rect.height)
 
         if self.size_alloc != new_alloc:
-            log.debug("New alloc: %d x %d" % new_alloc)
+            #log.debug("New alloc: %d x %d" % new_alloc)
             self.grat_da.set_size_request(rect.width, rect.height)
             self.size_alloc = (rect.width, rect.height)
             self.size_allocated = True
@@ -289,7 +289,7 @@ class ScopeArenaController(object):
 
         log.info("render_test_pb %.1f ms" % ((t1 - t0) * 1000))
 
-        log.info("Wave arena dimensions: %s" % repr(self.grat_rdr.get_wave_arena_dims()))
+        #log.info("Wave arena dimensions: %s" % repr(self.grat_rdr.get_wave_arena_dims()))
 
         # draw the pixbuf
         #mmap_obj = mmap.mmap(self.test_aobj.get_shm_id(), self.test_aobj.get_shm_size())
