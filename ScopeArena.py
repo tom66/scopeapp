@@ -250,6 +250,10 @@ class ScopeArenaController(object):
         self.test_mod = 0.0
         self.stat_waves = 0
 
+        self.test_aobj.set_channel_colour(1, (25, 180, 250), 40)
+        self.test_aobj.update_wave_params(0, 500, 96, 500)
+        self.test_aobj.set_target_dimensions(500, 500)
+
         self.wave_pb = None
 
     def notify_resize(self):
@@ -334,7 +338,8 @@ class ScopeArenaController(object):
             return
 
         # Redraw graticule if size has changed
-        self.grat_rdr.set_context(cr, self.size_alloc)
+        if cr != None:
+            self.grat_rdr.set_context(cr, self.size_alloc)
         #self.grat_rdr.render()
 
         targ_dims = self.grat_rdr.get_wave_arena_dims()
