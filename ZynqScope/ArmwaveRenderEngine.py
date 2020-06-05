@@ -182,8 +182,7 @@ class ArmwaveRenderEngine(zs.BaseRenderEngine):
         # filling the mmap pointer with the rendered buffer (renders into the buffer)
         log.info("fill_pixbuf_into_pybuffer(%r)" % self._mmap)
 
-        if not aw.test_fill_gdkbuf(gdkbuf):
-            raise RuntimeError("fail")
+        aw.test_fill_gdkbuf(gdkbuf)
 
         #print(bytes(self._mmap))
 
