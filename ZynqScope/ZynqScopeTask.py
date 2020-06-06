@@ -192,6 +192,7 @@ class ZynqScopeSubprocess(multiprocessing.Process):
         self.shared_dict['running_state'] = ACQSTATE_STOPPED
         self.shared_dict['render_to_mmap'] = False
         self.shared_dict['mmap_id'] = None
+        self.shared_dict['mmap_length'] = 0
 
         self.stats.num_waves_sent = 0
         
@@ -206,7 +207,9 @@ class ZynqScopeSubprocess(multiprocessing.Process):
 
     def do_render(self, resp):
         if self.shared_dict['render_to_mmap']:
-            self.shared_dict['mmap_id'] = self.rengine.render_single_mmal(resp.buffers[0].data_ptr)
+            mmap_id, mmap_length = self.rengine.render_single_mmal(resp.buffers[0].data_ptr)
+            self.shared_dict['mmap_id'] = mmap_id
+            self.shared_dict['mmap_length'] = mmap_length
         else:
             log.warn("Render inhibited")
 
@@ -601,6 +604,9 @@ class ZynqScopeTaskController(object):
 
     def get_render_mmap_id(self):
         return self.zstask.shared_dict['mmap_id']
+
+    def get_render_mmap_length(self):
+        return self.zstask.shared_dict['mmap_length']
 
     def sync_to_real_world(self):
         # Sync to the real world includes:  

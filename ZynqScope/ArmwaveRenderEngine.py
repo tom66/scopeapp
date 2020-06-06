@@ -138,7 +138,7 @@ class ArmwaveRenderEngine(zs.BaseRenderEngine):
         if not aw.fill_pixbuf_into_pybuffer(self._mmap):
             raise RuntimeError("Pixbuf render failed with PyFalse: possibly corrupt pointer?")
 
-        return self._shm_id
+        return self._shm_id, self._shm_size
 
     """
     def render_test_to_ppm(self, fn):
