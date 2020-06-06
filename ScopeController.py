@@ -457,7 +457,9 @@ class ScopeController(object):
     # Currently selected tab for UI
     active_tab = 0
     
-    def __init__(self):
+    def __init__(self, root_mgr):
+        self.root_mgr = root_mgr
+
         if AFE_module.get_channel_count() == 4:
             self.channels.append(ScopeChannelController(SCOPE_CH_1))
             self.channels.append(ScopeChannelController(SCOPE_CH_2))
@@ -537,6 +539,9 @@ class ScopeController(object):
         except Exception as e:
             # TRANSLATORS: {0} is a Python exception string which may or may not be translated into user's locale. 
             raise Utils.StateSaveFileCorrupted(_("Unable to restore configuration file: General load error: {0}".format(repr(e))))
+
+        # Generate notifiers for state change
+        self.root_mgr.state_change_all()
 
     def save_settings(self, fname):
         """Save settings file, overwriting any existing file with this name."""

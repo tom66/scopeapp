@@ -439,7 +439,7 @@ class MainApplication(object):
         called e.g. 'ch-colour' to notify the render engine that the wave colour has changed."""
         # Set a flag.  Changes are synced after a few seconds.
         self.state_sync_pending = True
-        
+
     def state_change_notify_ext(self, ident):
         """Extended state change notifier.  ident can be passed to identify a change notifier to be 
         called e.g. 'ch-colour' to notify the render engine that the wave colour has changed."""
@@ -447,6 +447,9 @@ class MainApplication(object):
 
         if ident == "ch-colour":
             self.arena.notify_channel_colour_change()
+
+    def state_change_all(self):
+        self.state_change_notify_ext("ch-colour")
 
     def prompt_user_50ohm(self):
         """Check if any channels have 50 ohm mode selected after restoring settings.

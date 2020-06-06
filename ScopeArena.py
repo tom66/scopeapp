@@ -256,7 +256,7 @@ class ScopeArenaController(object):
             cfg.Render.DisplayHSubDivisionsYT, cfg.Render.DisplayVSubDivisionsYT, \
             cfg.Render.XMargin, cfg.Render.YMargin, cfg.Render.YTopOffset, cfg.Render.GratFlags, \
             cfg.Render.GratMainColour, cfg.Render.GratSubColour, cfg.Render.GratDivColour, \
-            cfg.Render.GratBrightness, cfg.Render.GratSubTickSize)
+            cfg.Render.GratIntensity, cfg.Render.GratSubTickSize)
         
         self.grat_da = Gtk.DrawingArea()
         self.grat_da.connect('draw', self._draw)
@@ -272,6 +272,8 @@ class ScopeArenaController(object):
         self.stat_waves = 0
 
         self.wave_pb = None
+
+        self.set_wave_intensity(cfg.Render.WaveIntensity)
 
     def set_crt_mode(self, state):
         log.critical("CRT mode adjustment not implemented")
