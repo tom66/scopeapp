@@ -463,7 +463,7 @@ class ChannelTab(object):
     # Calls extension notifier: no decorator (TODO: Figure out how to make this work with decorators - 
     # naive approach did not work.)
     def _btn_chan_colour_press(self, *args):
-        def dyn_colour_change(self, colour):
+        def dyn_colour_change(colour):
             log.info("notifier: dyn_colour_change(%s)" % repr(colour)) 
             self.channel.set_colour(colour)
 
