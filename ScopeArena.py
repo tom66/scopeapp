@@ -354,6 +354,10 @@ class ScopeArenaController(object):
         self.img.queue_draw()
         t1 = time.time()
 
+        # we're done with mmap; Linux can free it for us
+        render_mmap.madvise(mmap.MADV_REMOVE)
+        render_mmap.close()
+
         #log.info("set_from_pixbuf %.1f ms" % ((t1 - t0) * 1000))
 
         self.stat_waves += 1
