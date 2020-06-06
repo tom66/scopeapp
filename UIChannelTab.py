@@ -466,6 +466,7 @@ class ChannelTab(object):
         def dyn_colour_change(colour):
             log.info("notifier: dyn_colour_change(%s)" % repr(colour)) 
             self.channel.set_colour(*colour)
+            self.root_mgr.state_change_notify_ext("ch-colour")
 
         colour_picker = UIChannelColourPicker.ChannelColourPicker(self.channel.long_name)
         colour_picker.set_hue_sat(*self.channel.get_colour())
