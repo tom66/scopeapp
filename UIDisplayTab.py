@@ -21,7 +21,6 @@ DISPLAY_TAB_LAYOUT_FILE = "resources/display_tab.gtkbuilder"
 DISPLAY_TAB_CSS_FILE = "display_tab.css"
 
 class DisplayTab(object):
-    last_enable_state = None
     cssprov = None
     
     init_refresh = False
@@ -95,8 +94,9 @@ class DisplayTab(object):
         # The button captures tab clicked events to activate our click tab action (channel enable/disable)
         self.lbl_tab = Gtk.Label()
         self.lbl_tab.set_angle(90)
+        self.lbl_tab.set_label(_("Display"))
         self.lbl_btn = Gtk.Button()
-        self.lbl_btn.add(_("Display"))
+        self.lbl_btn.add(lbl_tab)
         self.lbl_btn.connect("clicked", self.tab_clicked)
         self.lbl_btn.show_all()
         
@@ -187,7 +187,6 @@ class DisplayTab(object):
             return
         
         self.init_refresh = True
-
     
     def append_to_notebook(self):
         self.notebook.append_page(self.get_embedded_container(), self.get_embedded_label())
