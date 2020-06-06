@@ -91,8 +91,8 @@ class DisplayTab(object):
         self.frm_disp_graticule.get_label_widget().set_label(_("Graticule"))
 
         # Load configuration settings
-        self.scl_intensity.set_value(cfg.Render.WaveIntensity)
-        self.scl_grat_intensity.set_value(cfg.Render.GratIntensity)
+        self.scl_intensity.set_value(self.cfg.Render.WaveIntensity)
+        self.scl_grat_intensity.set_value(self.cfg.Render.GratIntensity)
 
         # Create a button containing a label which is placed in the tab label position
         # The button captures tab clicked events to activate our click tab action (channel enable/disable)
