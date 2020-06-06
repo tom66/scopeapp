@@ -199,7 +199,7 @@
       </packing>
     </child>
     <child>
-      <object class="GtkFrame" id="frm_disp_grat">
+      <object class="GtkFrame" id="frm_disp_graticule">
         <property name="visible">True</property>
         <property name="can_focus">False</property>
         <property name="valign">start</property>
