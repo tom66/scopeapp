@@ -137,6 +137,9 @@ class ChannelColourPicker(object):
         for n, btn in enumerate(self.default_colour_widgets):
             if btn == wdg:
                 self.set_hue_sat(*self.default_colours[n])
+                
+                if callable(self.notifier):
+                    self.notifier(self.get_hue_sat())
     
     def btn_ok_clicked(self, *args):
         print("btn_ok_clicked")
@@ -216,10 +219,14 @@ class ChannelColourPicker(object):
             
         self.hue = self.scl_hue.get_value()
         self.sat = self.scl_sat.get_value() * 0.01
+
+        if callable(self.notifier):
+            self.notifier(self.get_hue_sat())
         
         self.refresh_ui()
     
-    def run(self):
+    def run(self, notifier=None):
+        self.notifier = notifier
         self.dialog.show_all()
         self.dialog.run()
         print("Done, resp:", self.get_hue_sat())
