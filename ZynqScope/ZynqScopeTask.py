@@ -208,6 +208,7 @@ class ZynqScopeSubprocess(multiprocessing.Process):
     def do_render(self, resp):
         if self.shared_dict['render_to_mmap']:
             log.critical("render from: 0x%08x" % resp.buffers[0].data_ptr)
+            log.critical("render buffers: %s" % repr(resp.buffers))
             mmap_id, mmap_length = self.rengine.render_single_mmal(resp.buffers[0].data_ptr)
             self.shared_dict['mmap_id'] = mmap_id
             self.shared_dict['mmap_length'] = mmap_length
