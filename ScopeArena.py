@@ -378,7 +378,7 @@ class ScopeArenaController(object):
         self.fixed.move(self.img, ox, oy)
         
         # Drive the renderer
-        self.ctrl.zstc.setup_render_dimensions(width, height)
+        self.root_mgr.ctrl.zstc.setup_render_dimensions(width, height)
         #self.local_aobj.update_wave_params(0, width, 96, width)
         #self.local_aobj.set_target_dimensions(width, height)
         self.first_draw = True
