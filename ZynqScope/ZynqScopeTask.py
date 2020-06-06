@@ -350,7 +350,7 @@ class ZynqScopeSubprocess(multiprocessing.Process):
         """Acquisition tick process.  Manages acquisition and SPI control."""
         # This function should be cleaned up: we need to use ZynqScope API where possible, 
         # and not send our own ZynqCommands...
-        #log.debug("aq=%d" % self.acq_state)
+        log.debug("aq=%d" % self.acq_state)
 
         if self.acq_state == TSTATE_ACQ_PREPARE_TO_START:
             # Stop, if we get a signal
@@ -612,6 +612,8 @@ class ZynqScopeTaskController(object):
         self.evq_cache('ZynqScopeSimpleCommand_SetupForTimebase')
     
     def acquisition_tick(self):
+        pass
+        """
         while not self.acq_resp.empty():
             resp = self.acq_resp.get()
             #log.debug("Got AcqResponse: %r" % resp)
@@ -622,3 +624,4 @@ class ZynqScopeTaskController(object):
                 log.debug("Deref:  %r" % b.get_memoryview())
                 #b.dump_to_file("rxtest/test%d.bin" % self.acqstat.num_waves_acqd)
                 self.acqstat.num_waves_acqd += 1
+        """
