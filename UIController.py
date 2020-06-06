@@ -251,7 +251,6 @@ class MainApplication(object):
 
         # TODO: acquire, trigger, math, reference, storage, utility...
 
-
     def setup_channel_widgets(self):
         """Setup the channel widgets for the UI."""
         log.info("Creating channel widgets")
@@ -440,8 +439,13 @@ class MainApplication(object):
         called e.g. 'ch-colour' to notify the render engine that the wave colour has changed."""
         # Set a flag.  Changes are synced after a few seconds.
         self.state_sync_pending = True
+        
+    def state_change_notify_ext(self, ident):
+        """Extended state change notifier.  ident can be passed to identify a change notifier to be 
+        called e.g. 'ch-colour' to notify the render engine that the wave colour has changed."""
+        self.state_change_notify()
 
-        if opt_ident == "ch-colour":
+        if ident == "ch-colour":
             self.arena.notify_channel_colour_change()
 
     def prompt_user_50ohm(self):
