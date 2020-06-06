@@ -19,6 +19,10 @@ import CSSManager
 
 import copy
 
+# Load debug logger
+import logging
+log = logging.getLogger()
+
 CHANNEL_TAB_LAYOUT_FILE = "resources/channel_tab.gtkbuilder"
 CHANNEL_TAB_CSS_FILE = "channel_tab.css"
 
