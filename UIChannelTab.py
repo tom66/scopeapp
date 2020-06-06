@@ -463,9 +463,13 @@ class ChannelTab(object):
     # Calls extension notifier: no decorator (TODO: Figure out how to make this work with decorators - 
     # naive approach did not work.)
     def _btn_chan_colour_press(self, *args):
+        def dyn_colour_change(self, colour):
+            log.info("notifier: dyn_colour_change(%s)" % repr(colour)) 
+            self.channel.set_colour(colour)
+
         colour_picker = UIChannelColourPicker.ChannelColourPicker(self.channel.long_name)
         colour_picker.set_hue_sat(*self.channel.get_colour())
-        self.channel.set_colour(*colour_picker.run())
+        self.channel.set_colour(*colour_picker.run(notifier=dyn_colour_change))
         self.root_mgr.state_change_notify_ext("ch-colour")
     
     @__state_change
