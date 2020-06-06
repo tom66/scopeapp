@@ -179,8 +179,8 @@ class ZynqScopeSubprocess(multiprocessing.Process):
         self.stats.num_waves_sent = 0
         
         # Prepare the render endigne (in future we'll support other render targets)
-        self.rengine = awre.ArmwaveRenderEngine()
-        self.init_render_buffer(2048, 1024)
+        #self.rengine = awre.ArmwaveRenderEngine()
+        #self.init_render_buffer(2048, 1024)
 
         # we might want the capability to tune the period as time goes by
         self.task_period = 1.0 / DEFAULT_ZYNQ_TASK_RATE
@@ -191,8 +191,9 @@ class ZynqScopeSubprocess(multiprocessing.Process):
     def init_render_buffer(self, width, height):
         """Initialise a shm and the render engine for a specified width and height, for the
         software driven render engine ArmWave."""
-        self.rengine.set_channel_colour(1, (25, 170, 255), 10)
-        self.rengine.set_target_dimensions(width, height)
+        #self.rengine.set_channel_colour(1, (25, 170, 255), 10)
+        #self.rengine.set_target_dimensions(width, height)
+        pass
 
     def do_render(self, resp):
         log.info("do_render(%r)" % resp)
