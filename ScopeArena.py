@@ -275,11 +275,11 @@ class ScopeArenaController(object):
 
     def set_crt_mode(self, state):
         log.critical("CRT mode adjustment not implemented")
-        
+
     def set_wave_intensity(self, intensity):
         aw_ints = intensity * MAX_WAVE_INTENSITY
         log.info("Set intensity to %.1f - Armwave sees %.1f" % (intensity, aw_ints))
-        self.local_aobj.set_channel_brightness(aw_ints)
+        self.local_aobj.set_channel_brightness(1, aw_ints)
 
     def notify_resize(self):
         """Resize notifier."""
