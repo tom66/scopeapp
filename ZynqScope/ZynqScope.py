@@ -200,6 +200,7 @@ class ZynqScope(object):
     rawcam_mod = None 
     rawcam_running = False
     rawcam_buffer_dims = (0, 0, 0)
+
     
     def __init__(self, display_samples_target, default_hdiv_span):
         # Set default parameters
