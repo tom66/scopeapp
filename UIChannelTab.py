@@ -342,8 +342,9 @@ class ChannelTab(object):
         return wrapper
     
     def __state_change(func, opt_ident=""):
-        self.root_mgr.state_change_notify(opt_ident)
         def wrapper(self, *args):
+            log.info(repr(self))
+            self.root_mgr.state_change_notify(opt_ident)
             return func(self, *args)
         
         return wrapper
