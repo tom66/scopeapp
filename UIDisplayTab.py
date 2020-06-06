@@ -174,7 +174,8 @@ class DisplayTab(object):
 
     @__state_change
     def _scl_intensity_change(self, *args):
-        self.root_mgr.arena.set_wave_intensity(self.scl_intensity.get_value() * 0.01) # Value is from 0-100, scale to 0-1
+        if self.root_mgr.arena != None:
+            self.root_mgr.arena.set_wave_intensity(self.scl_intensity.get_value() * 0.01) # Value is from 0-100, scale to 0-1
 
     @__state_change
     def _scl_grat_intensity_change(self, *args):

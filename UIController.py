@@ -88,6 +88,8 @@ class MainApplication(object):
     ui_widgets = []
     
     active_ch = 0
+
+    arena = None
     
     # Flasher variable; flips state at config FlashFreq rate
     flash_period = 0
