@@ -466,7 +466,7 @@ class ChannelTab(object):
         colour_picker = UIChannelColourPicker.ChannelColourPicker(self.channel.long_name)
         colour_picker.set_hue_sat(*self.channel.get_colour())
         self.channel.set_colour(*colour_picker.run())
-        self.root_mgr.state_change_notify_ext(opt_ident)
+        self.root_mgr.state_change_notify_ext("ch-colour")
     
     @__state_change
     @__user_exception_handler
