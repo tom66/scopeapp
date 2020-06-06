@@ -8,6 +8,10 @@ from ctypes import util, cdll
 import ZynqScope.ZynqScope as zs
 import ZynqScope.armwave.armwave as aw
 
+# catch SIGSEGV, SIGABRT, etc.
+import faulthandler
+faulthandler.enable()
+
 import logging
 log = logging.getLogger()
 
