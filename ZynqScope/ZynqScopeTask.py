@@ -526,8 +526,8 @@ class ZynqScopeTaskController(object):
             'ZynqScopeRawcamStop' : ZynqScopeRawcamStop(),
             'ZynqScopeStartAutoAcquisition' : ZynqScopeStartAutoAcquisition(None),
             'ZynqScopeRenderSetupTargetDimensions' : ZynqScopeRenderSetupTargetDimensions(0, 0),
-            'ZynqScopeRenderChangeChannelColour' : (0, None),
-            'ZynqScopeRenderChangeChannelIntensity' : (0, 0)
+            'ZynqScopeRenderChangeChannelColour' : ZynqScopeRenderChangeChannelColour(0, None),
+            'ZynqScopeRenderChangeChannelIntensity' : ZynqScopeRenderChangeChannelIntensity(0, 0)
         }
         
         # Cache for last fetched attributes
