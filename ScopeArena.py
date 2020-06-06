@@ -326,7 +326,7 @@ class ScopeArenaController(object):
         render_length = self.root_mgr.ctrl.zst.get_render_mmap_length()
 
         if render_mmapid is None:
-            log.warn("render_mmap not yet ready, skipping render")
+            pass #log.warn("render_mmap not yet ready, skipping render")
             return
 
         render_mmap = mmap.mmap(render_mmapid, render_length)
