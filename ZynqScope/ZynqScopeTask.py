@@ -206,7 +206,7 @@ class ZynqScopeSubprocess(multiprocessing.Process):
 
     def do_render(self, resp):
         if self.shared_dict['render_to_mmap']:
-            self.shared_dict['mmap_id'] = self.rengine.render_block(resp.buffers[0].data_ptr)
+            self.shared_dict['mmap_id'] = self.rengine.render_single_mmal(resp.buffers[0].data_ptr)
         else:
             log.warn("Render inhibited")
 
