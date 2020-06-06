@@ -133,7 +133,7 @@ class ArmwaveRenderEngine(zs.BaseRenderEngine):
     def render_single_mmal(self, mmal_data_ptr):
         aw.clear_buffer(0)
         aw.set_wave_pointer_u32(mmal_data_ptr)
-        aw.test_generate()
+        aw.generate()
 
         if not aw.fill_pixbuf_into_pybuffer(self._mmap):
             raise RuntimeError("Pixbuf render failed with PyFalse: possibly corrupt pointer?")
