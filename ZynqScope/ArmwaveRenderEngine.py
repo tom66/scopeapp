@@ -144,6 +144,8 @@ class ArmwaveRenderEngine(zs.BaseRenderEngine):
         os.ftruncate(self._shm_id, self._shm_size)
         self._mmap = mmap.mmap(self._shm_id, self._shm_size)
 
+        log.info("shm_id=%d" % self._shm_id)
+
         aw.clear_buffer(0)
         aw.set_wave_pointer_u32(mmal_data_ptr)
         aw.generate()
