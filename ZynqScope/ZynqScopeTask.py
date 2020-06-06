@@ -497,6 +497,8 @@ class ZynqScopeTaskController(object):
     interface.
     """
     def __init__(self, zs_init_args):
+        log.info("ZynqScopeTaskController: __init__")
+
         # Create task queues and manager then initialise process with these resources
         self.evq = multiprocessing.Queue()
         self.rsq = multiprocessing.Queue()
