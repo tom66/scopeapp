@@ -320,7 +320,7 @@ class ScopeArenaController(object):
             log.warn("Not done first redraw, skipping update")
             return
 
-        render_mmap = self.ctrl.zstc.get_render_mmap_id()
+        render_mmap = self.root_mgr.ctrl.zstc.get_render_mmap_id()
 
         if render_mmap is None:
             log.warn("render_mmap not yet ready, skipping render")
