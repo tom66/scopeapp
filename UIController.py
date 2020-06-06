@@ -124,7 +124,7 @@ class MainApplication(object):
         self.cfgmgr = cfgmgr
 
         log.info("Start initialising oscilloscope control")
-        self.ctrl = SC.ScopeController()
+        self.ctrl = SC.ScopeController(self)
         
         # Here we'd display a splash screen while setting everything up...
         
