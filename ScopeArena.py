@@ -279,9 +279,10 @@ class ScopeArenaController(object):
         log.critical("CRT mode adjustment not implemented")
 
     def set_wave_intensity(self, intensity):
-        aw_ints = intensity * MAX_WAVE_INTENSITY
-        log.info("Set intensity to %.1f - Armwave sees %.1f" % (intensity, aw_ints))
-        self.root_mgr.ctrl.zstc.setup_render_channel_intensity(1, aw_ints)
+        if self.root_mgr.ctrl.zstc != None:
+            aw_ints = intensity * MAX_WAVE_INTENSITY
+            log.info("Set intensity to %.1f - Armwave sees %.1f" % (intensity, aw_ints))
+            self.root_mgr.ctrl.zstc.setup_render_channel_intensity(1, aw_ints)
 
     def notify_resize(self):
         """Resize notifier."""
@@ -292,9 +293,10 @@ class ScopeArenaController(object):
     def notify_channel_colour_change(self):
         """Update channel colour if an intensity has changed."""
         # We only support 1ch for now
-        log.info("notify_channel_colour_change() - updating channel colour")
         #self.local_aobj.set_channel_colour(1, self.root_mgr.ctrl.channels[0].get_rgb_colour())
-        self.root_mgr.ctrl.zstc.set_channel_colour(1, self.root_mgr.ctrl.channels[0].get_rgb_colour())
+        if self.root_mgr.ctrl.zstc != None:
+            log.info("notify_channel_colour_change() - updating channel colour")
+            self.root_mgr.ctrl.zstc.set_channel_colour(1, self.root_mgr.ctrl.channels[0].get_rgb_colour())
 
     def update_size_allocation(self):
         rect = self.fixed.get_allocated_size().allocation
