@@ -135,6 +135,15 @@ class ArmwaveRenderEngine(zs.BaseRenderEngine):
         #log.info("done generating %d wavesets" % self.test_waveset_count)
 
     def render_single_mmal(self, mmal_data_ptr):
+        # get a new shm
+        try:
+            shm_unlink(self._shm_name)
+        except:
+            pass
+        self._shm_id = shm_open(self._shm_name)
+        os.ftruncate(self._shm_id, self._shm_size)
+        self._mmap = mmap.mmap(self._shm_id, self._shm_size)
+
         aw.clear_buffer(0)
         aw.set_wave_pointer_u32(mmal_data_ptr)
         aw.generate()
