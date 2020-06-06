@@ -163,6 +163,8 @@ class ZynqScopeSubprocess(multiprocessing.Process):
     buffers_working = []
     buffers_freeable = []
 
+    target_dimensions = (0, 0)
+
     stop_signal = False
     start_signal = False
 
@@ -210,8 +212,7 @@ class ZynqScopeSubprocess(multiprocessing.Process):
             log.critical("render from:    0x%08x" % resp.buffers[0].data_ptr)
             log.critical("render buffers: %s" % repr(resp.buffers))
             log.critical("zs_params:      %s" % repr(self.zs.params))
-            
-            self.rengine.update_wave_params(0, self.zs.params.memory_depth, self.zs.params.nwaves,  self.zs.params.memory_depth)
+
             mmap_id, mmap_length = self.rengine.render_single_mmal(resp.buffers[0].data_ptr)
             self.shared_dict['mmap_id'] = mmap_id
             self.shared_dict['mmap_length'] = mmap_length
@@ -304,7 +305,8 @@ class ZynqScopeSubprocess(multiprocessing.Process):
 
         elif typ is ZynqScopeRenderSetupTargetDimensions:
             #log.info("ZynqScopeRenderSetupTargetDimensions: setting dimensions %d x %d" % (msg.width, msg.height))
-            self.rengine.set_target_dimensions(msg.width, msg.height)
+            self.target_dimensions = (msg.width, msg.height)
+            # we really need to stop the render engine and re-initialise it here...
             
         elif typ is ZynqScopeRenderChangeChannelIntensity:
             log.info("ZynqScopeRenderChangeChannelIntensity: setting channel %d intensity to %.2f" % (msg.ch, msg.ints))
@@ -344,6 +346,11 @@ class ZynqScopeSubprocess(multiprocessing.Process):
                 self.acquisition_tick()
 
         self.zs.setup_for_timebase()
+
+        # prepare the render 
+        self.rengine.update_wave_params(0, self.zs.params.memory_depth, self.zs.params.nwaves, self.zs.params.memory_depth)
+        self.rengine.set_target_dimensions(*self.target_dimensions)
+
         self.zs.zcmd.flush()
         self.zs.zcmd.setup_trigger_edge(zc.TRIG_CH_ADCSRC1, 0x7f, 0x10, zc.TRIG_EDGE_RISING) # write default trigger
         self.zs.zcmd.start_acquisition()

@@ -85,7 +85,7 @@ class ArmwaveRenderEngine(zs.BaseRenderEngine):
 
     def update_wave_params(self, start_t, end_t, n_waves, wave_stride):
         self.wave_params = (start_t, end_t, n_waves, wave_stride)
-        #log.info("update_wave_params: new %s" % repr(self.wave_params))
+        log.info("update_wave_params: new %s" % repr(self.wave_params))
 
     def set_channel_colour(self, index, colour):
         col = list(colour)
@@ -124,11 +124,11 @@ class ArmwaveRenderEngine(zs.BaseRenderEngine):
         log.info("setup_render done")
 
         # setup test wavesets
-        self.test_waveset_count = 10
-        log.info("start generating %d wavesets" % self.test_waveset_count)
+        #self.test_waveset_count = 10
+        #log.info("start generating %d wavesets" % self.test_waveset_count)
 
-        aw.test_create_am_sine(0.1, 10e-6, self.test_waveset_count)
-        log.info("done generating %d wavesets" % self.test_waveset_count)
+        #aw.test_create_am_sine(0.1, 10e-6, self.test_waveset_count)
+        #log.info("done generating %d wavesets" % self.test_waveset_count)
 
     def render_single_mmal(self, mmal_data_ptr):
         aw.clear_buffer(0)
