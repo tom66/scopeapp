@@ -60,10 +60,10 @@ class ZynqScopeCurrentParameters(object):
     expected_buffer_size = 0
     
     def __repr__(self):
-        return "<ZynqScopeCurrentParameters sample_depth=%d bits, memory_depth=%s, sample_rate=%s, trigger_point=%2.1f%%, delay=%s>" % \
+        return "<ZynqScopeCurrentParameters sample_depth=%d bits, memory_depth=%s, sample_rate=%s, trigger_point=%2.1f%%, delay=%s, nwaves=%d, flags=0x%04x>" % \
             (self.sample_depth, Utils.unit_format_suffix_handle_exc(self.memory_depth, 'pts', precision=2), \
             Utils.unit_format_suffix_handle_exc(self.sample_rate, 'Sa/s', precision=1), self.trigger_point * 100, \
-            Utils.unit_format_suffix_handle_exc(self.delay, 's', precision=5))
+            Utils.unit_format_suffix_handle_exc(self.delay, 's', precision=5), self.nwaves, self.flags)
  
 class ZynqScopeTimebaseOption(object):
     timebase_div = 0
