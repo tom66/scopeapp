@@ -589,13 +589,13 @@ class ZynqScopeTaskController(object):
 
     def setup_render_channel_colour(self, idx, colour_tuple):
         cmd = self.roc['ZynqScopeRenderChangeChannelColour']
-        cmd.ch = ch
+        cmd.ch = idx
         cmd.colour = colour_tuple
         self.evq.put(cmd)
 
     def setup_render_channel_intensity(self, idx, intensity):
         cmd = self.roc['ZynqScopeRenderChangeChannelIntensity']
-        cmd.ch = ch
+        cmd.ch = idx
         cmd.ints = intensity
         self.evq.put(cmd)
 
