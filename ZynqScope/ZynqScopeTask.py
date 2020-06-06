@@ -298,7 +298,7 @@ class ZynqScopeSubprocess(multiprocessing.Process):
             self.die_req = True
 
         elif typ is ZynqScopeRenderSetupTargetDimensions:
-            log.info("ZynqScopeRenderSetupTargetDimensions: setting dimensions %d x %d" % (msg.width, msg.height))
+            #log.info("ZynqScopeRenderSetupTargetDimensions: setting dimensions %d x %d" % (msg.width, msg.height))
             self.rengine.set_target_dimensions(msg.width, msg.height)
             
         elif typ is ZynqScopeRenderChangeChannelIntensity:
@@ -353,7 +353,7 @@ class ZynqScopeSubprocess(multiprocessing.Process):
         """Acquisition tick process.  Manages acquisition and SPI control."""
         # This function should be cleaned up: we need to use ZynqScope API where possible, 
         # and not send our own ZynqCommands...
-        #log.debug("aq=%d" % self.acq_state)
+        log.debug("aq=%d" % self.acq_state)
 
         if self.acq_state == TSTATE_ACQ_PREPARE_TO_START:
             # Stop, if we get a signal
