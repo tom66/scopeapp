@@ -248,7 +248,7 @@ class ScopeArenaController(object):
         self.window = window
         self.root_mgr = root_mgr
 
-        self.local_aobj = awre.ArmwaveRenderEngine()
+        #self.local_aobj = awre.ArmwaveRenderEngine()
 
         self.grat_rdr = ScopeArenaYTGraticuleRender()
         self.grat_rdr.apply_settings(\
@@ -281,7 +281,7 @@ class ScopeArenaController(object):
     def set_wave_intensity(self, intensity):
         aw_ints = intensity * MAX_WAVE_INTENSITY
         log.info("Set intensity to %.1f - Armwave sees %.1f" % (intensity, aw_ints))
-        self.local_aobj.set_channel_brightness(1, aw_ints)
+        self.ctrl.zstc.setup_render_channel_intensity(1, aw_ints)
 
     def notify_resize(self):
         """Resize notifier."""
@@ -293,7 +293,8 @@ class ScopeArenaController(object):
         """Update channel colour if an intensity has changed."""
         # We only support 1ch for now
         log.info("notify_channel_colour_change() - updating channel colour")
-        self.local_aobj.set_channel_colour(1, self.root_mgr.ctrl.channels[0].get_rgb_colour())
+        #self.local_aobj.set_channel_colour(1, self.root_mgr.ctrl.channels[0].get_rgb_colour())
+        self.ctrl.zstc.set_channel_colour(1, self.root_mgr.ctrl.channels[0].get_rgb_colour())
 
     def update_size_allocation(self):
         rect = self.fixed.get_allocated_size().allocation
@@ -319,10 +320,16 @@ class ScopeArenaController(object):
             log.warn("Not done first redraw, skipping update")
             return
 
+        render_mmap = self.ctrl.zstc.get_render_mmap_id()
+
+        if render_mmap is None:
+            log.warn("render_mmap not yet ready, skipping render")
+            return
+
         #log.info("render_test")
-        t0 = time.time()
-        self.local_aobj.render_test_pb(gdkbuf=self.wave_pb, index=self.stat_waves)
-        t1 = time.time()
+        #t0 = time.time()
+        #self.local_aobj.render_test_pb(gdkbuf=self.wave_pb, index=self.stat_waves)
+        #t1 = time.time()
 
         #log.info("render_test_pb %.1f ms" % ((t1 - t0) * 1000))
 
@@ -336,6 +343,7 @@ class ScopeArenaController(object):
         #mmap_obj.close()
 
         t0 = time.time()
+        self.wave_pb = GdkPixbuf.Pixbuf.new_from_bytes(GLib.bytes(render_mmap), GdkPixbuf.Colorspace.RGB, True, 8, width, height, width * 4)
         self.img.set_from_pixbuf(self.wave_pb)
         self.img.queue_draw()
         t1 = time.time()
@@ -368,11 +376,12 @@ class ScopeArenaController(object):
         self.fixed.move(self.img, ox, oy)
         
         # Drive the renderer
-        self.local_aobj.update_wave_params(0, width, 96, width)
-        self.local_aobj.set_target_dimensions(width, height)
+        self.ctrl.zstc.setup_render_dimensions(width, height)
+        #self.local_aobj.update_wave_params(0, width, 96, width)
+        #self.local_aobj.set_target_dimensions(width, height)
         self.first_draw = True
 
         # Make a new pixbuf and force a redraw(?)
         #self.wave_pb = GdkPixbuf.Pixbuf.new_from_bytes(GLib.Bytes(bytes(mmap_obj)), GdkPixbuf.Colorspace.RGB, True, 8, width, height, width * 4)
-        self.wave_pb = GdkPixbuf.Pixbuf.new(GdkPixbuf.Colorspace.RGB, True, 8, width, height)
+        #self.wave_pb = GdkPixbuf.Pixbuf.new(GdkPixbuf.Colorspace.RGB, True, 8, width, height)
 

@@ -130,6 +130,16 @@ class ArmwaveRenderEngine(zs.BaseRenderEngine):
         aw.test_create_am_sine(0.1, 10e-6, self.test_waveset_count)
         log.info("done generating %d wavesets" % self.test_waveset_count)
 
+    def render_single_mmal(self, mmal_data_ptr):
+        aw.clear_buffer(0)
+        aw.set_wave_pointer_u32(mmal_data_ptr)
+        aw.test_generate()
+
+        if not aw.fill_pixbuf_into_pybuffer(self._mmap):
+            raise RuntimeError("Pixbuf render failed with PyFalse: possibly corrupt pointer?")
+
+        return self._shm_id
+
     """
     def render_test_to_ppm(self, fn):
         # clear the buffer to black

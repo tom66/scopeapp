@@ -83,6 +83,21 @@ class ZynqScopeStartAutoAcquisition(ZynqScopeTaskQueueCommand):
 class ZynqScopeAttributesResponse(ZynqScopeTaskQueueResponse): pass
 class ZynqScopeNullResponse(ZynqScopeTaskQueueResponse): pass
 
+class ZynqScopeRenderSetupTargetDimensions(ZynqScopeTaskQueueCommand): 
+    def __init__(self, width, height):
+        self.width = width
+        self.height = height
+
+class ZynqScopeRenderChangeChannelColour(ZynqScopeTaskQueueCommand): 
+    def __init__(self, ch, colour):
+        self.ch = ch
+        self.colour = colour
+
+class ZynqScopeRenderChangeChannelIntensity(ZynqScopeTaskQueueCommand): 
+    def __init__(self, ch, ints):
+        self.ch = ch
+        self.ints = ints
+
 class ZynqScopeAcqStats(object):
     num_waves_acqd = 0
 
@@ -175,30 +190,25 @@ class ZynqScopeSubprocess(multiprocessing.Process):
 
         self.acq_state = TSTATE_ACQ_IDLE
         self.shared_dict['running_state'] = ACQSTATE_STOPPED
+        self.shared_dict['render_to_mmap'] = False
+        self.shared_dict['mmap_id'] = None
 
         self.stats.num_waves_sent = 0
         
-        # Prepare the render endigne (in future we'll support other render targets)
-        #self.rengine = awre.ArmwaveRenderEngine()
-        #self.init_render_buffer(2048, 1024)
+        # Prepare the render engine (in future we'll support other render targets)
+        self.rengine = awre.ArmwaveRenderEngine()
 
         # we might want the capability to tune the period as time goes by
         self.task_period = 1.0 / DEFAULT_ZYNQ_TASK_RATE
         self.target_acq_period = 1.0 / DEFAULT_ACQUISITION_RATE
         
         log.info("ZynqScopeSubprocess __init__(): task_period=%2.6f, target_acq_period=%2.2f" % (self.task_period, self.target_acq_period))
-        
-    def init_render_buffer(self, width, height):
-        """Initialise a shm and the render engine for a specified width and height, for the
-        software driven render engine ArmWave."""
-        #self.rengine.set_channel_colour(1, (25, 170, 255), 10)
-        #self.rengine.set_target_dimensions(width, height)
-        pass
 
     def do_render(self, resp):
-        log.info("do_render(%r)" % resp)
-        self.rengine.render_block(resp.buffers[0].data_ptr)
-        log.info("done render")
+        if self.shared_dict['render_to_mmap']:
+            self.shared_dict['mmap_id'] = self.rengine.render_block(resp.buffers[0].data_ptr)
+        else:
+            log.warn("Render inhibited")
 
     def run(self):
         """Runs periodically to check the status of the Zynq.  Presently set to ping at 50Hz,
@@ -283,7 +293,19 @@ class ZynqScopeSubprocess(multiprocessing.Process):
         elif typ is ZynqScopeDieTask:
             log.warning("ZynqScopeSubprocess: DieTask received")
             self.die_req = True
+
+        elif typ is ZynqScopeRenderSetupTargetDimensions:
+            log.info("ZynqScopeRenderSetupTargetDimensions: setting dimensions %d x %d" % (msg.width, msg.height))
+            self.rengine.set_target_dimensions(msg.width, msg.height)
             
+        elif typ is ZynqScopeRenderChangeChannelIntensity:
+            log.info("ZynqScopeRenderChangeChannelIntensity: setting channel %d intensity to %.2f" % (msg.ch, msg.ints))
+            self.rengine.set_channel_brightness(msg.ch, msg.ints)
+
+        elif typ is ZynqScopeRenderChangeChannelColour:
+            log.info("ZynqScopeRenderChangeChannelColour: setting channel %d colour to %s" % (msg.ch, repr(msg.colour)))
+            self.rengine.set_channel_colour(msg.ch, msg.colour)
+
         else:
             if not isinstance(msg, ZynqScopeTaskQueueCommand):
                 raise RuntimeError("Queue message not subclass of ZynqScopeTaskQueueCommand")
@@ -500,7 +522,10 @@ class ZynqScopeTaskController(object):
             'ZynqScopeRawcamStart' : ZynqScopeRawcamStart(),
             'ZynqScopeRawcamDequeueBuffer' : ZynqScopeRawcamDequeueBuffer(),
             'ZynqScopeRawcamStop' : ZynqScopeRawcamStop(),
-            'ZynqScopeStartAutoAcquisition' : ZynqScopeStartAutoAcquisition(None)
+            'ZynqScopeStartAutoAcquisition' : ZynqScopeStartAutoAcquisition(None),
+            'ZynqScopeRenderSetupTargetDimensions' : ZynqScopeRenderSetupTargetDimensions(0, 0),
+            'ZynqScopeRenderChangeChannelColour' : (0, None),
+            'ZynqScopeRenderChangeChannelIntensity' : (0, 0)
         }
         
         # Cache for last fetched attributes
@@ -550,7 +575,31 @@ class ZynqScopeTaskController(object):
     def start_acquisition(self):
         log.debug("ZSTC: ZynqScopeStartAutoAcquisition")
         self.evq_cache('ZynqScopeStartAutoAcquisition')
+
+        # for now, set this
+        self.zstask.shared_dict['render_to_mmap'] = True
     
+    def setup_render_dimensions(self, width, height):
+        cmd = self.roc['ZynqScopeRenderSetupTargetDimensions']
+        cmd.width = width
+        cmd.height = height
+        self.evq.put(cmd)
+
+    def setup_render_channel_colour(self, idx, colour_tuple):
+        cmd = self.roc['ZynqScopeRenderChangeChannelColour']
+        cmd.ch = ch
+        cmd.colour = colour_tuple
+        self.evq.put(cmd)
+
+    def setup_render_channel_intensity(self, idx, intensity):
+        cmd = self.roc['ZynqScopeRenderChangeChannelIntensity']
+        cmd.ch = ch
+        cmd.ints = intensity
+        self.evq.put(cmd)
+
+    def get_render_mmap_id(self):
+        return self.zstask.shared_dict['mmap_id']
+
     def sync_to_real_world(self):
         # Sync to the real world includes:  
         #  - Sending timebase change.  
@@ -571,45 +620,3 @@ class ZynqScopeTaskController(object):
                 log.debug("Deref:  %r" % b.get_memoryview())
                 #b.dump_to_file("rxtest/test%d.bin" % self.acqstat.num_waves_acqd)
                 self.acqstat.num_waves_acqd += 1
-
-    # def acquisition_tick(self):
-    #     """Manages Zynq acquisition control."""
-    #     self.get_attributes()
-
-    #     if self.acq_state == TSTATE_ACQ_PREPARE_TO_START:
-    #         # Rawcam must be stopped.  If not this is an error
-    #         if self.shared_dict['rawcam_running']:
-    #             raise RuntimeError("rawcam not in stopped state")
-
-    #         # Setup the rawcam interface preparing to acquire buffers
-    #         msg = self.roc['ZynqScopeRawcamConfigure']
-    #         msg.buffer_size = resp['CSITxSize'].all_waves_size
-    #         self.evq.put(msg)
-
-    #         # Start acquiring data...
-    #         self.acq_state = TSTATE_ACQ_PING_ZYNQ
-
-    #     elif self.acq_state == TSTATE_ACQ_RUNNING:
-    #         if self.shared_dict['rawcam_running']:
-    #             self.evq_cache('ZynqScopeRawcamStop')
-
-    #         cmd = self.roc['ZynqScopeSendCompAcqStreamCommand']
-    #         cmd.flags = zc.COMP0_ACQ_STOP | zc.COMP0_ACQ_GET_STATUS | zc.COMP0_ACQ_REWIND | zc.COMP0_ACQ_START_RESET_FIFO | \
-    #                     zc.COMP0_CSI_TRANSFER_WAVES | zc.COMP0_SPI_RESP_CSI_SIZE
-            
-    #         # if double-buffer acquisition is set then we want to swap lists on each Comp0 command
-    #         if self.get_attributes_cache().params.flags & zc.ACQ_MODE_DOUBLE_BUFFER:
-    #             cmd.flags |= zc.COMP0_ACQ_SWAP_ACQ_LISTS
-            
-    #         #print("cmd.flags 0x%04x" % cmd.flags)
-    #         self.evq.put(cmd)
-    #         resp = self.rsq.get()
-    #         self.status = resp['AcqStatus']
-
-
-    #         #print("CompAcqResponse:", self.rsq.get())
-    #         print("rx_buffer_count:", self.shared_dict['buffer_count'], "buffer_size:", msg.buffer_size, "status:", self.status)
-        
-    #     else:
-    #         print("Idle--not running")
-    # 
