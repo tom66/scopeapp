@@ -322,11 +322,13 @@ class ScopeArenaController(object):
             log.warn("Not done first redraw, skipping update")
             return
 
-        render_mmap = self.root_mgr.ctrl.zst.get_render_mmap_id()
+        render_mmapid = self.root_mgr.ctrl.zst.get_render_mmap_id()
 
-        if render_mmap is None:
+        if render_mmapid is None:
             log.warn("render_mmap not yet ready, skipping render")
             return
+
+        render_mmap = mmap.mmap(render_mmapid)
 
         #log.info("render_test")
         #t0 = time.time()
@@ -345,6 +347,7 @@ class ScopeArenaController(object):
         #mmap_obj.close()
 
         t0 = time.time()
+        log.info("render_mmap size %d" % len(render_mmap))
         self.wave_pb = GdkPixbuf.Pixbuf.new_from_bytes(GLib.Bytes(bytes(render_mmap)), GdkPixbuf.Colorspace.RGB, True, 8, width, height, width * 4)
         self.img.set_from_pixbuf(self.wave_pb)
         self.img.queue_draw()
