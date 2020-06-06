@@ -597,7 +597,7 @@ class MainApplication(object):
         self.arena.update()
         t1 = time.time()
 
-        log.info("update()  %.1f ms" % ((t1 - t0) * 1000))
+        #log.info("update()  %.1f ms" % ((t1 - t0) * 1000))
     
     def ui_update_clock(self):
         """

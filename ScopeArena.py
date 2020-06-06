@@ -69,9 +69,9 @@ class ScopeArenaYTGraticuleRender(object):
             pass # TODO: Cleanup?
 
         self.cr = cr
-        log.info("New dims.: %d x %d (cr:%r)" % (dims[0], dims[1], cr)) 
 
         if dims != self.dims:
+            log.info("New dims.: %d x %d (cr:%r)" % (dims[0], dims[1], cr)) 
             self.dims = dims
             return True
         else:
@@ -221,7 +221,7 @@ class ScopeArenaYTGraticuleRender(object):
                         self.cr.stroke()
 
         t1 = time.time()
-        log.info("Took %.1f ms to render graticule" % ((t1 - t0) * 1000))
+        #log.info("Took %.1f ms to render graticule" % ((t1 - t0) * 1000))
 
 class ScopeArenaController(object):
     """
@@ -344,7 +344,7 @@ class ScopeArenaController(object):
         #mmap_obj.madvise(mmap.MADV_REMOVE)
         #mmap_obj.close()
 
-        t0 = time.time()
+        t0 = time.time()*
         self.wave_pb = GdkPixbuf.Pixbuf.new_from_bytes(GLib.bytes(render_mmap), GdkPixbuf.Colorspace.RGB, True, 8, width, height, width * 4)
         self.img.set_from_pixbuf(self.wave_pb)
         self.img.queue_draw()
