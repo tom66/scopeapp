@@ -79,7 +79,7 @@ def unit_unpickle(pickle_str):
     return None
 
 def get_hex_colour_hsv(h, s, v):
-    return "#%02x%02x%02x" % get_rgb_colour_hsv(hsv)
+    return "#%02x%02x%02x" % get_rgb_colour_hsv(h, s, v)
 
 def get_rgb_colour_hsv(h, s, v):
     rgb = colorsys.hsv_to_rgb(h / 360.0, s, v)
