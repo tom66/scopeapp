@@ -279,10 +279,10 @@ class ScopeArenaController(object):
         log.critical("CRT mode adjustment not implemented")
 
     def set_wave_intensity(self, intensity):
-        if self.root_mgr.ctrl.zstc != None:
+        if self.root_mgr.ctrl.zst != None:
             aw_ints = intensity * MAX_WAVE_INTENSITY
             log.info("Set intensity to %.1f - Armwave sees %.1f" % (intensity, aw_ints))
-            self.root_mgr.ctrl.zstc.setup_render_channel_intensity(1, aw_ints)
+            self.root_mgr.ctrl.zst.setup_render_channel_intensity(1, aw_ints)
 
     def notify_resize(self):
         """Resize notifier."""
@@ -294,7 +294,7 @@ class ScopeArenaController(object):
         """Update channel colour if an intensity has changed."""
         # We only support 1ch for now
         #self.local_aobj.set_channel_colour(1, self.root_mgr.ctrl.channels[0].get_rgb_colour())
-        if self.root_mgr.ctrl.zstc != None:
+        if self.root_mgr.ctrl.zst != None:
             log.info("notify_channel_colour_change() - updating channel colour")
             self.root_mgr.ctrl.zstc.set_channel_colour(1, self.root_mgr.ctrl.channels[0].get_rgb_colour())
 
@@ -322,7 +322,7 @@ class ScopeArenaController(object):
             log.warn("Not done first redraw, skipping update")
             return
 
-        render_mmap = self.root_mgr.ctrl.zstc.get_render_mmap_id()
+        render_mmap = self.root_mgr.ctrl.zst.get_render_mmap_id()
 
         if render_mmap is None:
             log.warn("render_mmap not yet ready, skipping render")
@@ -378,7 +378,7 @@ class ScopeArenaController(object):
         self.fixed.move(self.img, ox, oy)
         
         # Drive the renderer
-        self.root_mgr.ctrl.zstc.setup_render_dimensions(width, height)
+        self.root_mgr.ctrl.zst.setup_render_dimensions(width, height)
         #self.local_aobj.update_wave_params(0, width, 96, width)
         #self.local_aobj.set_target_dimensions(width, height)
         self.first_draw = True

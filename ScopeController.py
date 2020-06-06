@@ -458,7 +458,7 @@ class ScopeController(object):
     active_tab = 0
 
     # ZynqScopeTaskController object.  Used as an interface to the "Real World"
-    zstc = None
+    zst = None
     
     def __init__(self, root_mgr):
         self.root_mgr = root_mgr
