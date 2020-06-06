@@ -107,7 +107,6 @@ class DisplayTab(object):
         
         # Refresh channel object connection
         self.refresh_object_attach()
-        self._update_probe_atten_options()
     
     def refresh_object_attach(self):
         pass
