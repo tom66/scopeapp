@@ -281,7 +281,7 @@ class ScopeArenaController(object):
     def set_wave_intensity(self, intensity):
         aw_ints = intensity * MAX_WAVE_INTENSITY
         log.info("Set intensity to %.1f - Armwave sees %.1f" % (intensity, aw_ints))
-        self.ctrl.zstc.setup_render_channel_intensity(1, aw_ints)
+        self.root_mgr.ctrl.zstc.setup_render_channel_intensity(1, aw_ints)
 
     def notify_resize(self):
         """Resize notifier."""
@@ -294,7 +294,7 @@ class ScopeArenaController(object):
         # We only support 1ch for now
         log.info("notify_channel_colour_change() - updating channel colour")
         #self.local_aobj.set_channel_colour(1, self.root_mgr.ctrl.channels[0].get_rgb_colour())
-        self.ctrl.zstc.set_channel_colour(1, self.root_mgr.ctrl.channels[0].get_rgb_colour())
+        self.root_mgr.ctrl.zstc.set_channel_colour(1, self.root_mgr.ctrl.channels[0].get_rgb_colour())
 
     def update_size_allocation(self):
         rect = self.fixed.get_allocated_size().allocation
