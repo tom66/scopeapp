@@ -187,7 +187,7 @@ class ArmwaveRenderEngine(zs.BaseRenderEngine):
         aw.set_wave_pointer_as_testbuf(index % self.test_waveset_count)
 
         #log.info("test_generate")
-        xindex = int((index / 100) % 14)
+        xindex = int((index / 20) % 28)
         log.info("test_generate %d" % (xindex))
         aw.test_generate(xindex)
 
