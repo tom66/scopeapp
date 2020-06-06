@@ -17,6 +17,7 @@ from datetime import datetime
 import ScopeController as SC
 import ScopeArena
 import UIChannelTab
+import UIDisplayTab
 import UIChannelWidget
 import UINotifier
 import Utils
@@ -228,7 +229,7 @@ class MainApplication(object):
     def setup_settings_notebook(self):
         """Populate the settings notebook."""
         # Load the GtkBuilder resource for the channel tabs in the selection notebook, and
-        # add one tab for each channel.  
+        # add one tab for each channel.   Add additional tabs for display, acquire, trigger etc.
         # XXX: Should we empty the notebook first?
         log.info("Creating settings notebook")
 
@@ -238,10 +239,18 @@ class MainApplication(object):
         self.nbk_main_settings.set_size_request(50, 0)
         self.nbk_main_settings.connect("select_page", self._nbk_select_page)
 
+        # Add channel tabs
         for idx, channel in enumerate(self.ctrl.channels):
             ui_tab = UIChannelTab.ChannelTab(self, idx, self.nbk_main_settings, len(self.ui_tabs) + 1)
             ui_tab.append_to_notebook()
             self.ui_tabs.append(ui_tab)
+
+        ui_tab = UIDisplayTab.DisplayTab(self, self.nbk_main_settings, len(self.ui_tabs) + 1)
+        ui_tab.append_to_notebook()
+        self.ui_tabs.append(ui_tab)
+
+        # TODO: acquire, trigger, math, reference, storage, utility...
+
 
     def setup_channel_widgets(self):
         """Setup the channel widgets for the UI."""

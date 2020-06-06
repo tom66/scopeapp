@@ -221,6 +221,8 @@ class ChannelTab(object):
         self.chk_chan_coup_50R.set_label(_("50\u03A9 Impedance"))
         self.btn_chan_probe_other.set_label(_("..."))
         self.btn_probe_atten_units.set_label("")
+
+        # i10n TODO: Frame label translation.  GtkBuilder presently only has English strings.
         
         self.btn_chan_colour_label = Gtk.Label()
         self.btn_chan_colour.add(self.btn_chan_colour_label)

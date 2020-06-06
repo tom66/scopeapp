@@ -16,6 +16,8 @@ GRAT_RENDER_CROSSHAIR = 0x02
 GRAT_RENDER_DIVISIONS = 0x04
 GRAT_RENDER_SUBDIVISIONS = 0x08
 
+MAX_WAVE_INTENSITY = 20
+
 import Utils
 import ZynqScope.ArmwaveRenderEngine as awre
 
@@ -245,8 +247,8 @@ class ScopeArenaController(object):
         self.cfg = cfg
         self.window = window
 
-        self.test_aobj = awre.ArmwaveRenderEngine()
-        self.test_aobj.set_channel_colour(1, (25, 180, 250), 2)
+        self.local_aobj = awre.ArmwaveRenderEngine()
+        self.local_aobj.set_channel_colour(1, (25, 180, 250), 40)
 
         self.grat_rdr = ScopeArenaYTGraticuleRender()
         self.grat_rdr.apply_settings(\
@@ -270,6 +272,14 @@ class ScopeArenaController(object):
         self.stat_waves = 0
 
         self.wave_pb = None
+
+    def set_crt_mode(self, state):
+        log.critical("CRT mode adjustment not implemented")
+        
+    def set_wave_intensity(self, intensity):
+        aw_ints = intensity * MAX_WAVE_INTENSITY
+        log.info("Set intensity to %.1f - Armwave sees %.1f" % (intensity, aw_ints))
+        self.local_aobj.set_channel_brightness(aw_ints)
 
     def notify_resize(self):
         """Resize notifier."""
@@ -303,7 +313,7 @@ class ScopeArenaController(object):
 
         #log.info("render_test")
         t0 = time.time()
-        self.test_aobj.render_test_pb(gdkbuf=self.wave_pb, index=self.stat_waves)
+        self.local_aobj.render_test_pb(gdkbuf=self.wave_pb, index=self.stat_waves)
         t1 = time.time()
 
         #log.info("render_test_pb %.1f ms" % ((t1 - t0) * 1000))
@@ -350,9 +360,8 @@ class ScopeArenaController(object):
         self.fixed.move(self.img, ox, oy)
         
         # Drive the renderer
-        self.test_aobj.set_channel_colour(1, (25, 180, 250), 40)
-        self.test_aobj.update_wave_params(0, width, 96, width)
-        self.test_aobj.set_target_dimensions(width, height)
+        self.local_aobj.update_wave_params(0, width, 96, width)
+        self.local_aobj.set_target_dimensions(width, height)
         self.first_draw = True
 
         # Make a new pixbuf and force a redraw(?)
