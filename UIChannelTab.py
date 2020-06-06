@@ -341,9 +341,9 @@ class ChannelTab(object):
         
         return wrapper
     
-    def __state_change(func):
+    def __state_change(func, opt_ident=""):
         def wrapper(self, *args):
-            self.root_mgr.state_change_notify()
+            self.root_mgr.state_change_notify(opt_ident)
             return func(self, *args)
         
         return wrapper
@@ -456,7 +456,7 @@ class ChannelTab(object):
             log.info("Set probe gain to %f" % probe_atten_options[self.cmb_probe_atten.get_active()])
             self.channel.set_probe_gain(probe_atten_options[self.cmb_probe_atten.get_active()])
     
-    @__state_change
+    @__state_change("ch-colour")
     def _btn_chan_colour_press(self, *args):
         colour_picker = UIChannelColourPicker.ChannelColourPicker(self.channel.long_name)
         colour_picker.set_hue_sat(*self.channel.get_colour())

@@ -290,7 +290,7 @@ class MainApplication(object):
         log.info("Initialising ScopeArenaController")
 
         # In future this could be other render targets
-        self.arena = ScopeArena.ScopeArenaController(self.cfgmgr, self.window, self.hbox_main, 'pack_start', (True, True, 0))
+        self.arena = ScopeArena.ScopeArenaController(self, self.cfgmgr, self.window, self.hbox_main, 'pack_start', (True, True, 0))
 
     def restore_settings_last(self):
         """
@@ -435,10 +435,15 @@ class MainApplication(object):
         
         self.ui_update_timebase_labels()
     
-    def state_change_notify(self):
+    def state_change_notify(self, opt_ident=""):
+        """State change notifier.  opt_ident can be passed to identify a change notifier to be 
+        called e.g. 'ch-colour' to notify the render engine that the wave colour has changed."""
         # Set a flag.  Changes are synced after a few seconds.
         self.state_sync_pending = True
-    
+
+        if opt_ident == "ch-colour":
+            self.arena.notify_channel_colour_change()
+
     def prompt_user_50ohm(self):
         """Check if any channels have 50 ohm mode selected after restoring settings.
         If any have 50 ohm enabled then the user is prompted to confirm before continuing,

@@ -236,7 +236,7 @@ class ScopeArenaController(object):
     are added via another compositing layer.  The hope is that this maximises performance on limited
     hardware.
     """
-    def __init__(self, cfg, window, pack_widget, pack_zone, pack_args=()):
+    def __init__(self, root_mgr, cfg, window, pack_widget, pack_zone, pack_args=()):
         self.fixed = Gtk.Layout()
         call_ = getattr(pack_widget, pack_zone)
         assert(callable(call_))
@@ -246,9 +246,9 @@ class ScopeArenaController(object):
 
         self.cfg = cfg
         self.window = window
+        self.root_mgr = root_mgr
 
         self.local_aobj = awre.ArmwaveRenderEngine()
-        self.local_aobj.set_channel_colour(1, (25, 180, 250), 40)
 
         self.grat_rdr = ScopeArenaYTGraticuleRender()
         self.grat_rdr.apply_settings(\
@@ -286,6 +286,12 @@ class ScopeArenaController(object):
         log.warn("notify_resize")
         self.update_size_allocation()
         self.grat_da.queue_draw()
+
+    def notify_channel_colour_change(self):
+        """Update channel colour if an intensity has changed."""
+        # We only support 1ch for now
+        log.info("notify_channel_colour_change() - updating channel colour")
+        self.local_aobj.set_channel_colour(1, self.root_mgr.ctrl.channels[0].get_rgb_colour())
 
     def update_size_allocation(self):
         rect = self.fixed.get_allocated_size().allocation

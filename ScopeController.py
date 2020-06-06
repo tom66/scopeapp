@@ -174,6 +174,10 @@ class ScopeChannelController(object):
         assert 0 <= value <= 1
         return Utils.get_hex_colour_hsv(self.hue, self.sat, value)
 
+    def get_rgb_colour(self):
+        """Get RGB representation (e.g. (0, 255, 0)) of channel colour assuming 100% value."""
+        return Utils.get_rgb_colour_hsv(self.hue, self.sat, 1.0)
+
     def enable_channel(self):
         self.enabled = True
         self.change_notifier('enable-state')

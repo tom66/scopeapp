@@ -76,14 +76,15 @@ class ArmwaveRenderEngine(zs.BaseRenderEngine):
         self.done_test_wave = False
 
         self.channel_colours = {}
+        self.channel_ints = {}
 
     def update_wave_params(self, start_t, end_t, n_waves, wave_stride):
         self.wave_params = (start_t, end_t * 2, n_waves, wave_stride * 2)
         #log.info("update_wave_params: new %s" % repr(self.wave_params))
 
-    def set_channel_colour(self, index, colour, brightness):
+    def set_channel_colour(self, index, colour):
         col = list(colour)
-        col = map(lambda x: int(x * brightness), col)
+        col = map(lambda x: int(x * self.channel_ints[index]), col)
         self.channel_colours[index] = colour  # Store colour
         aw.set_channel_colour(index, *col)
 
@@ -92,6 +93,7 @@ class ArmwaveRenderEngine(zs.BaseRenderEngine):
         colour = self.channel_colours[index]
         col = list(colour)
         col = map(lambda x: int(x * brightness), col)
+        self.channel_ints[index] = brightness
         aw.set_channel_colour(index, *col)
 
     def set_target_dimensions(self, width, height):

@@ -79,9 +79,11 @@ def unit_unpickle(pickle_str):
     return None
 
 def get_hex_colour_hsv(h, s, v):
+    return "#%02x%02x%02x" % get_rgb_colour_hsv(hsv)
+
+def get_rgb_colour_hsv(h, s, v):
     rgb = colorsys.hsv_to_rgb(h / 360.0, s, v)
-    rgb = (int(rgb[0] * 255), int(rgb[1] * 255), int(rgb[2] * 255))
-    return "#%02x%02x%02x" % rgb
+    return (int(rgb[0] * 255), int(rgb[1] * 255), int(rgb[2] * 255))
 
 def get_hue_fg_colour(h, s, v):
     """Returns the best foreground colour for a given background colour (black or white.)"""
