@@ -78,6 +78,11 @@ class ArmwaveRenderEngine(zs.BaseRenderEngine):
         self.channel_colours = {}
         self.channel_ints = {}
 
+        # TODO:  Pass # of expected channels
+        for n in range(4):
+            self.channel_colours[n + 1] = (0, 255, 0)
+            self.channel_ints[n + 1] = 10
+
     def update_wave_params(self, start_t, end_t, n_waves, wave_stride):
         self.wave_params = (start_t, end_t * 2, n_waves, wave_stride * 2)
         #log.info("update_wave_params: new %s" % repr(self.wave_params))
