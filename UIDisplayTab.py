@@ -96,7 +96,7 @@ class DisplayTab(object):
         self.lbl_tab.set_angle(90)
         self.lbl_tab.set_label(_("Display"))
         self.lbl_btn = Gtk.Button()
-        self.lbl_btn.add(lbl_tab)
+        self.lbl_btn.add(self.lbl_tab)
         self.lbl_btn.connect("clicked", self.tab_clicked)
         self.lbl_btn.show_all()
         
