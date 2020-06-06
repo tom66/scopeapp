@@ -329,7 +329,7 @@ class ScopeArenaController(object):
             log.warn("render_mmap not yet ready, skipping render")
             return
 
-        render_mmap = mmap.mmap(render_mmapid)
+        render_mmap = mmap.mmap(render_mmapid, render_length)
 
         #log.info("render_test")
         #t0 = time.time()
