@@ -344,7 +344,7 @@ class ScopeArenaController(object):
         #mmap_obj.madvise(mmap.MADV_REMOVE)
         #mmap_obj.close()
 
-        t0 = time.time()*
+        t0 = time.time()
         self.wave_pb = GdkPixbuf.Pixbuf.new_from_bytes(GLib.bytes(render_mmap), GdkPixbuf.Colorspace.RGB, True, 8, width, height, width * 4)
         self.img.set_from_pixbuf(self.wave_pb)
         self.img.queue_draw()
