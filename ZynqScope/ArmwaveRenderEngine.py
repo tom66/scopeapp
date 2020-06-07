@@ -136,6 +136,7 @@ class ArmwaveRenderEngine(zs.BaseRenderEngine):
 
     def render_single_mmal(self, mmal_data_ptr):
         # get a new shm
+        """
         try:
             shm_unlink(self._shm_name)
         except:
@@ -143,6 +144,7 @@ class ArmwaveRenderEngine(zs.BaseRenderEngine):
         self._shm_id = shm_open(self._shm_name)
         os.ftruncate(self._shm_id, self._shm_size)
         self._mmap = mmap.mmap(self._shm_id, self._shm_size)
+        """
 
         log.info("shm_id=%d" % self._shm_id)
 
