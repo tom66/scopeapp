@@ -322,54 +322,62 @@ class ScopeArenaController(object):
             log.warn("Not done first redraw, skipping update")
             return
 
-        # Try to grab mmap lock
-        if self.root_mgr.ctrl.zst.acquire_render_lock():
-            log.warn("Not rendering - unable to acquire render lock")
-            return
+        # TODO: Rewrite with with()?
+        try:
+            # Try to grab mmap lock
+            if self.root_mgr.ctrl.zst.acquire_render_lock():
+                log.warn("Not rendering - unable to acquire render lock")
+                return
 
-        log.info("Got render lock")
+            log.info("Got render lock")
 
-        render_mmapid = self.root_mgr.ctrl.zst.get_render_mmap_id()
-        render_length = self.root_mgr.ctrl.zst.get_render_mmap_length()
+            render_mmapid = self.root_mgr.ctrl.zst.get_render_mmap_id()
+            render_length = self.root_mgr.ctrl.zst.get_render_mmap_length()
 
-        if render_mmapid is None:
-            pass #log.warn("render_mmap not yet ready, skipping render")
-            return
+            if render_mmapid is None:
+                log.warn("render_mmap not yet ready, skipping render")
+                self.root_mgr.ctrl.zst.release_render_lock()
+                return
 
-        render_mmap = mmap.mmap(render_mmapid, render_length)
+            render_mmap = mmap.mmap(render_mmapid, render_length)
 
-        #log.info("render_test")
-        #t0 = time.time()
-        #self.local_aobj.render_test_pb(gdkbuf=self.wave_pb, index=self.stat_waves)
-        #t1 = time.time()
+            #log.info("render_test")
+            #t0 = time.time()
+            #self.local_aobj.render_test_pb(gdkbuf=self.wave_pb, index=self.stat_waves)
+            #t1 = time.time()
 
-        #log.info("render_test_pb %.1f ms" % ((t1 - t0) * 1000))
+            #log.info("render_test_pb %.1f ms" % ((t1 - t0) * 1000))
 
-        #log.info("Wave arena dimensions: %s" % repr(self.grat_rdr.get_wave_arena_dims()))
+            #log.info("Wave arena dimensions: %s" % repr(self.grat_rdr.get_wave_arena_dims()))
 
-        # draw the pixbuf
-        targ_dims = self.grat_rdr.get_wave_arena_dims()
-        width, height = targ_dims[1]
+            # draw the pixbuf
+            targ_dims = self.grat_rdr.get_wave_arena_dims()
+            width, height = targ_dims[1]
 
-        #mmap_obj.madvise(mmap.MADV_REMOVE)
-        #mmap_obj.close()
+            #mmap_obj.madvise(mmap.MADV_REMOVE)
+            #mmap_obj.close()
 
-        t0 = time.time()
-        log.info("render_mmap size %d" % len(render_mmap))
-        self.wave_pb = GdkPixbuf.Pixbuf.new_from_bytes(GLib.Bytes(bytes(render_mmap)), GdkPixbuf.Colorspace.RGB, True, 8, width, height, width * 4)
-        self.img.set_from_pixbuf(self.wave_pb)
-        self.img.queue_draw()
-        t1 = time.time()
+            t0 = time.time()
+            log.info("render_mmap size %d" % len(render_mmap))
+            self.wave_pb = GdkPixbuf.Pixbuf.new_from_bytes(GLib.Bytes(bytes(render_mmap)), GdkPixbuf.Colorspace.RGB, True, 8, width, height, width * 4)
+            self.img.set_from_pixbuf(self.wave_pb)
+            self.img.queue_draw()
+            t1 = time.time()
 
-        # we're done with mmap; Linux can free it for us
-        render_mmap.madvise(mmap.MADV_REMOVE)
-        render_mmap.close()
+            # we're done with mmap; Linux can free it for us
+            render_mmap.madvise(mmap.MADV_REMOVE)
+            render_mmap.close()
 
-        self.root_mgr.ctrl.zstc.release_render_lock()
+            self.root_mgr.ctrl.zstc.release_render_lock()
 
-        #log.info("set_from_pixbuf %.1f ms" % ((t1 - t0) * 1000))
+            #log.info("set_from_pixbuf %.1f ms" % ((t1 - t0) * 1000))
 
-        self.stat_waves += 1
+            self.stat_waves += 1
+        except Exception as e:
+            # Cleanup
+            log.critical("Exception during local render: %r" % e)
+            self.root_mgr.ctrl.zstc.release_render_lock()
+            raise e
 
     def _draw(self, wdg, cr):
         """Draw/expose callback"""
