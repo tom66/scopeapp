@@ -368,7 +368,7 @@ class ScopeArenaController(object):
             render_mmap.madvise(mmap.MADV_REMOVE)
             render_mmap.close()
 
-            self.root_mgr.ctrl.zstc.release_render_lock()
+            self.root_mgr.ctrl.zst.release_render_lock()
 
             #log.info("set_from_pixbuf %.1f ms" % ((t1 - t0) * 1000))
 
@@ -376,7 +376,7 @@ class ScopeArenaController(object):
         except Exception as e:
             # Cleanup
             log.critical("Exception during local render: %r" % e)
-            self.root_mgr.ctrl.zstc.release_render_lock()
+            self.root_mgr.ctrl.zst.release_render_lock()
             raise e
 
     def _draw(self, wdg, cr):
