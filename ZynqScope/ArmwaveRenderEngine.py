@@ -147,7 +147,16 @@ class ArmwaveRenderEngine(zs.BaseRenderEngine):
         """
 
         self._mmap.madvise(mmap.MADV_REMOVE)
-        #self._mmap.close()
+
+        try:
+            self._mmap.close()
+            log.info("_mmap close()")
+        except:
+            pass
+
+        self._shm_id = shm_open(self._shm_name)
+        os.ftruncate(self._shm_id, self._shm_size)
+        self._mmap = mmap.mmap(self._shm_id, self._shm_size)
 
         log.info("shm_id=%d" % self._shm_id)
 
