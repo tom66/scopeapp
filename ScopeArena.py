@@ -334,6 +334,8 @@ class ScopeArenaController(object):
             render_mmapid = self.root_mgr.ctrl.zst.get_render_mmap_id()
             render_length = self.root_mgr.ctrl.zst.get_render_mmap_length()
 
+            log.info("MMAP info: %d (size %d)" % (render_mmap, render_length))
+
             if render_mmapid is None:
                 log.warn("render_mmap not yet ready, skipping render")
                 self.root_mgr.ctrl.zst.release_render_lock()
@@ -363,10 +365,6 @@ class ScopeArenaController(object):
             self.img.set_from_pixbuf(self.wave_pb)
             self.img.queue_draw()
             t1 = time.time()
-
-            # we're done with mmap; Linux can free it for us
-            render_mmap.madvise(mmap.MADV_REMOVE)
-            render_mmap.close()
 
             self.root_mgr.ctrl.zst.release_render_lock()
 
