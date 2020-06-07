@@ -364,7 +364,7 @@ class ScopeArenaController(object):
             self.wave_pb = GdkPixbuf.Pixbuf.new_from_bytes(GLib.Bytes(bytes(render_mmap)), GdkPixbuf.Colorspace.RGB, True, 8, width, height, width * 4)
             #self.wave_pb = GdkPixbuf.Pixbuf.new_from_data(render_mmap, GdkPixbuf.Colorspace.RGB, True, 8, width, height, width * 4)
             self.img.set_from_pixbuf(self.wave_pb)
-            self.img.queue_draw()
+            #self.img.queue_draw()
             t1 = time.time()
 
             self.root_mgr.ctrl.zst.release_render_lock()
