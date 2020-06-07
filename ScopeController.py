@@ -439,7 +439,7 @@ class ScopeTimebaseController(object):
     def set_change_notifier(self, notify):
         assert(callable(notify))
         self.change_notifier = notify
-            
+
 class ScopeController(object):
     """
     This class manages the overall oscilloscope function.  It controls acquisition, via the FPGA,

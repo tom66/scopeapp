@@ -322,6 +322,13 @@ class ScopeArenaController(object):
             log.warn("Not done first redraw, skipping update")
             return
 
+        # Try to grab mmap lock
+        if self.root_mgr.ctrl.zstc.acquire_render_lock():
+            log.warn("Not rendering - unable to acquire render lock")
+            return
+
+        log.info("Got render lock")
+
         render_mmapid = self.root_mgr.ctrl.zst.get_render_mmap_id()
         render_length = self.root_mgr.ctrl.zst.get_render_mmap_length()
 
@@ -357,6 +364,8 @@ class ScopeArenaController(object):
         # we're done with mmap; Linux can free it for us
         render_mmap.madvise(mmap.MADV_REMOVE)
         render_mmap.close()
+
+        self.root_mgr.ctrl.zstc.release_render_lock()
 
         #log.info("set_from_pixbuf %.1f ms" % ((t1 - t0) * 1000))
 
