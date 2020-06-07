@@ -146,6 +146,7 @@ class ArmwaveRenderEngine(zs.BaseRenderEngine):
         self._mmap = mmap.mmap(self._shm_id, self._shm_size)
         """
 
+        """
         self._mmap.madvise(mmap.MADV_REMOVE)
 
         try:
@@ -157,6 +158,7 @@ class ArmwaveRenderEngine(zs.BaseRenderEngine):
         self._shm_id = shm_open(self._shm_name)
         os.ftruncate(self._shm_id, self._shm_size)
         self._mmap = mmap.mmap(self._shm_id, self._shm_size)
+        """
 
         log.info("shm_id=%d" % self._shm_id)
 
