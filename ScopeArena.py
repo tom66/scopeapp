@@ -323,7 +323,7 @@ class ScopeArenaController(object):
             return
 
         # Try to grab mmap lock
-        if self.root_mgr.ctrl.zstc.acquire_render_lock():
+        if self.root_mgr.ctrl.zst.acquire_render_lock():
             log.warn("Not rendering - unable to acquire render lock")
             return
 
