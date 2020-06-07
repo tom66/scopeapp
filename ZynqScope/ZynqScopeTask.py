@@ -214,9 +214,9 @@ class ZynqScopeSubprocess(multiprocessing.Process):
 
     def do_render(self, resp):
         if self.shared_dict['render_to_mmap']:
-            log.critical("render from:    0x%08x" % resp.buffers[0].data_ptr)
-            log.critical("render buffers: %s" % repr(resp.buffers))
-            log.critical("zs_params:      %s" % repr(self.zs.params))
+            #log.critical("render from:    0x%08x" % resp.buffers[0].data_ptr)
+            #log.critical("render buffers: %s" % repr(resp.buffers))
+            #log.critical("zs_params:      %s" % repr(self.zs.params))
 
             mmap_id, mmap_length = self.rengine.render_single_mmal(resp.buffers[0].data_ptr)
             self.shared_dict['mmap_id'] = mmap_id
@@ -398,7 +398,7 @@ class ZynqScopeSubprocess(multiprocessing.Process):
         elif self.acq_state == TSTATE_ACQ_PING_ZYNQ:
             # Try to acquire the render lock
             self.render_lock.acquire()
-            
+
             # Stop, if we get a signal
             if self.stop_signal:
                 self.acq_state = TSTATE_ACQ_IDLE
