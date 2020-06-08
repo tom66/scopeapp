@@ -91,12 +91,14 @@ class ArmwaveRenderEngine(zs.BaseRenderEngine):
         self._shm_display_index = 1
         self._shm_size = size
 
+        lock_mgr = multiprocessing.Manager()
+
         for i in range(2):
             # Create a new shm and store the fd (ID) and shm name
             shm_name = SHM_NAME_TEMPLATE % i
             shm_id = shm_open(shm_name)
             os.ftruncate(shm_id, size)
-            sem = multiprocessing.Lock()
+            sem = lock_mgr.Lock()
 
             self._shm_buffers.append((shm_name, shm_id, sem, self._shm_size))
             log.info("Create SHM by name %s id %d" % (shm_name, shm_id))
