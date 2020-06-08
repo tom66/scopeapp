@@ -98,6 +98,7 @@ class ArmwaveRenderEngine(zs.BaseRenderEngine):
             shm_name = SHM_NAME_TEMPLATE % i
             shm_id = shm_open(shm_name)
             os.ftruncate(shm_id, size)
+            m = mmap.mmap(shm_id, size)
             sem = lock_mgr.Lock()
 
             self._shm_buffers.append((shm_name, shm_id, sem, self._shm_size))
