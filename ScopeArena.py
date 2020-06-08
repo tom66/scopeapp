@@ -334,6 +334,7 @@ class ScopeArenaController(object):
 
             log.info("MMAP info: %r" % (render,))
 
+            log.info("trying to MMAP %d of size %d" % (render[1], render[3]))
             render_mmap = mmap.mmap(render[1], render[3])
 
             #log.info("render_test")
