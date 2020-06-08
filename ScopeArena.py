@@ -367,7 +367,7 @@ class ScopeArenaController(object):
         except Exception as e:
             # Cleanup
             log.critical("Exception during local render: %r" % e)
-            self.root_mgr.ctrl.zst.release_render_lock()
+            self.root_mgr.ctrl.zst.release_render(render)
             raise e
 
     def _draw(self, wdg, cr):
