@@ -61,7 +61,8 @@ class ArmwaveRenderEngine(zs.BaseRenderEngine):
     def __init__(self):
         log.info("Initialising ArmwaveRenderEngine")
 
-        self._free_and_create_shms()
+        # default size
+        self._free_and_create_shms(640 * 480 * 4)
 
         # Initialise ArmWave
         aw.init()
