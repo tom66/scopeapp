@@ -62,7 +62,7 @@ class ArmwaveRenderEngine(zs.BaseRenderEngine):
         log.info("Initialising ArmwaveRenderEngine")
 
         # default size
-        self._free_and_create_shms(640 * 480 * 4)
+        self._create_shms(640 * 480 * 4)
 
         # Initialise ArmWave
         aw.init()
@@ -77,15 +77,7 @@ class ArmwaveRenderEngine(zs.BaseRenderEngine):
             self.channel_colours[n + 1] = (0, 255, 0)
             self.channel_ints[n + 1] = 10
 
-    def _free_and_create_shms(self, size):
-        # Try to free existing buffers
-        for shm in self._shm_buffers:
-            try:
-                shm_unlink(shm[0])
-                log.info("Unlink SHM by name %s id %d" % (shm[0], shm[1]))
-            except Exception as e:
-                log.warn("Unable to unlink SHM by name %s id %d: exception %r" % (shm[0], shm[1], e))
-
+    def _create_shms(self, size):
         self._shm_buffers = []
         self._shm_working_index = 0
         self._shm_display_index = 1
@@ -101,8 +93,13 @@ class ArmwaveRenderEngine(zs.BaseRenderEngine):
             #m = mmap.mmap(shm_id, size)
             sem = lock_mgr.Lock()
 
-            self._shm_buffers.append((shm_name, shm_id, sem, self._shm_size))
-            log.info("Create SHM by name %s id %d (%d bytes)" % (shm_name, shm_id, self._shm_size))
+            self._shm_buffers.append((shm_name, shm_id, sem, size))
+            log.info("Create SHM by name %s id %d (%d bytes)" % (shm_name, shm_id, size))
+
+    def _resize_shms(self, size):
+        for shm in self._shm_buffers:
+            log.info("Resize SHM by name %s id %d to %d bytes" % (shm_name, shm_id, size))
+            os.ftruncate(shm[1], size)
 
     def update_wave_params(self, start_t, end_t, n_waves, wave_stride):
         self.wave_params = (start_t, end_t, n_waves, wave_stride)
@@ -123,11 +120,13 @@ class ArmwaveRenderEngine(zs.BaseRenderEngine):
         aw.set_channel_colour(index, *col)
 
     def set_target_dimensions(self, width, height):
+        """Set new target dimensions and return requested size."""
         new_size = width * height * 4  # 4 bytes per pixel
         if self._shm_size == new_size:
             return
-        
-        self._free_and_create_shms(new_size)
+        self._shm_size = new_size
+
+        self._resize_shms(new_size)
 
         # Setup armwave
         aw.cleanup()
@@ -140,6 +139,19 @@ class ArmwaveRenderEngine(zs.BaseRenderEngine):
 
         #aw.test_create_am_sine(0.1, 10e-6, self.test_waveset_count)
         #log.info("done generating %d wavesets" % self.test_waveset_count)
+
+        return new_size
+
+    def get_requested_shms(self):
+        """Return the list of requested SHMs for the parent process to create for us.  This ensures that
+        the fds are accessible from both parent and child."""
+        shms = []
+
+        for i in range(2):
+            shm_name = SHM_NAME_TEMPLATE % i
+            shms.append((shm_name, self._shm_size))
+
+        return shms
 
     def render_single_mmal(self, mmal_data_ptr):
         # Acquire the presently working shm.  Block until it is available.
