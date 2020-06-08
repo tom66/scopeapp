@@ -17,7 +17,7 @@ faulthandler.enable()
 import logging
 log = logging.getLogger()
 
-SHM_NAME_TEMPLATE = b"scopeapp_aw_dispbuff%d"
+SHM_NAME_TEMPLATE = b"scopeapp_aw_dbuff%d_x"
 
 # Portions based on:-
 # https://gist.github.com/jakirkham/100a7f5e86b0ff2a22de0850723a4c5c
