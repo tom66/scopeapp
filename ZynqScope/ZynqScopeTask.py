@@ -43,6 +43,8 @@ log = logging.getLogger()
 class ZynqScopeTaskQueueCommand(object): pass
 class ZynqScopeTaskQueueResponse(object): pass
 
+class ZynqScopeRenderQueueEmptyException(Exception): pass
+
 class ZynqScopeCmdsIfcSimpleCommand(ZynqScopeTaskQueueCommand):
     def __init__(self, cmd_name, flush, args=(), kwargs={}):
         assert(type(cmd_name) == str)
@@ -181,16 +183,13 @@ class ZynqScopeSubprocess(multiprocessing.Process):
 
     rengine = None
 
-    def __init__(self, event_queue, response_queue, acq_response_queue, render_lock, shared_dict, zs_init_args):
+    def __init__(self, event_queue, response_queue, acq_response_queue, render_queue, shared_dict, zs_init_args):
         super(ZynqScopeSubprocess, self).__init__()
         
         self.evq = event_queue
         self.rsq = response_queue
         self.acq_response_queue = acq_response_queue
-        self.render_lock = render_lock
-
-        # While we are stopped we acquire the semaphore.  It is only released once we have a buffer ready.
-        self.render_lock.acquire()
+        self.render_queue = render_queue
 
         self.shared_dict = shared_dict
         self.zs_init_args = zs_init_args
@@ -198,8 +197,7 @@ class ZynqScopeSubprocess(multiprocessing.Process):
         self.acq_state = TSTATE_ACQ_IDLE
         self.shared_dict['running_state'] = ACQSTATE_STOPPED
         self.shared_dict['render_to_mmap'] = False
-        self.shared_dict['mmap_id'] = None
-        self.shared_dict['mmap_length'] = 0
+        self.shared_dict['mmap_display'] = None
 
         self.stats.num_waves_sent = 0
         
@@ -212,18 +210,17 @@ class ZynqScopeSubprocess(multiprocessing.Process):
         
         log.info("ZynqScopeSubprocess __init__(): task_period=%2.6f, target_acq_period=%2.2f" % (self.task_period, self.target_acq_period))
 
-    def do_render(self, resp):
+    def do_render(self):
         if self.shared_dict['render_to_mmap']:
             #log.critical("render from:    0x%08x" % resp.buffers[0].data_ptr)
             #log.critical("render buffers: %s" % repr(resp.buffers))
             #log.critical("zs_params:      %s" % repr(self.zs.params))
 
-            mmap_id, mmap_length = self.rengine.render_single_mmal(resp.buffers[0].data_ptr)
-            self.shared_dict['mmap_id'] = mmap_id
-            self.shared_dict['mmap_length'] = mmap_length
-            self.render_lock.release()
+            # Max 2 items in the queue.
+            if self.render_queue.qsize() <= 1:
+                self.render_queue.put(self.rengine.render_single_mmal(resp.buffers[0].data_ptr))
         else:
-            log.warn("Render inhibited")
+            log.warn("Render inhibited as render_to_mmap is False")
 
     def run(self):
         """Runs periodically to check the status of the Zynq.  Presently set to ping at 50Hz,
@@ -396,9 +393,6 @@ class ZynqScopeSubprocess(multiprocessing.Process):
                 self.acq_state = TSTATE_ACQ_AUTO_WAIT
 
         elif self.acq_state == TSTATE_ACQ_PING_ZYNQ:
-            # Try to acquire the render lock
-            self.render_lock.acquire()
-
             # Stop, if we get a signal
             if self.stop_signal:
                 self.acq_state = TSTATE_ACQ_IDLE
@@ -527,10 +521,10 @@ class ZynqScopeTaskController(object):
         self.evq = multiprocessing.Queue()
         self.rsq = multiprocessing.Queue()
         self.acq_resp = multiprocessing.Queue()
+        self.render_queue = multiprocessing.Queue()
         self.shared_dict = multiprocessing.Manager().dict()
-        self.render_lock = multiprocessing.Semaphore()
 
-        self.zstask = ZynqScopeSubprocess(self.evq, self.rsq, self.acq_resp, self.render_lock, self.shared_dict, zs_init_args)
+        self.zstask = ZynqScopeSubprocess(self.evq, self.rsq, self.acq_resp, self.render_queue, self.shared_dict, zs_init_args)
         self.status = zc.ZynqAcqStatus()
         self.rawcam_running = False
 
@@ -559,9 +553,6 @@ class ZynqScopeTaskController(object):
         # Cache for last fetched attributes
         self.attribs_cache = None
     
-    def set_render_lock(self):
-        self.render_lock.set()
-
     def evq_cache(self, key):
         """Pack a cached message quickly into the queue for the subprocess."""
         self.evq.put(self.roc[key])
@@ -628,17 +619,20 @@ class ZynqScopeTaskController(object):
         cmd.ints = intensity
         self.evq.put(cmd)
 
-    def get_render_mmap_id(self):
-        return self.zstask.shared_dict['mmap_id']
+    def get_render_from_queue(self):
+        """Get a render from the queue; acquire it and return it. Raises ZynqScopeRenderQueueEmpty 
+        if the queue has no buffers available."""
+        if self.render_queue.qsize() == 0:
+            raise ZynqScopeRenderQueueEmptyException("empty queue")
 
-    def get_render_mmap_length(self):
-        return self.zstask.shared_dict['mmap_length']
+        item = self.render_queue.get()
+        item[2].acquire()  # index 2 holds semaphore
 
-    def acquire_render_lock(self):
-        return self.render_lock.acquire(False)
+        return item
 
-    def release_render_lock(self):
-        return self.render_lock.release()
+    def release_render(self, render):
+        """Release the buffer, freeing it for reuse."""
+        render.release()
 
     def sync_to_real_world(self):
         # Sync to the real world includes:  

@@ -20,6 +20,7 @@ MAX_WAVE_INTENSITY = 20
 
 import Utils
 import ZynqScope.ArmwaveRenderEngine as awre
+import ZynqScope.ZynqScopeTask as zst
 
 # Load debug logger
 import logging
@@ -312,9 +313,8 @@ class ScopeArenaController(object):
             #log.debug("New alloc: %d x %d" % new_alloc)
             #self.grat_da.set_size_request(rect.width, rect.height)
             self.size_alloc = (rect.width, rect.height)
-            self.size_allocated = True
+            self.size_allocated = TrueF
             return True
-        else:
             return False
 
     def update(self):
@@ -324,24 +324,16 @@ class ScopeArenaController(object):
 
         # TODO: Rewrite with with()?
         try:
-            # Try to grab mmap lock
-            if self.root_mgr.ctrl.zst.acquire_render_lock():
-                log.warn("Not rendering - unable to acquire render lock")
+            # Try to grab a render buffer
+            try:
+                render = self.root_mgr.ctrl.zst.get_render_from_queue()
+            except zst.ZynqScopeRenderQueueEmptyException:
+                log.warn("No buffers available; ignoring.")
                 return
 
-            log.info("Got render lock")
+            log.info("MMAP info: %r" % (render,))
 
-            render_mmapid = self.root_mgr.ctrl.zst.get_render_mmap_id()
-            render_length = self.root_mgr.ctrl.zst.get_render_mmap_length()
-
-            log.info("MMAP info: %r (size %d)" % (render_mmapid, render_length))
-
-            if render_mmapid is None:
-                log.warn("render_mmap not yet ready, skipping render")
-                self.root_mgr.ctrl.zst.release_render_lock()
-                return
-
-            render_mmap = mmap.mmap(render_mmapid, render_length)
+            render_mmap = mmap.mmap(render[1], render[3])
 
             #log.info("render_test")
             #t0 = time.time()
@@ -362,12 +354,11 @@ class ScopeArenaController(object):
             t0 = time.time()
             log.info("render_mmap size %d" % len(render_mmap))
             self.wave_pb = GdkPixbuf.Pixbuf.new_from_bytes(GLib.Bytes(bytes(render_mmap)), GdkPixbuf.Colorspace.RGB, True, 8, width, height, width * 4)
-            #self.wave_pb = GdkPixbuf.Pixbuf.new_from_data(render_mmap, GdkPixbuf.Colorspace.RGB, True, 8, width, height, width * 4)
             self.img.set_from_pixbuf(self.wave_pb)
             #self.img.queue_draw()
             t1 = time.time()
 
-            self.root_mgr.ctrl.zst.release_render_lock()
+            self.root_mgr.ctrl.zst.release_render(render)
 
             #log.info("set_from_pixbuf %.1f ms" % ((t1 - t0) * 1000))
 

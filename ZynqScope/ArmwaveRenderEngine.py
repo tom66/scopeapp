@@ -8,12 +8,16 @@ from ctypes import util, cdll
 import ZynqScope.ZynqScope as zs
 import ZynqScope.armwave.armwave as aw
 
+import multiprocessing
+
 # catch SIGSEGV, SIGABRT, etc.
 import faulthandler
 faulthandler.enable()
 
 import logging
 log = logging.getLogger()
+
+SHM_NAME_TEMPLATE = b"scopeapp_aw_dispbuff%d"
 
 # Portions based on:-
 # https://gist.github.com/jakirkham/100a7f5e86b0ff2a22de0850723a4c5c
@@ -49,32 +53,22 @@ def shm_unlink(name):
 
 class ArmwaveRenderEngine(zs.BaseRenderEngine):
     """Default Y-T Render Engine using ArmWave."""
-    def __init__(self):
-        self._shm_name = b"scopeapp_aw_dispbuff"
-        self._shm_id = None
-        self._shm_size = 0
-        self._mmap = None
-        # Free existing memory if present
-        #if self._shm_id != None:
-        #    self._mmap.close()
+    _shm_buffers = []
+    _shm_size = 0
+    _shm_working_index = None
+    _shm_display_index = None
 
-        try:
-            shm_unlink(self._shm_name)
-            log.info("shm_unlinked")
-        except:
-            pass
+    def __init__(self, sem_empty, sem_full):
+        log.info("Initialising ArmwaveRenderEngine with semaphores: empty=%r and full=%r" % (sem_empty, sem_full))
 
-        #try:
-        #    self._mmap.close()
-        #    os.close(self._shm_id)
-        #    log.info("_mmap close()")
-        #except:
-        #    pass
+        # IMPORTANT: _sem_empty should initialise with a count of 1 and _sem_full with a count of 0.
+        # We do not check this as these are private multiprocessing attributes.
+        self._sem_empty = sem_empty
+        self._sem_full = sem_full
 
-        self._shm_id = shm_open(self._shm_name)
+        self._free_and_create_shms()
 
-        # default wave parameters
-        self.wave_params = (0, 2048, 64, 2048)
+        # Initialise ArmWave
         aw.init()
 
         self.done_test_wave = False
@@ -86,6 +80,30 @@ class ArmwaveRenderEngine(zs.BaseRenderEngine):
         for n in range(4):
             self.channel_colours[n + 1] = (0, 255, 0)
             self.channel_ints[n + 1] = 10
+
+    def _free_and_create_shms(self, size):
+        # Try to free existing buffers
+        for shm in self._shm_buffers:
+            try:
+                shm_unlink(shm[0])
+                log.info("Unlink SHM by name %s id %d" % (shm[0], shm[1]))
+            except Exception as e:
+                log.warn("Unable to unlink SHM by name %s id %d: exception %r" % (shm[0], shm[1], e))
+
+        self._shm_buffers = []
+        self._shm_working_index = 0
+        self._shm_display_index = 1
+        self._shm_size = size
+
+        for i in range(2):
+            # Create a new shm and store the fd (ID) and shm name
+            shm_name = SHM_NAME_TEMPLATE % i
+            shm_id = shm_open(shm_name)
+            os.ftruncate(shm_id, size)
+            sem = multiprocessing.Semaphore()
+
+            self._shm_buffers.append((shm_name, shm_id, sem, self._shm_size))
+            log.info("Create SHM by name %s id %d" % (shm_name, shm_id))
 
     def update_wave_params(self, start_t, end_t, n_waves, wave_stride):
         self.wave_params = (start_t, end_t, n_waves, wave_stride)
@@ -109,18 +127,8 @@ class ArmwaveRenderEngine(zs.BaseRenderEngine):
         new_size = width * height * 4  # 4 bytes per pixel
         if self._shm_size == new_size:
             return
-        self._shm_size = new_size
-        try:
-            self._mmap.close()
-            #os.close(self._shm_id)
-            log.info("_mmap close()")
-        except:
-            pass
-        os.ftruncate(self._shm_id, self._shm_size)
-        self._mmap = mmap.mmap(self._shm_id, self._shm_size)
-
-        log.info("available_wave_params: new %s" % repr(self.wave_params))
-        #log.info("_shm_id: %d" % self._shm_id)
+        
+        self._free_and_create_shms(new_size)
 
         # Setup armwave
         aw.cleanup()
@@ -135,32 +143,8 @@ class ArmwaveRenderEngine(zs.BaseRenderEngine):
         #log.info("done generating %d wavesets" % self.test_waveset_count)
 
     def render_single_mmal(self, mmal_data_ptr):
-        # get a new shm
-        """
-        try:
-            shm_unlink(self._shm_name)
-        except:
-            pass
-        self._shm_id = shm_open(self._shm_name)
-        os.ftruncate(self._shm_id, self._shm_size)
-        self._mmap = mmap.mmap(self._shm_id, self._shm_size)
-        """
-
-        """
-        self._mmap.madvise(mmap.MADV_REMOVE)
-
-        try:
-            self._mmap.close()
-            log.info("_mmap close()")
-        except:
-            pass
-
-        self._shm_id = shm_open(self._shm_name)
-        os.ftruncate(self._shm_id, self._shm_size)
-        self._mmap = mmap.mmap(self._shm_id, self._shm_size)
-        """
-
-        log.info("shm_id=%d" % self._shm_id)
+        # Acquire the presently working shm.  Block until it is available.
+        self._shm_buffers[self._shm_working_index][2].acquire()
 
         aw.clear_buffer(0)
         aw.set_wave_pointer_u32(mmal_data_ptr)
@@ -169,119 +153,22 @@ class ArmwaveRenderEngine(zs.BaseRenderEngine):
         if not aw.fill_pixbuf_into_pybuffer(self._mmap):
             raise RuntimeError("Pixbuf render failed with PyFalse: possibly corrupt pointer?")
 
-        return self._shm_id, self._shm_size
+        # Release the working shm.  Swap buffers.
+        working = self._shm_working_index
+        self._shm_swap()
+        self._shm_buffers[working][2].release()
 
-    """
-    def render_test_to_ppm(self, fn):
-        # clear the buffer to black
-        log.info("clear_buffer")
-        aw.clear_buffer(0)
+        # ONLY use the display shm returned by this call as it is not otherwise guaranteed to be 
+        # synchronised with the correct buffer.
+        return self.shm_get_display()
 
-        # allocate buffer for test waveform
-        log.info("test_buffer_alloc")
-        aw.test_buffer_alloc()
+    def _shm_get_display(self):
+        return self._shm_buffers[self._shm_display_index]
 
-        # create a test sine wave
-        log.info("test_create_am_sine")
-        aw.test_create_am_sine(0.25, 1e-6)
+    def _shm_get_working(self):
+        return self._shm_buffers[self._shm_working_index]
 
-        # set the wavepointer
-        log.info("set_wave_pointer_as_testbuf")
-        aw.set_wave_pointer_as_testbuf()
-
-        # generate the rendered pre-targets
-        log.info("test_generate")
-        aw.test_generate()
-
-        # generate the final image into the working buffer
-        log.info("test_fill_outbuf")
-        aw.test_fill_outbuf()
-
-        # dump the working buffer into a ppm
-        log.info("test_dump_buffer_to_ppm(%s)" % fn)
-        aw.test_dump_buffer_to_ppm(fn)
-
-        log.info("done")
-    """
-
-    def render_test(self, index):
-        log.info("clear_buffer")
-        aw.clear_buffer(0)
-
-        #log.info("test_buffer_alloc")
-        #aw.test_buffer_alloc()
-
-        #log.info("test_create_am_sine")
-
-        log.info("set_wave_pointer_as_testbuf %d" % index)
-        aw.set_wave_pointer_as_testbuf(index % self.test_waveset_count)
-
-        #log.info("test_generate %d" % (index % 8))
-        aw.test_generate()
-
-        # filling the mmap pointer with the rendered buffer (renders into the buffer)
-        log.info("fill_pixbuf_into_pybuffer(%r)" % self._mmap)
-
-        if not aw.fill_pixbuf_into_pybuffer(self._mmap):
-            raise RuntimeError("fail")
-
-        #print(bytes(self._mmap))
-
-        log.info("done")
-
-    def render_test_pb(self, gdkbuf, index):
-        #log.info("clear_buffer")
-        aw.clear_buffer(0)
-
-        #log.info("test_buffer_alloc")
-        #aw.test_buffer_alloc()
-
-        #log.info("test_create_am_sine")
-        #if not self.done_test_wave:
-        #    aw.test_create_am_sine(mod, noise)
-        #    self.done_test_wave = True
-
-        #log.info("set_wave_pointer_as_testbuf %d" % index)
-        aw.set_wave_pointer_as_testbuf(index % self.test_waveset_count)
-
-        #log.info("test_generate")
-        #xindex = int((index / 20) % 28)
-        #log.info("test_generate %d" % (xindex))
-        aw.test_generate()
-
-        # filling the mmap pointer with the rendered buffer (renders into the buffer)
-        #log.info("fill_pixbuf_into_pybuffer(%r)" % self._mmap)
-
-        aw.test_fill_gdkbuf(gdkbuf)
-
-        #print(bytes(self._mmap))
-
-        #log.info("done")
-
-    """
-    def render_block(self, data_ptr):
-        log.info("src data_ptr=%d" % data_ptr)
-
-        log.info("clear_buffer")
-        aw.clear_buffer(0)
-
-        log.info("set_wave_pointer_u32")
-        aw.set_wave_pointer_u32(data_ptr)
-
-        log.info("test_generate")
-        aw.test_generate()
-
-        log.info("fill_pixbuf_into_pybuffer(%r)" % self._mmap)
-        aw.fill_pixbuf_into_pybuffer(self._mmap)
-
-        log.info("done")
-    """
-
-    def get_shm_name(self):
-        return self._shm_name
-
-    def get_shm_id(self):
-        return self._shm_id
-
-    def get_shm_size(self):
-        return self._shm_size
+    def _shm_swap(self):
+        temp = self._shm_display_index
+        self._shm_working_index = self._shm_display_index
+        self._shm_display_index = temp
