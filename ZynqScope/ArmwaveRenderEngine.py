@@ -99,6 +99,7 @@ class ArmwaveRenderEngine(zs.BaseRenderEngine):
     def _resize_shms(self, size):
         for shm in self._shm_buffers:
             log.info("Resize SHM by name %s id %d to %d bytes (was %d bytes)" % (shm[0], shm[1], size, shm[3]))
+            shm[3] = size  # Change size...
             os.ftruncate(shm[1], size)
 
     def update_wave_params(self, start_t, end_t, n_waves, wave_stride):
@@ -160,7 +161,7 @@ class ArmwaveRenderEngine(zs.BaseRenderEngine):
 
         mmap_obj = mmap.mmap(buf[1], buf[3])
 
-        log.info("mmap_obj: %s" % repr(mmap_obj))
+        log.info("mmap_obj: %s length %d" % (repr(mmap_obj), len(mmap_obj)))
 
         aw.clear_buffer(0)
         aw.set_wave_pointer_u32(mmal_data_ptr)
