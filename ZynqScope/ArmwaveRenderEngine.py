@@ -101,7 +101,7 @@ class ArmwaveRenderEngine(zs.BaseRenderEngine):
             sem = lock_mgr.Lock()
 
             self._shm_buffers.append((shm_name, shm_id, sem, self._shm_size))
-            log.info("Create SHM by name %s id %d" % (shm_name, shm_id))
+            log.info("Create SHM by name %s id %d (%d bytes)" % (shm_name, shm_id, self._shm_size))
 
     def update_wave_params(self, start_t, end_t, n_waves, wave_stride):
         self.wave_params = (start_t, end_t, n_waves, wave_stride)
