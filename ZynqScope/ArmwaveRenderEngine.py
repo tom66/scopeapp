@@ -98,7 +98,7 @@ class ArmwaveRenderEngine(zs.BaseRenderEngine):
             shm_name = SHM_NAME_TEMPLATE % i
             shm_id = shm_open(shm_name)
             os.ftruncate(shm_id, size)
-            m = mmap.mmap(shm_id, size)
+            #m = mmap.mmap(shm_id, size)
             sem = lock_mgr.Lock()
 
             self._shm_buffers.append((shm_name, shm_id, sem, self._shm_size))
@@ -157,7 +157,7 @@ class ArmwaveRenderEngine(zs.BaseRenderEngine):
             raise RuntimeError("Pixbuf render failed with PyFalse: possibly corrupt pointer?")
 
         # Close the mmap.  We're done working with it.
-        mmap_obj.close()
+        #mmap_obj.close()
 
         # Release the working shm.  Swap buffers.
         working = self._shm_working_index
