@@ -59,7 +59,7 @@ class ArmwaveRenderEngine(zs.BaseRenderEngine):
     _shm_display_index = None
 
     def __init__(self):
-        log.info("Initialising ArmwaveRenderEngine with semaphores: empty=%r and full=%r" % (sem_empty, sem_full))
+        log.info("Initialising ArmwaveRenderEngine")
 
         self._free_and_create_shms()
 
