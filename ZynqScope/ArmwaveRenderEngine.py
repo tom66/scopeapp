@@ -160,9 +160,13 @@ class ArmwaveRenderEngine(zs.BaseRenderEngine):
 
         mmap_obj = mmap.mmap(buf[1], buf[3])
 
+        log.info("mmap_obj: %s" % repr(mmap_obj))
+
         aw.clear_buffer(0)
         aw.set_wave_pointer_u32(mmal_data_ptr)
         aw.generate()
+
+        log.info("start fill into pixbuf")
 
         if not aw.fill_pixbuf_into_pybuffer(mmap_obj):
             mmap_obj.close()
