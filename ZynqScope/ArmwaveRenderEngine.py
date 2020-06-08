@@ -197,6 +197,6 @@ class ArmwaveRenderEngine(zs.BaseRenderEngine):
 
     def _shm_swap(self):
         log.info("shms: %d %d" % (self._shm_display_index, self._shm_working_index))
-        temp = self._shm_display_index
+        temp = self._shm_working_index
         self._shm_working_index = self._shm_display_index
         self._shm_display_index = temp
