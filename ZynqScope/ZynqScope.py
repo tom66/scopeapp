@@ -460,8 +460,10 @@ class ZynqScope(object):
         if tb.timebase_div <= self.split_transition_tb:
             max_memory = self.mem_depth_maximum_split
             flags |= zc.ACQ_MODE_DOUBLE_BUFFER
+            log.info("acq flag: ACQ_MODE_DOUBLE_BUFFER is set")
         else:
             max_memory = self.mem_depth_maximum
+            log.info("acq flag: ACQ_MODE_DOUBLE_BUFFER is *NOT* set")
         
         if (nwaves * (pre_size + post_size)) > max_memory:
             nwaves = max_memory / (pre_size + post_size)
