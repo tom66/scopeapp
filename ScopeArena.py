@@ -368,7 +368,7 @@ class ScopeArenaController(object):
             # Cleanup
             log.critical("Exception during local render: %r" % e)
             self.root_mgr.ctrl.zst.release_render(render)
-            raise e
+            #raise e
 
     def _draw(self, wdg, cr):
         """Draw/expose callback"""
