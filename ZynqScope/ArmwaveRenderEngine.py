@@ -96,7 +96,7 @@ class ArmwaveRenderEngine(zs.BaseRenderEngine):
             shm_name = SHM_NAME_TEMPLATE % i
             shm_id = shm_open(shm_name)
             os.ftruncate(shm_id, size)
-            sem = multiprocessing.Semaphore()
+            sem = multiprocessing.Lock()
 
             self._shm_buffers.append((shm_name, shm_id, sem, self._shm_size))
             log.info("Create SHM by name %s id %d" % (shm_name, shm_id))
