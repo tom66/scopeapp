@@ -97,10 +97,14 @@ class ArmwaveRenderEngine(zs.BaseRenderEngine):
             log.info("Create SHM by name %s id %d (%d bytes)" % (shm_name, shm_id, size))
 
     def _resize_shms(self, size):
+        new_shm = []
+
         for shm in self._shm_buffers:
             log.info("Resize SHM by name %s id %d to %d bytes (was %d bytes)" % (shm[0], shm[1], size, shm[3]))
-            shm[3] = size  # Change size...
             os.ftruncate(shm[1], size)
+            new_shm.append((shm[0], shm[1], shm[2], size))
+
+        self._shm_buffers = new_shm
 
     def update_wave_params(self, start_t, end_t, n_waves, wave_stride):
         self.wave_params = (start_t, end_t, n_waves, wave_stride)
