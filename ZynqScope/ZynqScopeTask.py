@@ -210,7 +210,7 @@ class ZynqScopeSubprocess(multiprocessing.Process):
         
         log.info("ZynqScopeSubprocess __init__(): task_period=%2.6f, target_acq_period=%2.2f" % (self.task_period, self.target_acq_period))
 
-    def do_render(self):
+    def do_render(self, resp):
         if self.shared_dict['render_to_mmap']:
             #log.critical("render from:    0x%08x" % resp.buffers[0].data_ptr)
             #log.critical("render buffers: %s" % repr(resp.buffers))
@@ -403,7 +403,7 @@ class ZynqScopeSubprocess(multiprocessing.Process):
                 # The Zynq function currently doesn't handle cases other than full waves or no waves yet; WIP.
                 flags = zc.COMP0_ACQ_STOP | zc.COMP0_ACQ_GET_STATUS | zc.COMP0_ACQ_REWIND | \
                         zc.COMP0_ACQ_START_RESET_FIFO | zc.COMP0_CSI_TRANSFER_WAVES
-                        
+
                 # | zc.COMP0_ACQ_SWAP_ACQ_LISTS 
 
                 # if double-buffer acquisition is set then we want to swap lists on each Comp0 command
