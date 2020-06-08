@@ -329,12 +329,12 @@ class ScopeArenaController(object):
             try:
                 render = self.root_mgr.ctrl.zst.get_render_from_queue()
             except zst.ZynqScopeRenderQueueEmptyException:
-                log.warn("No buffers available; ignoring.")
+                #log.warn("No buffers available; ignoring.")
                 return
 
-            log.info("MMAP info: %r" % (render,))
+            #log.info("MMAP info: %r" % (render,))
 
-            log.info("trying to MMAP %d of size %d" % (render[1], render[3]))
+            #log.info("trying to MMAP %d of size %d" % (render[1], render[3]))
             render_mmap = mmap.mmap(render[1], render[3])
 
             #log.info("render_test")
@@ -354,7 +354,7 @@ class ScopeArenaController(object):
             #mmap_obj.close()
 
             t0 = time.time()
-            log.info("render_mmap size %d" % len(render_mmap))
+            #log.info("render_mmap size %d" % len(render_mmap))
             self.wave_pb = GdkPixbuf.Pixbuf.new_from_bytes(GLib.Bytes(bytes(render_mmap)), GdkPixbuf.Colorspace.RGB, True, 8, width, height, width * 4)
             self.img.set_from_pixbuf(self.wave_pb)
             #self.img.queue_draw()

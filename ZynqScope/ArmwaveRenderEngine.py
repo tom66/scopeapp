@@ -165,13 +165,13 @@ class ArmwaveRenderEngine(zs.BaseRenderEngine):
 
         mmap_obj = mmap.mmap(buf[1], buf[3])
 
-        log.info("mmap_obj: %s length %d" % (repr(mmap_obj), len(mmap_obj)))
+        #log.info("mmap_obj: %s length %d" % (repr(mmap_obj), len(mmap_obj)))
 
         aw.clear_buffer(0)
         aw.set_wave_pointer_u32(mmal_data_ptr)
         aw.generate()
 
-        log.info("start fill into pixbuf")
+        #log.info("start fill into pixbuf")
 
         if not aw.fill_pixbuf_into_pybuffer(mmap_obj):
             mmap_obj.close()
@@ -196,7 +196,7 @@ class ArmwaveRenderEngine(zs.BaseRenderEngine):
         return self._shm_buffers[self._shm_working_index]
 
     def _shm_swap(self):
-        log.info("shms: %d %d" % (self._shm_display_index, self._shm_working_index))
+        #log.info("shms: %d %d" % (self._shm_display_index, self._shm_working_index))
         temp = self._shm_working_index
         self._shm_working_index = self._shm_display_index
         self._shm_display_index = temp

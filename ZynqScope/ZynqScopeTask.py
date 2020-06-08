@@ -479,7 +479,7 @@ class ZynqScopeSubprocess(multiprocessing.Process):
                 # Wait for the acquisition time to be reached for timeout purposes
                 # If this happens it's bad.  We want to reduce these occurrences to zero.
                 if (time.time() - self.time_last_acq) > self.target_acq_period:
-                    log.warning("Timeout trying to get CSI buffers from Zynq/rawcam; let's try again")
+                    #log.warning("Timeout trying to get CSI buffers from Zynq/rawcam; let's try again")
                     self.cleanup_rawcam_buffers()
                     self.acq_state = TSTATE_ACQ_PING_ZYNQ
 
