@@ -163,7 +163,7 @@ class ArmwaveRenderEngine(zs.BaseRenderEngine):
 
         # ONLY use the display shm returned by this call as it is not otherwise guaranteed to be 
         # synchronised with the correct buffer.
-        return self.shm_get_display()
+        return self._shm_get_display()
 
     def _shm_get_display(self):
         return self._shm_buffers[self._shm_display_index]
