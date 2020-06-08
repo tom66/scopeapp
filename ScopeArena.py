@@ -313,9 +313,10 @@ class ScopeArenaController(object):
             #log.debug("New alloc: %d x %d" % new_alloc)
             #self.grat_da.set_size_request(rect.width, rect.height)
             self.size_alloc = (rect.width, rect.height)
-            self.size_allocated = TrueF
+            self.size_allocated = True
             return True
-            return False
+        
+        return False
 
     def update(self):
         if not self.first_draw:
