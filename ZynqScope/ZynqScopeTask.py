@@ -407,7 +407,7 @@ class ZynqScopeSubprocess(multiprocessing.Process):
                 # in start_auto_acquisition, or restared by this function) and return the status of it.  If 
                 # that acquisition has more than zero waves, the waves will be streamed out via CSI bus.  
                 # The Zynq function currently doesn't handle cases other than full waves or no waves yet; WIP.
-                flags = zc.COMP0_ACQ_STOP | zc.COMP0_ACQ_GET_STATUS | zc.COMP0_ACQ_REWIND | \
+                flags = zc.COMP0_ACQ_STOP | zc.COMP0_ACQ_GET_STATUS | zc.COMP0_ACQ_REWIND | zc.COMP0_ACQ_SWAP_ACQ_LISTS | \
                         zc.COMP0_ACQ_START_RESET_FIFO | zc.COMP0_CSI_TRANSFER_WAVES
 
                 # if double-buffer acquisition is set then we want to swap lists on each Comp0 command
