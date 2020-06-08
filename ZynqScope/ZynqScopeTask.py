@@ -634,7 +634,7 @@ class ZynqScopeTaskController(object):
 
     def release_render(self, render):
         """Release the buffer, freeing it for reuse."""
-        render.release()
+        render[2].release()
 
     def sync_to_real_world(self):
         # Sync to the real world includes:  
