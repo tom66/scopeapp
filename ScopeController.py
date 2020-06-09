@@ -509,9 +509,7 @@ class ScopeController(object):
         self.zst.start_task()
         self.timebase = ScopeTimebaseController(self.zst)
         self.timebase.set_change_notifier(self.change_notifier)
-
-        # In future this could be other render targets
-        self.ctrl.arena = ScopeArena.ScopeArenaController(self, self.root_mgr.cfgmgr)
+        self.arena = ScopeArena.ScopeArenaController(self, self.root_mgr.cfgmgr)
 
     def save_settings_temp(self):
         self.save_settings(TEMP_SETTING_FILE)
