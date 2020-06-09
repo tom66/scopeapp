@@ -375,7 +375,7 @@ checkbutton > check {
 }
 
 checkbutton:disabled > check  {
-    background-color: #101010;
+    background-color: #202020;
     background-image: none;
     border: 1px solid #555555;
 }
@@ -446,13 +446,17 @@ entry:focus {
 
 /* Scales */
 scale trough {
-    background-color: #101010;
+    background-color: #202020;
     border: 1px solid #555555;
 }
 
 scale highlight {
-    background-color: #008a43;
-    border: 1px solid #00369c;
+    background-color: #003b93;
+    border: 1px solid #005eeb;
+}
+
+scale value {
+    color: #ffffff;
 }
 
 /* Notify messages */
