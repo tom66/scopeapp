@@ -242,6 +242,11 @@ class ScopeArenaController(object):
     JSON configurator to allow configurations to be saved between devices.
     """
 
+    mode_antialias = False
+    mode_line = False
+    wave_intensity = 0.5
+    grat_intensity = 0.5
+
     pack_vars_types = {
         "wave_intensity":       [(float,), 0, 1],
         "grat_intensity":       [(float,), 0, 1],
