@@ -396,7 +396,7 @@ class ScopeTimebaseController(object):
     def restore_state(self, json_dict):
         try:
             Utils.unpack_json(self, json_dict, self.pack_vars_types)
-            
+
             try:
                 tb = self.supported_timebases[self.timebase_index]
             except:
@@ -454,7 +454,7 @@ class ScopeTimebaseController(object):
     def set_change_notifier(self, notify):
         assert(callable(notify))
         self.change_notifier = notify
-
+ 
 class ScopeController(object):
     """
     This class manages the overall oscilloscope function.  It controls acquisition, via the FPGA,
@@ -549,7 +549,8 @@ class ScopeController(object):
                 #self.channels[ch].termination_50R_applied = False
             
             # Recall timebase, arena; later recall triggers, acquisition settings, etc.
-            self.timebase.
+            self.timebase.restore_state(json_obj['timebase'])
+            self.arena.restore_state(json_obj['arena'])
 
             self.acq_state = STATE_STOPPED              # Default to stopped
             #self.run_state = ACQ_IS_STOPPED
