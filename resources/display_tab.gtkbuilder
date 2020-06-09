@@ -15,8 +15,6 @@
   <object class="GtkVBox" id="vbx_disp_container">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
-    <property name="halign">start</property>
-    <property name="valign">start</property>
     <property name="hexpand">True</property>
     <property name="vexpand">True</property>
     <property name="baseline_position">top</property>
@@ -307,6 +305,8 @@
       <object class="GtkLabel" id="lbl_render_fps">
         <property name="visible">True</property>
         <property name="can_focus">False</property>
+        <property name="valign">end</property>
+        <property name="hexpand">True</property>
         <property name="label" translatable="yes">18.5fps</property>
       </object>
       <packing>
@@ -319,6 +319,8 @@
       <object class="GtkLabel" id="lbl_render_arenadims">
         <property name="visible">True</property>
         <property name="can_focus">False</property>
+        <property name="valign">end</property>
+        <property name="hexpand">True</property>
         <property name="label" translatable="yes">(arena 640 x 480)</property>
       </object>
       <packing>
@@ -331,6 +333,8 @@
       <object class="GtkLabel" id="lbl_render_time">
         <property name="visible">True</property>
         <property name="can_focus">False</property>
+        <property name="valign">end</property>
+        <property name="hexpand">True</property>
         <property name="label" translatable="yes">3.3ms avg. render time</property>
       </object>
       <packing>
@@ -343,6 +347,8 @@
       <object class="GtkLabel" id="lbl_render_wfms">
         <property name="visible">True</property>
         <property name="can_focus">False</property>
+        <property name="valign">end</property>
+        <property name="hexpand">True</property>
         <property name="label" translatable="yes">~10.5k wfm/s</property>
       </object>
       <packing>
