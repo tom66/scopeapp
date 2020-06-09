@@ -309,14 +309,15 @@ class MainApplication(object):
                 log.info("Attempting to use default configuration file")
 
                 self.ctrl.restore_settings_default() 
-                self.notifier.push_notification(UINotifier.NotifyMessage(UINotifier.NOTIFY_WARNING, "Unable to load last configuration - reverting to default configuration"))
+                self.notifier.push_notification(UINotifier.NotifyMessage(UINotifier.NOTIFY_WARNING, \
+                    _("Unable to load last configuration - reverting to default configuration")))
             except:
                 log.critical("Exception during default setting restore: %r" % e)
                 log.error("Unable to load any configuration file.  The application may be unstable")
                 
                 self.notifier.push_notification(UINotifier.NotifyMessage(UINotifier.NOTIFY_WARNING, \
-                    "Unable to load last OR default configuration - configuration has errors.  The application may be unstable! "
-                    "Please restore the configuration file to the user directory."))
+                    _("Unable to load last OR default configuration - configuration has errors.  The application may be unstable!\n" \
+                      "Please restore the configuration file to the user directory.")))
         
         self.ui_sync_config()
         log.info("Done loading last settings file")
