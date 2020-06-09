@@ -154,7 +154,7 @@ class ScopeChannelController(object):
             #print("??termination_50R", self.termination_50R)
             self.unit = Utils.unit_unpickle(self.unit)
         except Exception as e:
-            raise Utils.StateSaveFileCorrupted(_("Unable to restore configuration file: Exception - %s" % str(e)))
+            raise Utils.StateSaveFileCorrupted(_("Unable to restore configuration file for ScopeChannelController: Exception - %s" % str(e)))
     
     def set_colour(self, hue, sat):
         """Set the colour of a channel.  Only the hue and saturation of a channel may be set, to allow
@@ -393,6 +393,21 @@ class ScopeTimebaseController(object):
     def prepare_state(self):
         return Utils.pack_dict_json(self, self.pack_vars_types)
     
+    def restore_state(self, json_dict):
+        try:
+            Utils.unpack_json(self, json_dict, self.pack_vars_types)
+            
+            try:
+                tb = self.supported_timebases[self.timebase_index]
+            except:
+                # Go back to default timebase
+                log.warning("Timebase in configuration file is invalid: using first timebase available")
+                self.timebase_index = 0
+
+            # TODO: Bounds check on offset?
+        except Exception as e:
+            raise Utils.StateSaveFileCorrupted(_("Unable to restore configuration file for ScopeTimebaseController: Exception - %s" % str(e)))
+
     def get_timebase(self):
         if self.timebase_index < 0: 
             self.timebase_index = 0
@@ -509,6 +524,7 @@ class ScopeController(object):
         state = { 'version'     : (Utils.APP_VERSION_MAJOR, Utils.APP_VERSION_MINOR), 
                   'n_channels'  : int(len(self.channels)), 
                   'timebase'    : self.timebase.prepare_state(),
+                  'arena'       : self.arena.prepare_state(),
                   'active_tab'  : self.active_tab }
         
         for n in range(len(self.channels)):
@@ -526,11 +542,15 @@ class ScopeController(object):
             if int(json_obj['version'][0]) > Utils.APP_VERSION_MAJOR:
                 raise Utils.StateSaveFileCorrupted(_("Unable to restore configuration file: Major version newer, cannot load"))
             
+            # Recall channels
             for ch in range(int(json_obj['n_channels'])):
                 self.channels[ch].restore_state(json_obj['channel%d' % ch])
                 #print("unpack_json_state", self.channels[ch].termination_50R, self.channels[ch].termination_50R_applied)
                 #self.channels[ch].termination_50R_applied = False
             
+            # Recall timebase, arena; later recall triggers, acquisition settings, etc.
+            self.timebase.
+
             self.acq_state = STATE_STOPPED              # Default to stopped
             #self.run_state = ACQ_IS_STOPPED
             self.active_tab = json_obj['active_tab']    # Recall tab

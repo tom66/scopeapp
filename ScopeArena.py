@@ -237,7 +237,18 @@ class ScopeArenaController(object):
     input requires, but generally stays the same if settings are not changed.  Side widgets and cursors
     are added via another compositing layer.  The hope is that this maximises performance on limited
     hardware.
+
+    Most settings for the module are set via the configuration file but a few are passed via the 
+    JSON configurator to allow configurations to be saved between devices.
     """
+
+    pack_vars_types = {
+        "wave_intensity":       [(float,), 0, 1],
+        "grat_intensity":       [(float,), 0, 1],
+        "mode_antialias":       [(bool,)],
+        "mode_line":            [(bool,)]
+    } 
+
     def __init__(self, root_mgr, cfg, window, pack_widget, pack_zone, pack_args=()):
         self.fixed = Gtk.Layout()
         call_ = getattr(pack_widget, pack_zone)
@@ -250,6 +261,10 @@ class ScopeArenaController(object):
         self.window = window
         self.root_mgr = root_mgr
 
+        # Default intensities and settings - some loaded from config
+        self.grat_intensity = cfg.Render.GratDefaultIntensity
+        self.wave_intensity = cfg.Render.WaveDefaultIntensity
+
         #self.local_aobj = awre.ArmwaveRenderEngine()
 
         self.grat_rdr = ScopeArenaYTGraticuleRender()
@@ -258,7 +273,7 @@ class ScopeArenaController(object):
             cfg.Render.DisplayHSubDivisionsYT, cfg.Render.DisplayVSubDivisionsYT, \
             cfg.Render.XMargin, cfg.Render.YMargin, cfg.Render.YTopOffset, cfg.Render.GratFlags, \
             cfg.Render.GratMainColour, cfg.Render.GratSubColour, cfg.Render.GratDivColour, \
-            cfg.Render.GratIntensity, cfg.Render.GratSubTickSize)
+            self.grat_intensity, cfg.Render.GratSubTickSize)
         
         self.grat_da = Gtk.DrawingArea()
         self.grat_da.connect('draw', self._draw)
@@ -275,13 +290,25 @@ class ScopeArenaController(object):
 
         self.wave_pb = None
 
-        self.set_wave_intensity(cfg.Render.WaveIntensity)
+        self.set_wave_intensity(self.wave_intensity)
 
+    def prepare_state(self):
+        return Utils.pack_dict_json(self, self.pack_vars_types)
+    
+    def restore_state(self, json_dict):
+        try:
+            Utils.unpack_json(self, json_dict, self.pack_vars_types)
+            self.set_wave_intensity(self.wave_intensity)
+        except Exception as e:
+            raise Utils.StateSaveFileCorrupted(_("Unable to restore configuration file for ScopeArena: Exception - %s" % str(e)))
+    
     def set_crt_mode(self, state):
         log.critical("CRT mode adjustment not implemented")
 
     def set_wave_intensity(self, intensity):
         if self.root_mgr.ctrl.zst != None:
+            # Armwave intensity is scaled up, but we internally manage with 0-1 only.
+            # TODO: We should probably abstract this out to Armwave?
             intensity = min(intensity, 1.0) 
             aw_ints = max(intensity * MAX_WAVE_INTENSITY, MIN_WAVE_INTENSITY)
             log.info("Set intensity to %.1f - Armwave sees %.1f" % (intensity, aw_ints))
