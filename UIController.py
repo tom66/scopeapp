@@ -303,12 +303,20 @@ class MainApplication(object):
 
         try:
             self.ctrl.restore_settings_last()
-        except:
+        except Exception as e:
             try:
-                self.ctrl.restore_settings_default()
+                log.critical("Exception during setting restore: %r" % e)
+                log.info("Attempting to use default configuration file")
+
+                self.ctrl.restore_settings_default() 
                 self.notifier.push_notification(UINotifier.NotifyMessage(UINotifier.NOTIFY_WARNING, "Unable to load last configuration - reverting to default configuration"))
             except:
-                self.notifier.push_notification(UINotifier.NotifyMessage(UINotifier.NOTIFY_WARNING, "Unable to load last OR default configuration - configuration have errors"))
+                log.critical("Exception during default setting restore: %r" % e)
+                log.error("Unable to load any configuration file.  The application may be unstable")
+                
+                self.notifier.push_notification(UINotifier.NotifyMessage(UINotifier.NOTIFY_WARNING, \
+                    "Unable to load last OR default configuration - configuration has errors.  The application may be unstable! "
+                    "Please restore the configuration file to the user directory."))
         
         self.ui_sync_config()
         log.info("Done loading last settings file")
