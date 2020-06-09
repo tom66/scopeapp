@@ -282,7 +282,8 @@ class ScopeArenaController(object):
 
     def set_wave_intensity(self, intensity):
         if self.root_mgr.ctrl.zst != None:
-            aw_ints = max(min(intensity, 1.0) * MAX_WAVE_INTENSITY, MIN_WAVE_INTENSITY)
+            intensity = min(intensity, 1.0) 
+            aw_ints = max(intensity * MAX_WAVE_INTENSITY, MIN_WAVE_INTENSITY)
             log.info("Set intensity to %.1f - Armwave sees %.1f" % (intensity, aw_ints))
             self.root_mgr.ctrl.zst.setup_render_channel_intensity(1, aw_ints)
 
