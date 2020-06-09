@@ -254,9 +254,9 @@ class ScopeArenaController(object):
         "mode_line":            [(bool,)]
     } 
 
-    def __init__(self, root_mgr, cfg):
+    def __init__(self, ctrl, cfg):
         self.cfg = cfg
-        self.root_mgr = root_mgr
+        self.ctrl = ctrl
 
         # Default intensities and settings - some loaded from config
         self.grat_intensity = cfg.Render.GratDefaultIntensity
@@ -312,13 +312,13 @@ class ScopeArenaController(object):
         log.critical("CRT mode adjustment not implemented")
 
     def set_wave_intensity(self, intensity):
-        if self.root_mgr.ctrl.zst != None:
+        if self.ctrl.zst != None:
             # Armwave intensity is scaled up, but we internally manage with 0-1 only.
             # TODO: We should probably abstract this out to Armwave?
             intensity = min(intensity, 1.0) 
             aw_ints = max(intensity * MAX_WAVE_INTENSITY, MIN_WAVE_INTENSITY)
             log.info("Set intensity to %.1f - Armwave sees %.1f" % (intensity, aw_ints))
-            self.root_mgr.ctrl.zst.setup_render_channel_intensity(1, aw_ints)
+            self.ctrl.zst.setup_render_channel_intensity(1, aw_ints)
 
     def notify_resize(self):
         """Resize notifier."""
@@ -329,10 +329,10 @@ class ScopeArenaController(object):
     def notify_channel_colour_change(self):
         """Update channel colour if an intensity has changed."""
         # We only support 1ch for now
-        #self.local_aobj.set_channel_colour(1, self.root_mgr.ctrl.channels[0].get_rgb_colour())
-        if self.root_mgr.ctrl.zst != None:
+        #self.local_aobj.set_channel_colour(1, self.ctrl.channels[0].get_rgb_colour())
+        if self.ctrl.zst != None:
             log.info("notify_channel_colour_change() - updating channel colour")
-            self.root_mgr.ctrl.zstc.set_channel_colour(1, self.root_mgr.ctrl.channels[0].get_rgb_colour())
+            self.ctrl.zstc.set_channel_colour(1, self.ctrl.channels[0].get_rgb_colour())
 
     def update_size_allocation(self):
         rect = self.fixed.get_allocated_size().allocation
@@ -362,7 +362,7 @@ class ScopeArenaController(object):
         try:
             # Try to grab a render buffer
             try:
-                render = self.root_mgr.ctrl.zst.get_render_from_queue()
+                render = self.ctrl.zst.get_render_from_queue()
             except zst.ZynqScopeRenderQueueEmptyException:
                 #log.warn("No buffers available; ignoring.")
                 return
@@ -395,7 +395,7 @@ class ScopeArenaController(object):
             #self.img.queue_draw()
             t1 = time.time()
 
-            self.root_mgr.ctrl.zst.release_render(render)
+            self.ctrl.zst.release_render(render)
 
             #log.info("set_from_pixbuf %.1f ms" % ((t1 - t0) * 1000))
 
@@ -403,7 +403,7 @@ class ScopeArenaController(object):
         except Exception as e:
             # Cleanup
             log.critical("Exception during local render: %r" % e)
-            self.root_mgr.ctrl.zst.release_render(render)
+            self.ctrl.zst.release_render(render)
             #raise e
 
     def _draw(self, wdg, cr):
@@ -430,7 +430,7 @@ class ScopeArenaController(object):
         self.fixed.move(self.img, ox, oy)
         
         # Drive the renderer
-        self.root_mgr.ctrl.zst.setup_render_dimensions(width, height)
+        self.ctrl.zst.setup_render_dimensions(width, height)
         #self.local_aobj.update_wave_params(0, width, 96, width)
         #self.local_aobj.set_target_dimensions(width, height)
         self.first_draw = True
