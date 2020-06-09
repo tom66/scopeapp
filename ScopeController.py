@@ -524,7 +524,7 @@ class ScopeController(object):
         state = { 'version'     : (Utils.APP_VERSION_MAJOR, Utils.APP_VERSION_MINOR), 
                   'n_channels'  : int(len(self.channels)), 
                   'timebase'    : self.timebase.prepare_state(),
-                  'arena'       : self.arena.prepare_state(),
+                  'arena'       : self.root_mgr.arena.prepare_state(),
                   'active_tab'  : self.active_tab }
         
         for n in range(len(self.channels)):
