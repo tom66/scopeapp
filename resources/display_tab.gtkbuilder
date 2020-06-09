@@ -34,12 +34,14 @@
           <object class="GtkBox">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
+            <property name="hexpand">True</property>
             <property name="orientation">vertical</property>
             <child>
               <object class="GtkScale" id="scl_intensity">
                 <property name="name">scl_intensity</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
+                <property name="hexpand">True</property>
                 <property name="adjustment">adj_intensity</property>
                 <property name="round_digits">1</property>
               </object>
@@ -55,6 +57,7 @@
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">False</property>
+                <property name="hexpand">True</property>
                 <property name="draw_indicator">True</property>
               </object>
               <packing>
@@ -97,6 +100,7 @@
             <property name="can_focus">False</property>
             <property name="margin_top">5</property>
             <property name="margin_bottom">5</property>
+            <property name="hexpand">True</property>
             <property name="row_spacing">5</property>
             <property name="column_spacing">10</property>
             <property name="column_homogeneous">True</property>
@@ -217,6 +221,7 @@
             <property name="can_focus">False</property>
             <property name="margin_top">5</property>
             <property name="margin_bottom">5</property>
+            <property name="hexpand">True</property>
             <property name="row_spacing">5</property>
             <property name="column_spacing">10</property>
             <property name="column_homogeneous">True</property>
@@ -225,6 +230,7 @@
                 <property name="name">scl_intensity</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
+                <property name="hexpand">True</property>
                 <property name="adjustment">adj_grat_intensity</property>
                 <property name="round_digits">1</property>
               </object>
@@ -240,6 +246,7 @@
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">False</property>
+                <property name="hexpand">True</property>
                 <property name="draw_indicator">True</property>
               </object>
               <packing>
@@ -254,6 +261,7 @@
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">False</property>
+                <property name="hexpand">True</property>
                 <property name="draw_indicator">True</property>
               </object>
               <packing>
@@ -268,6 +276,7 @@
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">False</property>
+                <property name="hexpand">True</property>
                 <property name="draw_indicator">True</property>
               </object>
               <packing>
