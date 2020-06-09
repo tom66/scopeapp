@@ -656,7 +656,6 @@ class ScopeController(object):
             raise RuntimeError("Oscilloscope is not stopped")
         """
 
-    
     def acq_stop(self):
         """
         print("acq_stop() outer")
@@ -669,3 +668,6 @@ class ScopeController(object):
         else:
             raise RuntimeError("Oscilloscope is not running")
         """
+
+    def update(self):
+        self.ctrl.ui_tick_scope()
