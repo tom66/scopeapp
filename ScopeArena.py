@@ -254,16 +254,8 @@ class ScopeArenaController(object):
         "mode_line":            [(bool,)]
     } 
 
-    def __init__(self, root_mgr, cfg, window, pack_widget, pack_zone, pack_args=()):
-        self.fixed = Gtk.Layout()
-        call_ = getattr(pack_widget, pack_zone)
-        assert(callable(call_))
-        call_(self.fixed, *pack_args)
-
-        self.wnd = self.fixed.get_window()
-
+    def __init__(self, root_mgr, cfg):
         self.cfg = cfg
-        self.window = window
         self.root_mgr = root_mgr
 
         # Default intensities and settings - some loaded from config
@@ -280,13 +272,6 @@ class ScopeArenaController(object):
             cfg.Render.GratMainColour, cfg.Render.GratSubColour, cfg.Render.GratDivColour, \
             self.grat_intensity, cfg.Render.GratSubTickSize)
         
-        self.grat_da = Gtk.DrawingArea()
-        self.grat_da.connect('draw', self._draw)
-        self.fixed.put(self.grat_da, 0, 0)
-
-        self.img = Gtk.Image()
-        self.fixed.put(self.img, 0, 0)
-
         self.size_allocated = False
         self.size_alloc = (0, 0)
         self.first_draw = False
@@ -296,6 +281,22 @@ class ScopeArenaController(object):
         self.wave_pb = None
 
         self.set_wave_intensity(self.wave_intensity)
+
+    def gtk_attach(self, window, pack_widget, pack_zone, pack_args=()):
+        self.fixed = Gtk.Layout()
+
+        call_ = getattr(pack_widget, pack_zone)
+        assert(callable(call_))
+        call_(self.fixed, *pack_args)
+        self.window = window
+
+        self.grat_da = Gtk.DrawingArea()
+        self.grat_da.connect('draw', self._draw)
+        self.fixed.put(self.grat_da, 0, 0)
+
+        self.img = Gtk.Image()
+        self.fixed.put(self.img, 0, 0)
+
 
     def prepare_state(self):
         return Utils.pack_dict_json(self, self.pack_vars_types)

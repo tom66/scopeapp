@@ -88,8 +88,6 @@ class MainApplication(object):
     ui_widgets = []
     
     active_ch = 0
-
-    arena = None
     
     # Flasher variable; flips state at config FlashFreq rate
     flash_period = 0
@@ -288,9 +286,8 @@ class MainApplication(object):
 
     def setup_render_arena(self):
         log.info("Initialising ScopeArenaController")
-
-        # In future this could be other render targets
-        self.arena = ScopeArena.ScopeArenaController(self, self.cfgmgr, self.window, self.hbox_main, 'pack_start', (True, True, 0))
+        
+        self.ctrl.arena.gtk_attach(self.window, self.hbox_main, 'pack_start', (True, True, 0))
 
     def restore_settings_last(self):
         """

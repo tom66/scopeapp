@@ -474,6 +474,9 @@ class ScopeController(object):
 
     # ZynqScopeTaskController object.  Used as an interface to the "Real World"
     zst = None
+
+    # ScopeArena object.  Used as the render target
+    arena = None
     
     def __init__(self, root_mgr):
         self.root_mgr = root_mgr
@@ -504,7 +507,10 @@ class ScopeController(object):
         self.zst.start_task()
         self.timebase = ScopeTimebaseController(self.zst)
         self.timebase.set_change_notifier(self.change_notifier)
-    
+
+        # In future this could be other render targets
+        self.ctrl.arena = ScopeArena.ScopeArenaController(self, self.root_mgr.cfgmgr)
+
     def save_settings_temp(self):
         self.save_settings(TEMP_SETTING_FILE)
         
@@ -524,7 +530,7 @@ class ScopeController(object):
         state = { 'version'     : (Utils.APP_VERSION_MAJOR, Utils.APP_VERSION_MINOR), 
                   'n_channels'  : int(len(self.channels)), 
                   'timebase'    : self.timebase.prepare_state(),
-                  'arena'       : self.root_mgr.arena.prepare_state(),
+                  'arena'       : self.arena.prepare_state(),
                   'active_tab'  : self.active_tab }
         
         for n in range(len(self.channels)):
