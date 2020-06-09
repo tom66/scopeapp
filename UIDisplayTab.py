@@ -41,7 +41,7 @@ class DisplayTab(object):
         self.builder.add_from_file(DISPLAY_TAB_LAYOUT_FILE)
         self.vbox = self.builder.get_object("vbx_disp_container")
         self.vbox.get_style_context().add_class("display_tab")
-        self.vbox.set_hexpand(False)
+        self.vbox.set_hexpand(True)
         
         # Extract connections to important widgets
         self.scl_intensity = self.builder.get_object("scl_intensity")
