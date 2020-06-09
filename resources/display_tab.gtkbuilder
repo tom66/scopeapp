@@ -17,6 +17,8 @@
     <property name="can_focus">False</property>
     <property name="halign">start</property>
     <property name="valign">start</property>
+    <property name="hexpand">True</property>
+    <property name="vexpand">True</property>
     <property name="baseline_position">top</property>
     <child>
       <object class="GtkFrame" id="frm_disp_intensity">
