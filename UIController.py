@@ -340,7 +340,7 @@ class MainApplication(object):
     
     def _user_message(self, msg):
         """Called to display a message to the user."""
-        log.info("UserMessage: %s" % repr(exc))
+        log.info("UserMessage: %s" % str(msg))
         self.notifier.push_notification(UINotifier.NotifyMessage(UINotifier.NOTIFY_INFO, str(msg)))
     
     def _nbk_select_page(self, *args):
