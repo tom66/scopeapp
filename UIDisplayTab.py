@@ -45,7 +45,6 @@ class DisplayTab(object):
         
         # Extract connections to important widgets
         self.scl_intensity = self.builder.get_object("scl_intensity")
-        self.chk_crt_mode = self.builder.get_object("chk_crt_mode")
         self.btn_disp_tog_dots = self.builder.get_object("btn_disp_tog_dots")
         self.btn_disp_tog_vectors = self.builder.get_object("btn_disp_tog_vectors")
         self.btn_disp_tog_fast = self.builder.get_object("btn_disp_tog_fast")
@@ -62,7 +61,6 @@ class DisplayTab(object):
         self.frm_disp_rendering = self.builder.get_object("frm_disp_rendering")
         self.frm_disp_graticule = self.builder.get_object("frm_disp_graticule")
         
-        self.chk_crt_mode.connect("toggled", self._chk_crt_mode_toggle)
         self.chk_grat_crosshair.connect("toggled", self._chk_grat_crosshair_toggle)
         self.chk_grat_divisions.connect("toggled", self._chk_grat_divisions_toggle)
         self.chk_grat_subdivisions.connect("toggled", self._chk_grat_subdivisions_toggle)
@@ -78,7 +76,6 @@ class DisplayTab(object):
         self.btn_disp_tog_vectors.set_label(_("Vectors"))           # TRANSLATORS: 'Vectors' means lines between dots
         self.btn_disp_tog_fast.set_label(_("Fast"))                 # TRANSLATORS: 'Fast' means faster rendering with downsampler (i.e. low-quality but fast)
         self.btn_disp_tog_AA.set_label(_("AA"))                     # TRANSLATORS: 'AA' means anti-aliased
-        self.chk_crt_mode.set_label(_("Tube Display Mode"))         # TRANSLATORS: 'Tube' means Cathode Ray Tube
         self.chk_grat_crosshair.set_label(_("Crosshair"))           
         self.chk_grat_divisions.set_label(_("Divisions"))          
         self.chk_grat_subdivisions.set_label(_("Sub-Divisions"))
@@ -136,10 +133,6 @@ class DisplayTab(object):
         
         return wrapper
     
-    @__state_change
-    def _chk_crt_mode_toggle(self, *args):
-        self.root_mgr.arena.set_crt_mode(self.chk_crt_mode.get_active())
-
     @__state_change
     def _chk_grat_crosshair_toggle(self, *args):
         pass
