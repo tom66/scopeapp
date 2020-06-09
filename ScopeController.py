@@ -670,4 +670,4 @@ class ScopeController(object):
         """
 
     def update(self):
-        self.arena.ui_tick_scope()
+        self.arena.update()
