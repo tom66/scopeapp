@@ -286,7 +286,7 @@ class MainApplication(object):
 
     def setup_render_arena(self):
         log.info("Initialising ScopeArenaController")
-        
+
         self.ctrl.arena.gtk_attach(self.window, self.hbox_main, 'pack_start', (True, True, 0))
 
     def restore_settings_last(self):
@@ -359,7 +359,7 @@ class MainApplication(object):
         log.info("New window size: %d x %d;  after removing mandatory space: %d x %d approx. available for waveform" % \
             (rect.width, rect.height, w, h))
 
-        self.arena.notify_resize()
+        self.ctrl.arena.notify_resize()
 
     def _logo_clicked(self, *args):
         log.info("_logo_clicked %r" % list(args))
@@ -453,7 +453,7 @@ class MainApplication(object):
         self.state_change_notify()
 
         if ident == "ch-colour":
-            self.arena.notify_channel_colour_change()
+            self.ctrl.arena.notify_channel_colour_change()
 
     def state_change_all(self):
         self.state_change_notify_ext("ch-colour")
@@ -598,9 +598,9 @@ class MainApplication(object):
             self.start_auto = None
             self.ctrl.acq_run()
 
-        # Update waveform arena (including loading next frame)
+        # Update controller
         t0 = time.time()
-        self.arena.update()
+        self.ctrl.update()
         t1 = time.time()
 
         #log.info("update()  %.1f ms" % ((t1 - t0) * 1000))
