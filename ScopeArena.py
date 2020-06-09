@@ -16,6 +16,7 @@ GRAT_RENDER_CROSSHAIR = 0x02
 GRAT_RENDER_DIVISIONS = 0x04
 GRAT_RENDER_SUBDIVISIONS = 0x08
 
+MIN_WAVE_INTENSITY = 0.25
 MAX_WAVE_INTENSITY = 5
 
 import Utils
@@ -281,7 +282,7 @@ class ScopeArenaController(object):
 
     def set_wave_intensity(self, intensity):
         if self.root_mgr.ctrl.zst != None:
-            aw_ints = intensity * MAX_WAVE_INTENSITY
+            aw_ints = max(min(intensity, 1.0) * MAX_WAVE_INTENSITY, MIN_WAVE_INTENSITY)
             log.info("Set intensity to %.1f - Armwave sees %.1f" % (intensity, aw_ints))
             self.root_mgr.ctrl.zst.setup_render_channel_intensity(1, aw_ints)
 
