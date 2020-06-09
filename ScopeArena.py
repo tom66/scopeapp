@@ -297,7 +297,6 @@ class ScopeArenaController(object):
         self.img = Gtk.Image()
         self.fixed.put(self.img, 0, 0)
 
-
     def prepare_state(self):
         return Utils.pack_dict_json(self, self.pack_vars_types)
     
@@ -332,7 +331,7 @@ class ScopeArenaController(object):
         #self.local_aobj.set_channel_colour(1, self.ctrl.channels[0].get_rgb_colour())
         if self.ctrl.zst != None:
             log.info("notify_channel_colour_change() - updating channel colour")
-            self.ctrl.zstc.set_channel_colour(1, self.ctrl.channels[0].get_rgb_colour())
+            self.ctrl.zst.set_channel_colour(1, self.ctrl.channels[0].get_rgb_colour())
 
     def update_size_allocation(self):
         rect = self.fixed.get_allocated_size().allocation
