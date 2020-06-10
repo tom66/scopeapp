@@ -490,7 +490,7 @@ class ZynqScope(object):
             # positive delay not yet implemented
             self.params.trigger_point = 1.0
         
-        self.params.acq_flags = flags
+        self.params.flags = flags
         self.params.nwaves = nwaves
         self.params.wave_rate = nwaves * self.acq_framerate
         self.params.delay = self.next_delay
