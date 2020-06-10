@@ -404,6 +404,8 @@ class ZynqScopeSubprocess(multiprocessing.Process):
                 flags = zc.COMP0_ACQ_STOP | zc.COMP0_ACQ_GET_STATUS | zc.COMP0_ACQ_REWIND | \
                         zc.COMP0_ACQ_START_RESET_FIFO | zc.COMP0_CSI_TRANSFER_WAVES
 
+                log.info("AcqParams flags=0x%04x" % self.acq_params.flags)
+
                 # if double-buffer acquisition is set then we want to swap lists on each Comp0 command
                 if self.acq_params.flags & zc.ACQ_MODE_DOUBLE_BUFFER:
                     flags |= zc.COMP0_ACQ_SWAP_ACQ_LISTS
