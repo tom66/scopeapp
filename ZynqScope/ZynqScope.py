@@ -58,6 +58,7 @@ class ZynqScopeCurrentParameters(object):
     delay = 0
     flags = 0x0000
     expected_buffer_size = 0
+    double_buffered = False
     
     def __repr__(self):
         return "<ZynqScopeCurrentParameters sample_depth=%d bits, memory_depth=%s, sample_rate=%s, trigger_point=%2.1f%%, delay=%s, nwaves=%d, flags=0x%04x>" % \
@@ -460,9 +461,11 @@ class ZynqScope(object):
         if tb.timebase_div <= self.split_transition_tb:
             max_memory = self.mem_depth_maximum_split
             flags |= zc.ACQ_MODE_DOUBLE_BUFFER
+            self.params.double_buffered = True
             log.info("acq flag: ACQ_MODE_DOUBLE_BUFFER is set")
         else:
             max_memory = self.mem_depth_maximum
+            self.params.double_buffered = False
             log.info("acq flag: ACQ_MODE_DOUBLE_BUFFER is *NOT* set")
         
         if (nwaves * (pre_size + post_size)) > max_memory:
