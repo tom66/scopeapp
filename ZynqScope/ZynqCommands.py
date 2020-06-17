@@ -316,10 +316,10 @@ class ZynqCommands(object):
         self.zspi.queue_command_ignore_response(zcmd._AC_SETUP_ACQ_AND_STREAM, \
             _pack_32b_int_arg(int(period_us)))
 
-    def ac_start(self, period_us):
+    def ac_start(self):
         self.zspi.queue_command_ignore_response(zcmd._AC_START)
 
-    def ac_stop(self, period_us):
+    def ac_stop(self):
         self.zspi.queue_command_ignore_response(zcmd._AC_STOP)
 
     def comp_acq_control(self, flags):
