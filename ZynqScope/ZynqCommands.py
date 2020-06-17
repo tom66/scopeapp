@@ -322,6 +322,9 @@ class ZynqCommands(object):
     def ac_stop(self):
         self.zspi.queue_command_ignore_response(zcmd._AC_STOP)
 
+    def ac_reset(self):
+        self.zspi.queue_command_ignore_response(zcmd._AC_RESET)
+
     def comp_acq_control(self, flags):
         """Composite acquisition control and CSI data transfer."""
         # The response takes time to generate, and varies according to the flags, so set the expected response size to None
