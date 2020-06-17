@@ -228,10 +228,11 @@ class ZynqScope(object):
         self.next_tb = self.timebase_settings[default_timebase]
 
         # Set IOs as inputs
-        RPi.GPIO.setmode(GPIO.BCM)
-        RPi.GPIO.setup(RASPI_PIN_SEND, GPIO.OUT)
-        RPi.GPIO.setup(RASPI_PIN_PKT_READY, GPIO.IN)
-        RPi.GPIO.add_event_detect(RASPI_PIN_PKT_READY, GPIO.RISING, callback=self.gpio_irq_pkt_ready)
+        RPi.GPIO.setmode(RPi.GPIO.BCM)
+        RPi.GPIO.setup(RASPI_PIN_SEND, RPi.GPIO.OUT)
+        RPi.GPIO.setup(RASPI_PIN_PKT_READY, RPi.GPIO.IN)
+        RPi.GPIO.add_event_detect(RASPI_PIN_PKT_READY, RPi.GPIO.RISING, callback=self.gpio_irq_pkt_ready)
+        self.zynq_stop_ready()
 
         # Instead of blindly returning True we should check that the hardware is ready first...
         return True
@@ -329,12 +330,12 @@ class ZynqScope(object):
             log.warning("ZynqScope: rawcam_stop() ignored - rawcam not running")
 
     def zynq_set_ready(self):
-        RPi.GPIO.output(RASPI_PIN_SEND, GPIO.LOW)
+        RPi.GPIO.output(RASPI_PIN_SEND, RPi.GPIO.LOW)
 
     def zynq_stop_ready(self):
         # Go high indicating nREADY;  only do this after a packet has been received correctly
         # as it otherwise might indicate the wrong state.
-        RPi.GPIO.output(RASPI_PIN_SEND, GPIO.HIGH)
+        RPi.GPIO.output(RASPI_PIN_SEND, RPi.GPIO.HIGH)
 
     def zynq_acknowledge_if_pending(self):
         if self.zynq_pkt_ready:
