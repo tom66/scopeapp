@@ -417,7 +417,7 @@ class ZynqScopeSubprocess(multiprocessing.Process):
                 # Acknowledge any pending packet
                 self.cleanup_rawcam_buffers()
 
-                if self.zynq_acknowledge_if_pending():
+                if self.zs.zynq_acknowledge_if_pending():
                     log.info("Zynq has packet; try to read it...")
 
                     while len(self.buffers_working) < self.zs.rawcam_buffer_dims[2]:
@@ -454,7 +454,7 @@ class ZynqScopeSubprocess(multiprocessing.Process):
                             resp.status = self.acq_comp0_response['AcqStatus']
                             self.acq_response_queue.put(resp)
                             self.do_render(resp)
-                            self.zynq_set_ready()
+                            self.zs.zynq_set_ready()
                             #self.zs.rawcam_stop()
                             #self.acq_state = TSTATE_ACQ_IDLE
                             self.acq_state = TSTATE_ACQ_WAITING_FOR_CSI_TRANSFER
