@@ -35,6 +35,8 @@ ACQSTATE_STOPPED = 3
 RAWCAM_BITRATE = 0.4e9              # 300MHz, 2 lanes, DDR: 1.2Gbit/s
 RAWCAM_OVERHEAD = 1.50              # 30% overhead (estimated)
 
+ZYNQ_CSI_HEADER_SIZE = 512
+
 # Load debug logger
 import logging
 log = logging.getLogger()
@@ -397,7 +399,8 @@ class ZynqScopeSubprocess(multiprocessing.Process):
             # params before starting.
             self.acq_params = self.zs.params
             self.zs.rawcam_init()
-            self.zs.rawcam_configure(self.acq_params.expected_buffer_size)
+            # TODO: Size needs to be dynamic...
+            self.zs.rawcam_configure(self.acq_params.expected_buffer_size + ZYNQ_CSI_HEADER_SIZE)
             self.zs.rawcam_start()
             #self.zs.rawcam_disable()
             self.zs.rawcam_enable()
