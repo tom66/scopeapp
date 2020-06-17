@@ -235,7 +235,7 @@ class ZynqScope(object):
         self.zynq_stop_ready()
 
         # Ensure AcqCtrl is reset...
-        self.zs.ac_reset()
+        self.ac_reset()
 
         # Instead of blindly returning True we should check that the hardware is ready first...
         return True
