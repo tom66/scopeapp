@@ -235,6 +235,10 @@ class ZynqScope(object):
         self.zynq_stop_ready()
 
         # Ensure AcqCtrl is reset...
+        while True:
+            RPi.GPIO.output(RASPI_PIN_SEND, RPi.GPIO.LOW)
+            RPi.GPIO.output(RASPI_PIN_SEND, RPi.GPIO.HIGH)
+
         self.zcmd.ac_reset()
 
         # Instead of blindly returning True we should check that the hardware is ready first...
