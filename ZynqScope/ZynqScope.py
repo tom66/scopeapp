@@ -13,6 +13,9 @@ import ZynqScope.ZynqSPI, ZynqScope.ZynqCommands as zc
 # Rawcam library
 import ZynqScope.pirawcam.rawcam as rawcam
 
+# RasPi IO
+import RPi.GPIO
+
 # Load debug logger
 import logging
 log = logging.getLogger()
@@ -26,6 +29,9 @@ RAWCAM_MIN_SPARE_BUFFERS = 4
 
 RAWCAM_IMAGE_ID = 0x2a
 RAWCAM_WCT_HEADER = 0x0000
+
+RASPI_PIN_SEND = 12
+RASPI_PIN_PKT_READY = 13
 
 # Supported timebases
 """
@@ -201,8 +207,9 @@ class ZynqScope(object):
     rawcam_mod = None 
     rawcam_running = False
     rawcam_buffer_dims = (0, 0, 0)
-
     
+    zynq_pkt_ready = False
+
     def __init__(self, display_samples_target, default_hdiv_span):
         # Set default parameters
         self.display_samples_target = display_samples_target
@@ -220,11 +227,15 @@ class ZynqScope(object):
         self.init_timebases()
         self.next_tb = self.timebase_settings[default_timebase]
 
-        log.info("ZynqScope connect(): done initialisation")
-        
+        # Set IOs as inputs
+        RPi.GPIO.setmode(GPIO.BCM)
+        RPi.GPIO.setup(RASPI_PIN_SEND, GPIO.OUT)
+        RPi.GPIO.setup(RASPI_PIN_PKT_READY, GPIO.IN)
+        RPi.GPIO.add_event_detect(RASPI_PIN_PKT_READY, GPIO.RISING, callback=self.gpio_irq_pkt_ready)
+
         # Instead of blindly returning True we should check that the hardware is ready first...
         return True
-    
+
     def rawcam_init(self):
         log.debug("ZynqScope rawcam_init(): setting up rawcam")
 
@@ -316,6 +327,26 @@ class ZynqScope(object):
             self.rawcam_running = False
         else:
             log.warning("ZynqScope: rawcam_stop() ignored - rawcam not running")
+
+    def zynq_set_ready(self):
+        RPi.GPIO.output(RASPI_PIN_SEND, GPIO.LOW)
+
+    def zynq_stop_ready(self):
+        # Go high indicating nREADY;  only do this after a packet has been received correctly
+        # as it otherwise might indicate the wrong state.
+        RPi.GPIO.output(RASPI_PIN_SEND, GPIO.HIGH)
+
+    def zynq_acknowledge_if_pending(self):
+        if self.zynq_pkt_ready:
+            self.zynq_stop_ready()
+            self.zynq_pkt_ready = False
+            return True
+        else:
+            return False
+
+    def gpio_irq_pkt_ready(self, *args):
+        log.info("gpio_irq_pkt_ready(%r)" % args)
+        self.zynq_pkt_ready = True
 
     def calc_real_sample_rate_for_index(self, index):
         """Only supports 8-bit mode for now"""

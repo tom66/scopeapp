@@ -309,8 +309,18 @@ class ZynqCommands(object):
         return resp
 
     def csi_setup_params(self, wordcount, data_type):
-        self.zspi.queue_command_ignore_response(zcmd._CSI_SET_PARAMS_QUEUE, \
+        self.zspi.queue_command_ignore_response(zcmd._CSI_SET_PARAMS, \
             _pack_16b_int_arg(wordcount) + (data_type,))
+
+    def ac_setup_acq_and_stream(self, period_us):
+        self.zspi.queue_command_ignore_response(zcmd._AC_SETUP_ACQ_AND_STREAM, \
+            (_pack_32b_int_arg(int(period_us)),))
+
+    def ac_start(self, period_us):
+        self.zspi.queue_command_ignore_response(zcmd._AC_START)
+
+    def ac_stop(self, period_us):
+        self.zspi.queue_command_ignore_response(zcmd._AC_STOP)
 
     def comp_acq_control(self, flags):
         """Composite acquisition control and CSI data transfer."""
@@ -328,7 +338,7 @@ class ZynqCommands(object):
             ret['CSITxSize'] = self.csitxsize_cache
 
         return ret
-    
+
     def nop_mark(self):
         """Emit 0xfe into the queue as a debugging NOP."""
         self.zspi.queue_command_ignore_response(zcmd._NOP_MARK)

@@ -355,8 +355,12 @@ class ZynqScopeSubprocess(multiprocessing.Process):
         self.rengine.set_target_dimensions(*self.target_dimensions)
 
         self.zs.zcmd.flush()
+
         self.zs.zcmd.setup_trigger_edge(zc.TRIG_CH_ADCSRC1, 0x7f, 0x10, zc.TRIG_EDGE_RISING) # write default trigger
-        self.zs.zcmd.start_acquisition()
+        #self.zs.zcmd.start_acquisition()
+        log.info("Writing period: %d us" % int(1e6 / DEFAULT_ACQUISITION_RATE))
+        self.zs.zcmd.ac_setup_acq_and_stream(1e6 / DEFAULT_ACQUISITION_RATE)
+        self.zs.zcmd.ac_start()
         self.zs.zcmd.flush()
         self.time_last_acq = time.time()
         self.start_signal = True
@@ -370,143 +374,101 @@ class ZynqScopeSubprocess(multiprocessing.Process):
         # and not send our own ZynqCommands...
         #log.debug("aq=%d" % self.acq_state)
 
-        if self.acq_state == TSTATE_ACQ_PREPARE_TO_START:
-            # Stop, if we get a signal
+        if self.acq_state == TSTATE_ACQ_IDLE:
             if self.stop_signal:
-                self.acq_state = TSTATE_ACQ_IDLE
-            else:
-                # Rawcam must be stopped.  If not this is an error
-                if self.zs.rawcam_running:
-                    raise RuntimeError("rawcam not in stopped state")
+                self._handle_stop()
+                self.acq_state = STATE_ACQ_STOPPED
 
-                # Setup the rawcam interface preparing to acquire.  Save a copy of the acquisition
-                # params before starting.
-                self.acq_params = self.zs.params
-                self.zs.rawcam_init()
-                self.zs.rawcam_configure(self.acq_params.expected_buffer_size)
-                self.zs.rawcam_start()
-                #self.zs.rawcam_disable()
-                self.zs.rawcam_enable()
-                time.sleep(0.001)  # Give rawcam a moment to start
+            if self.start_signal:
+                self.acq_state = TSTATE_ACQ_PREPARE_TO_START
+        
+        elif self.acq_state == TSTATE_ACQ_STOPPED:
+            log.info("Stopped")
 
-                # Wait, then start acquiring data
-                self.acq_state = TSTATE_ACQ_AUTO_WAIT
+            if self.start_signal:
+                self.zs.rawcam_disable()
+                self.acq_state = TSTATE_ACQ_PREPARE_TO_START
 
-        elif self.acq_state == TSTATE_ACQ_PING_ZYNQ:
-            # Stop, if we get a signal
-            if self.stop_signal:
-                self.acq_state = TSTATE_ACQ_IDLE
-            else:
-                # Send message to Zynq to stop the current acquisition (either the first acquisition started
-                # in start_auto_acquisition, or restared by this function) and return the status of it.  If 
-                # that acquisition has more than zero waves, the waves will be streamed out via CSI bus.  
-                # The Zynq function currently doesn't handle cases other than full waves or no waves yet; WIP.
-                flags = zc.COMP0_ACQ_STOP | zc.COMP0_ACQ_GET_STATUS | zc.COMP0_ACQ_REWIND | \
-                        zc.COMP0_ACQ_START_RESET_FIFO | zc.COMP0_CSI_TRANSFER_WAVES
+        elif self.acq_state == TSTATE_ACQ_PREPARE_TO_START:
+            # Rawcam must be stopped.  If not this is an error
+            if self.zs.rawcam_running:
+                raise RuntimeError("rawcam not in stopped state")
 
-                #log.info("AcqParams flags=0x%04x" % self.acq_params.flags)
+            # Setup the rawcam interface preparing to acquire.  Save a copy of the acquisition
+            # params before starting.
+            self.acq_params = self.zs.params
+            self.zs.rawcam_init()
+            self.zs.rawcam_configure(self.acq_params.expected_buffer_size)
+            self.zs.rawcam_start()
+            #self.zs.rawcam_disable()
+            self.zs.rawcam_enable()
+            time.sleep(0.001)  # Give rawcam a moment to start
 
-                # if double-buffer acquisition is set then we want to swap lists on each Comp0 command
-                if self.acq_params.flags & zc.ACQ_MODE_DOUBLE_BUFFER:
-                    flags |= zc.COMP0_ACQ_SWAP_ACQ_LISTS
-                    #log.info("DoubleBuffer set on Comp0 command")
+            # tell the Zynq that we're ready to accept new data: READY goes low.
+            self.zs.zynq_set_ready()
 
-                #self.zs.rawcam_debug()
-                self.acq_comp0_response = self.zs.zcmd.comp_acq_control(flags)
-                self.time_last_acq = time.time()
-
-                self.time_reqd_rawcam = (self.zs.rawcam_buffer_dims[1] * 8) / RAWCAM_BITRATE
-                self.time_reqd_rawcam *= RAWCAM_OVERHEAD
-
-                # Does Zynq have enough data for us?
-                if self.acq_comp0_response['AcqStatus'].num_acq == 0:
-                    # No acquisitions.  Maybe no trigger.  Go back to AUTO_WAIT.
-                    self.zs.rawcam_stop()
-                    self.acq_state = TSTATE_ACQ_AUTO_WAIT
-                else:
-                    self.acq_state = TSTATE_ACQ_WAITING_FOR_CSI_TRANSFER
-                    self.shared_dict['running_state'] = ACQSTATE_RUNNING_TRIGD
+            # Wait, then start acquiring data
+            self.acq_state = TSTATE_ACQ_WAITING_FOR_CSI_TRANSFER
 
         elif self.acq_state == TSTATE_ACQ_WAITING_FOR_CSI_TRANSFER:
             # Stop, if we get a signal
             if self.stop_signal:
-                self.acq_state = TSTATE_ACQ_IDLE
+                self.handle_stop()
+            else:
+                # Acknowledge any pending packet
                 self.cleanup_rawcam_buffers()
-                self.zs.rawcam_stop()
-                self.zcmd.stop_acquisition()
-            else:
-                while self.zs.rawcam_get_buffer_count() > 0: #>= self.zs.rawcam_buffer_dims[2]:
-                    # Dequeue this buffer and record the pointer so we can free this later
-                    count = self.zs.rawcam_get_buffer_count()
-                    fr_buffer = self.zs.rawcam_buffer_get_friendly()
-                    buff = ZynqScopePicklableMemoryBuff(fr_buffer)
 
-                    # hack
-                    if buff.length == 0:
-                        buff.length = self.zs.rawcam_buffer_dims[3]
+                if self.zynq_acknowledge_if_pending():
+                    log.info("Zynq has packet; try to read it...")
 
-                    self.buffers_working.append(buff)
-                    self.buffers_freeable.append(fr_buffer)
+                    while len(self.buffers_working) < self.zs.rawcam_buffer_dims[2]:
+                        while self.zs.rawcam_get_buffer_count() > 0: 
+                            # Dequeue this buffer and record the pointer so we can free this later
+                            count = self.zs.rawcam_get_buffer_count()
+                            fr_buffer = self.zs.rawcam_buffer_get_friendly()
+                            buff = ZynqScopePicklableMemoryBuff(fr_buffer)
 
-                    #buff.dump_to_file("rxtest/sender%d.bin" % self.stats.num_waves_sent)
+                            # hack
+                            if buff.length == 0:
+                                buff.length = self.zs.rawcam_buffer_dims[3]
 
-                    self.stats.num_waves_sent += 1
-                    self.rawcam_seq += 1
+                            self.buffers_working.append(buff)
+                            self.buffers_freeable.append(fr_buffer)
 
-                    if self.last_pts != None:
-                        us_delta = buff.pts - self.last_pts
-                    else:
-                        us_delta = 0
-                    self.last_pts = buff.pts
-                    #print("Buffer count: %d, size of list: %d (total %d), new buffer: %r, us_delta: %d" % (count, len(self.buffers_working), self.rawcam_seq, buff, us_delta))
+                            #buff.dump_to_file("rxtest/sender%d.bin" % self.stats.num_waves_sent)
 
-                if len(self.buffers_working) >= self.zs.rawcam_buffer_dims[2]:
-                    # Create the response and send it
-                    resp = ZynqScopeAcquisitionResponse()
-                    resp.time = time.time()
-                    resp.buffers = self.buffers_working
-                    resp.status = self.acq_comp0_response['AcqStatus']
-                    self.acq_response_queue.put(resp)
-                    self.do_render(resp)
-                    #self.zs.rawcam_stop()
-                    #self.acq_state = TSTATE_ACQ_IDLE
-                    self.acq_state = TSTATE_ACQ_AUTO_WAIT
-                else:
-                    pass 
-                    #if (time.time() - self.time_last_acq) > self.time_reqd_rawcam:
-                    #    print("Rawcam time up (%.4f s), let's ask for more." % self.time_reqd_rawcam)
-                    #    self.zs.rawcam_flush() # Let's try and get some more, mkay?
+                            self.stats.num_waves_sent += 1
+                            self.rawcam_seq += 1
 
-                # Wait for the acquisition time to be reached for timeout purposes
-                # If this happens it's bad.  We want to reduce these occurrences to zero.
-                if (time.time() - self.time_last_acq) > self.target_acq_period:
-                    #log.warning("Timeout trying to get CSI buffers from Zynq/rawcam; let's try again")
-                    self.cleanup_rawcam_buffers()
-                    self.acq_state = TSTATE_ACQ_PING_ZYNQ
+                            if self.last_pts != None:
+                                us_delta = buff.pts - self.last_pts
+                            else:
+                                us_delta = 0
+                            self.last_pts = buff.pts
+                            #print("Buffer count: %d, size of list: %d (total %d), new buffer: %r, us_delta: %d" % (count, len(self.buffers_working), self.rawcam_seq, buff, us_delta))
 
-        elif self.acq_state == TSTATE_ACQ_AUTO_WAIT:
-            # Stop, if we get a signal
-            if self.stop_signal:
-                self.acq_state = TSTATE_ACQ_IDLE
-                self.zcmd.stop_acquisition()
-                # Do we need to cleanup??
-            else:
-                # Wait for the acquisition time to be reached before gathering data
-                if (time.time() - self.time_last_acq) > self.target_acq_period:
-                    #log.debug("TimesUp!")
-                    self.cleanup_rawcam_buffers()
-                    self.acq_state = TSTATE_ACQ_PING_ZYNQ
+                        if len(self.buffers_working) >= self.zs.rawcam_buffer_dims[2]:
+                            # Create the response and send it
+                            resp = ZynqScopeAcquisitionResponse()
+                            resp.time = time.time()
+                            resp.buffers = self.buffers_working
+                            resp.status = self.acq_comp0_response['AcqStatus']
+                            self.acq_response_queue.put(resp)
+                            self.do_render(resp)
+                            self.zynq_set_ready()
+                            #self.zs.rawcam_stop()
+                            #self.acq_state = TSTATE_ACQ_IDLE
+                            self.acq_state = TSTATE_ACQ_WAITING_FOR_CSI_TRANSFER
 
-        elif self.acq_state == TSTATE_ACQ_IDLE:
-            if self.start_signal:
-                # Stop the rawcam and free all buffers
-                #self.cleanup_rawcam_buffers()
-                #self.zs.rawcam_stop()
-                self.zs.rawcam_disable()
-                self.acq_state = TSTATE_ACQ_PREPARE_TO_START
-        
         else:
-            log.debug("Idle--not running")
+            log.warning("Unimplemented state")
+
+    def _handle_stop(self):
+        log.info("_handle_stop()")
+        self.acq_state = TSTATE_ACQ_IDLE
+        self.cleanup_rawcam_buffers()
+        self.zs.rawcam_stop()
+        self.zcmd.stop_acquisition()
 
     def die_cleanup(self):
         """Stub - to be fleshed out later."""
