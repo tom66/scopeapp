@@ -451,7 +451,7 @@ class ZynqScopeSubprocess(multiprocessing.Process):
                             resp = ZynqScopeAcquisitionResponse()
                             resp.time = time.time()
                             resp.buffers = self.buffers_working
-                            resp.status = self.acq_comp0_response['AcqStatus']
+                            #resp.status = self.acq_comp0_response['AcqStatus']
                             self.acq_response_queue.put(resp)
                             self.do_render(resp)
                             self.zs.zynq_set_ready()
