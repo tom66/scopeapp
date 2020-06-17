@@ -314,7 +314,7 @@ class ZynqCommands(object):
 
     def ac_setup_acq_and_stream(self, period_us):
         self.zspi.queue_command_ignore_response(zcmd._AC_SETUP_ACQ_AND_STREAM, \
-            (_pack_32b_int_arg(int(period_us)),))
+            _pack_32b_int_arg(int(period_us)))
 
     def ac_start(self, period_us):
         self.zspi.queue_command_ignore_response(zcmd._AC_START)
