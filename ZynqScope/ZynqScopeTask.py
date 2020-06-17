@@ -217,7 +217,7 @@ class ZynqScopeSubprocess(multiprocessing.Process):
 
             # Max 2 items in the queue.
             if self.render_queue.qsize() <= 1:
-                self.render_queue.put(self.rengine.render_single_mmal(resp.buffers[0].data_ptr))
+                self.render_queue.put(self.rengine.render_single_mmal(resp.buffers[0].data_ptr + 512))  # 512 byte offset for header; header to be decoded later
         else:
             log.warn("Render inhibited as render_to_mmap is False")
 
