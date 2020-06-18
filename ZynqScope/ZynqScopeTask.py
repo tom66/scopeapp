@@ -37,6 +37,8 @@ RAWCAM_OVERHEAD = 1.50              # 30% overhead (estimated)
 
 ZYNQ_CSI_HEADER_SIZE = 512
 
+ZST_TIMEOUT = 0.5
+
 # Load debug logger
 import logging
 log = logging.getLogger()
@@ -83,8 +85,11 @@ class ZynqScopeStartAutoAcquisition(ZynqScopeTaskQueueCommand):
     def __init__(self, rate):
         self.rate = rate
 
+class ZynqScopeStopAutoAcquisition(ZynqScopeTaskQueueCommand): pass
+
 class ZynqScopeAttributesResponse(ZynqScopeTaskQueueResponse): pass
 class ZynqScopeNullResponse(ZynqScopeTaskQueueResponse): pass
+class ZynqScopeStopCompleted(ZynqScopeTaskQueueResponse): pass
 
 class ZynqScopeRenderSetupTargetDimensions(ZynqScopeTaskQueueCommand): 
     def __init__(self, width, height):
@@ -271,6 +276,9 @@ class ZynqScopeSubprocess(multiprocessing.Process):
         elif typ is ZynqScopeStartAutoAcquisition:
             self.start_auto_acquisition()
 
+        elif typ is ZynqScopeStopAutoAcquisition:
+            self.stop_auto_acquisition()
+
         elif typ is ZynqScopeSyncAcquisitionSettings:
             self.zs.setup_for_timebase(0, None) # TODO: These parameters need to be filled in, too!
             
@@ -368,6 +376,10 @@ class ZynqScopeSubprocess(multiprocessing.Process):
         self.shared_dict['running_state'] = ACQSTATE_RUNNING_WAIT
 
         log.debug("start_auto_acquisition(): done")
+
+    def stop_auto_acquisition(self):
+        """Send the stop signal."""
+        self.stop_signal = True
 
     def acquisition_tick(self):
         """Acquisition tick process.  Manages acquisition and SPI control."""
@@ -471,6 +483,8 @@ class ZynqScopeSubprocess(multiprocessing.Process):
         self.cleanup_rawcam_buffers()
         self.zs.rawcam_stop()
         self.zcmd.stop_acquisition()
+        self.stop_signal = False
+        self.rsq.put(ZynqScopeStopCompleted())
 
     def die_cleanup(self):
         """Stub - to be fleshed out later."""
@@ -506,12 +520,14 @@ class ZynqScopeTaskController(object):
             'ZynqScopeGetAttributes': ZynqScopeGetAttributes(),
             'ZynqScopeDieTask' : ZynqScopeDieTask(),
             'ZynqScopeSendCompAcqStreamCommand' : ZynqScopeSendCompAcqStreamCommand(0x0000),
+            'ZynqScopeSimpleCommand_SetNextTimebase' : ZynqScopeSimpleCommand("set_next_timebase"),
             'ZynqScopeSimpleCommand_SetupForTimebase' : ZynqScopeSimpleCommand("setup_for_timebase"),
             'ZynqScopeRawcamConfigure' : ZynqScopeRawcamConfigure(0),
             'ZynqScopeRawcamStart' : ZynqScopeRawcamStart(),
             'ZynqScopeRawcamDequeueBuffer' : ZynqScopeRawcamDequeueBuffer(),
             'ZynqScopeRawcamStop' : ZynqScopeRawcamStop(),
             'ZynqScopeStartAutoAcquisition' : ZynqScopeStartAutoAcquisition(None),
+            'ZynqScopeStopAutoAcquisition' : ZynqScopeStopAutoAcquisition(),
             'ZynqScopeRenderSetupTargetDimensions' : ZynqScopeRenderSetupTargetDimensions(0, 0),
             'ZynqScopeRenderChangeChannelColour' : ZynqScopeRenderChangeChannelColour(0, None),
             'ZynqScopeRenderChangeChannelIntensity' : ZynqScopeRenderChangeChannelIntensity(0, 0)
@@ -551,7 +567,8 @@ class ZynqScopeTaskController(object):
         return attrs.timebase_settings
 
     def set_next_timebase_index(self, tb):
-        cmd = self.roc['ZynqScopeSimpleCommand_SetupForTimebase']
+        log.info("Set next timebase %d" % int(tb))
+        cmd = self.roc['ZynqScopeSimpleCommand_SetNextTimebase']
         cmd.args = (int(tb),)
         self.evq.put(cmd)
     
@@ -559,7 +576,16 @@ class ZynqScopeTaskController(object):
         self.evq.put(ZynqScopeCmdsIfcSimpleCommand("setup_trigger_edge", True, (ch, level, hyst, edge)))
     
     def stop_acquisition(self):
-        pass
+        self.evq_cache('ZynqScopeStopAutoAcquisition')
+
+        log.info("Wait for Stop...")
+
+        # Wait for stop... up to ZST_TIMEOUT seconds
+        resp = self.rsq.get(True, ZST_TIMEOUT)
+
+        if type(resp) == ZynqScopeStopCompleted:
+            log.info("Got stop")
+            return True
     
     def start_acquisition(self):
         log.debug("ZSTC: ZynqScopeStartAutoAcquisition")
@@ -567,7 +593,7 @@ class ZynqScopeTaskController(object):
 
         # for now, set this
         self.zstask.shared_dict['render_to_mmap'] = True
-    
+
     def setup_render_dimensions(self, width, height):
         cmd = self.roc['ZynqScopeRenderSetupTargetDimensions']
         cmd.width = width

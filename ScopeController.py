@@ -591,7 +591,9 @@ class ScopeController(object):
         log.info("sync_if_needed() run_state: %r in sync_if_needed" % self.run_state)
         if self.run_state == ACQ_IS_RUNNING:
             log.info("Syncing to real world")
+            self.zst.stop_acquisition()
             self.zst.sync_to_real_world()
+            self.zst.start_acquisition()
         else:
             log.info("No sync, we are stopped")
     
