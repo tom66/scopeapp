@@ -536,7 +536,7 @@ scale value {
 menu {
     background-image: none;
     background-color: #202020;   
-    margin: 0px;
+    margin: 1px;
     padding: 0px;
     border: 1px solid #333333;
     border-radius: 3px;
