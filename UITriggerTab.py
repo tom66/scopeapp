@@ -124,6 +124,8 @@ class TriggerTab(object):
             self.css_manager.add_widget(hbox, "trigger_option_menuitem")
 
             cont = obj.get_embedded_container()
+            cont.hide()
+            
             self.trigger_pages.pack_start(cont, True, True, 0)
 
             row += 1
