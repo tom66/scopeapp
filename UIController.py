@@ -15,12 +15,7 @@ import sys, time, random, math
 from datetime import datetime
 
 import ScopeController as SC
-import ScopeArena
-import UIChannelTab
-import UIDisplayTab
-import UIChannelWidget
-import UINotifier
-import Utils
+import UIChannelTab, UIDisplayTab, UITriggerTab, UIChannelWidget, UINotifier, ScopeArena, Utils
 
 LAYOUT_FILE = "resources/mainapp.gtkbuilder"
 
