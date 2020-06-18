@@ -79,6 +79,7 @@ class TriggerTab(object):
             log.info("Initialising trigger option: %r" % opt)
 
             obj = opt()
+            log.info("Dump: %r" % (dir(obj),))
             img = Gtk.Image()
             if obj.icon != None:
                 Utils.set_svg_image(img, os.path.join(global_cfg.Theme.resourcedir, obj.icon))
@@ -88,7 +89,7 @@ class TriggerTab(object):
             item.set_label("<b>%s</b>\n<small>%s</small>" % (obj.name, obj.desc))
 
             self.trigger_menu.attach(item, 0, 1, row, row + 1)
-            self.inner_tabs.append(opt)
+            self.inner_tabs.append(obj)
             row += 1
 
         # Create a button containing a label which is placed in the tab label position
