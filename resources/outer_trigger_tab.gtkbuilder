@@ -62,20 +62,7 @@
       </packing>
     </child>
     <child>
-      <template class="__glade_unnamed_6" parent="GtkBin">
-        <property name="name">bin_trig_container</property>
-        <property name="visible">True</property>
-        <property name="can_focus">False</property>
-        <property name="vexpand">True</property>
-        <child>
-          <placeholder/>
-        </child>
-      </template>
-      <packing>
-        <property name="expand">True</property>
-        <property name="fill">True</property>
-        <property name="position">1</property>
-      </packing>
+      <placeholder/>
     </child>
   </object>
 </interface>
