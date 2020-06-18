@@ -24,7 +24,7 @@ ZYNQ_SAMPLE_WORD_SIZE = 8
 ZYNQ_SAMPLE_WORD_CACHE_DIVISIBLE = 32
 
 RAWCAM_LINE_SIZE = 2048
-RAWCAM_MAX_BUFFER_HEIGHT = 2048
+RAWCAM_MAX_BUFFER_HEIGHT = 4096
 RAWCAM_MIN_SPARE_BUFFERS = 4
 
 RAWCAM_IMAGE_ID = 0x2a
@@ -185,7 +185,7 @@ class ZynqScope(object):
     
     # Desired acquisition proportion for the frame time.  This should be tweaked to determine
     # the maximum performance possible.  
-    acq_frametime_frac = 0.20 # = 0.12
+    acq_frametime_frac = 0.30 # = 0.12
     
     # Sample rate model.  Defines the dividers and clock rates available to the ADC and PLL.
     samprate_mdl = None
