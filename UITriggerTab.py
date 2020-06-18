@@ -75,8 +75,8 @@ class TriggerTab(object):
 
         # Initialise the menu dropdown with trigger options
         self.menubtn = self.builder.get_object("mub_trigger")
-        self.menubtn_label = self.builder.get_object("mub_trigger")
-        self.menubtn_image = self.builder.get_object("mub_trigger")
+        self.menubtn_label = self.builder.get_object("lbl_mub_trig_name")
+        self.menubtn_image = self.builder.get_object("img_mub_trig_image")
 
         self.trigger_menu = Gtk.Menu()
         self.inner_tabs = []
