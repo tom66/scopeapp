@@ -124,8 +124,8 @@ class TriggerTab(object):
             self.css_manager.add_widget(hbox, "trigger_option_menuitem")
 
             cont = obj.get_embedded_container()
-            cont.hide()
-            
+            cont.hide_all()
+
             self.trigger_pages.pack_start(cont, True, True, 0)
 
             row += 1
@@ -161,7 +161,7 @@ class TriggerTab(object):
         # Make the selection visible for the active item.  Hide all other items.
         for other_obj in self.inner_tabs:
             log.warn("Hide %r" % other_obj)
-            other_obj.get_embedded_container().hide()
+            other_obj.get_embedded_container().hide_all()
 
         cont = obj.get_embedded_container()
         cont.show_all()
