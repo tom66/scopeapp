@@ -29,7 +29,7 @@ class AlwaysTriggerContainer(TriggerContainerSuperclass):
     def __init__(self):
         self.name = _("Always Trigger")
         self.desc = _("Continuously generates a trigger")
-        self.icon = None
+        self.icon = "trigger_always.svg"
 
 class EdgeTriggerContainer(TriggerContainerSuperclass):
     def __init__(self):
