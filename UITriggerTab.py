@@ -35,6 +35,10 @@ class AlwaysTriggerContainer(TriggerContainerSuperclass):
 
         self.bin = Gtk.Box()
         self.bin.pack_start(Gtk.Label(_("This trigger has no options")), False, False, 0)
+        self.bin.set_hexpand(True)
+        self.bin.set_vexpand(True)
+        self.bin.set_valign(Gtk.Align.START)
+        self.bin.set_halign(Gtk.Align.FILL)
 
     def get_embedded_container(self):
         return self.bin
@@ -49,6 +53,10 @@ class EdgeTriggerContainer(TriggerContainerSuperclass):
         self.builder.add_from_file(EDGE_TRIGGER_LAYOUT_FILE)
 
         self.vbox = self.builder.get_object("vbox_trigger_controller_edge")
+        self.vbox.set_hexpand(True)
+        self.vbox.set_vexpand(True)
+        self.bin.set_valign(Gtk.Align.START)
+        self.bin.set_halign(Gtk.Align.FILL)
 
     def get_embedded_container(self):
         return self.vbox
@@ -126,10 +134,6 @@ class TriggerTab(object):
             self.css_manager.add_widget(hbox, "trigger_option_menuitem")
 
             cont = obj.get_embedded_container()
-            cont.set_valign(Gtk.Align.START)
-            cont.set_halign(Gtk.Align.FILL)
-            cont.set_hexpand(True)
-            cont.set_vexpand(True)
             self.trigger_pages.append_page(cont, None)
 
             row += 1
@@ -138,7 +142,7 @@ class TriggerTab(object):
         self.css_manager.add_widget(self.trigger_menu, "trigger_option_menu")
         self.css_manager.add_widget(self.menubtn, "trigger_option_menubutton")
         self.trigger_menu.show_all()
-        
+
         self.menubtn.set_popup(self.trigger_menu)
         self.menubtn.set_valign(Gtk.Align.START)
         self.menubtn.set_vexpand(False)
