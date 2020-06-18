@@ -125,7 +125,7 @@ class TriggerTab(object):
 
             cont = obj.get_embedded_container()
             cont.set_visible(False)
-            self.trigger_pages.pack_start(obj, True, True, 0)
+            self.trigger_pages.pack_start(cont, True, True, 0)
 
             row += 1
 
@@ -158,7 +158,8 @@ class TriggerTab(object):
         Utils.set_svg_image(self.menubtn_image, os.path.join(self.cfgmgr.Theme.resourcedir, obj.icon), self.cfgmgr.Theme.TriggerIconSize)
 
         # Make the selection visible for the active item
-        obj.set_visible(True)
+        cont = obj.get_embedded_container()
+        cont.set_visible(True)
 
     def refresh_object_attach(self):
         pass
