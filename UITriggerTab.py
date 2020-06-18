@@ -80,9 +80,13 @@ class TriggerTab(object):
             if obj.icon != None:
                 Utils.set_svg_image(img, os.path.join(self.cfgmgr.Theme.resourcedir, obj.icon), 32)
 
-            item = Gtk.ImageMenuItem()
-            item.set_image(img)
-            item.set_label("<b>%s</b>\n<small>%s</small>" % (obj.name, obj.desc))
+            lbl = Gtk.Label()
+            lbl.set_markup("<b>%s</b>\n<small>%s</small>" % (obj.name, obj.desc))
+
+            item = Gtk.MenuItem()
+            hbox = Gtk.Box(Gtk.Orientation.HORIZONTAL, 0)
+            hbox.pack_start(img)
+            hbox.pack_start(lbl)
 
             self.trigger_menu.attach(item, 0, 1, row, row + 1)
             self.inner_tabs.append(obj)
