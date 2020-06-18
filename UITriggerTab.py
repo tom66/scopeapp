@@ -23,7 +23,7 @@ log = logging.getLogger()
 OUTER_TRIGGER_TAB_LAYOUT_FILE = "resources/outer_trigger_tab.gtkbuilder"
 OUTER_TRIGGER_TAB_CSS_FILE = "trigger_tab.css"
 
-EDGE_TRIGGER_LAYOUT_FILE = "edge_trigger_tab.gtkbuilder"
+EDGE_TRIGGER_LAYOUT_FILE = "resources/edge_trigger_tab.gtkbuilder"
 
 class TriggerContainerSuperclass(object): pass
 
