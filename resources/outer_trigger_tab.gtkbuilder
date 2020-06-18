@@ -16,7 +16,6 @@
         <property name="receives_default">True</property>
         <property name="valign">start</property>
         <property name="hexpand">True</property>
-        <property name="vexpand">True</property>
         <child>
           <object class="GtkBox" id="grd_trigger_inner">
             <property name="name">grd_trigger_inner</property>
@@ -56,8 +55,8 @@
         </child>
       </object>
       <packing>
-        <property name="expand">True</property>
-        <property name="fill">True</property>
+        <property name="expand">False</property>
+        <property name="fill">False</property>
         <property name="position">0</property>
       </packing>
     </child>
