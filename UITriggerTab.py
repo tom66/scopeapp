@@ -133,7 +133,7 @@ class TriggerTab(object):
         row = 0
 
         for trig in supported_triggers:
-            obj = trig()
+            obj = trig(self)
             log.info("Initialising trigger option: %r" % obj)
 
             img = Gtk.Image()
