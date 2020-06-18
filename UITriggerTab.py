@@ -170,8 +170,10 @@ class TriggerTab(object):
         pass
     
     def _trig_menu_select(self, wdg, row):
-        log.critical("%r %d" % (wdg, row))
-    
+        log.info("_trig_menu_select(%r, %d)" % (wdg, row))
+        self.inner_tab_sel = row
+        self.refresh_ui()
+
     def __user_exception_handler(func):
         def wrapper(self, *args):
             try:
