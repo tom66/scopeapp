@@ -66,6 +66,11 @@ class TriggerTab(object):
         self.vbox = self.builder.get_object("vbox_trigger_outer")
         self.vbox.get_style_context().add_class("trigger_tab")
         self.vbox.set_hexpand(True)
+        
+        # Add all relevant widgets to the CSS manager
+        self.css_manager = CSSManager.CSSManager(OUTER_TRIGGER_TAB_CSS_FILE)
+        self.css_manager.add_widget(self.notebook, None)
+        self.css_manager.add_widget(self.vbox, None)
 
         # Initialise the menu dropdown with trigger options
         self.menubtn = self.builder.get_object("mub_trigger")
@@ -92,6 +97,7 @@ class TriggerTab(object):
 
             self.trigger_menu.attach(item, 0, 1, row, row + 1)
             self.inner_tabs.append(obj)
+            self.css_manager.add_widget(hbox, "trigger_menuitem")
             row += 1
 
         self.trigger_menu.show_all()
@@ -106,11 +112,6 @@ class TriggerTab(object):
         self.lbl_btn.add(self.lbl_tab)
         self.lbl_btn.connect("clicked", self.tab_clicked)
         self.lbl_btn.show_all()
-        
-        # Add all relevant widgets to the CSS manager
-        self.css_manager = CSSManager.CSSManager(OUTER_TRIGGER_TAB_CSS_FILE)
-        self.css_manager.add_widget(self.notebook, None)
-        self.css_manager.add_widget(self.vbox, None)
         
         # Refresh channel object connection
         self.refresh_object_attach()
