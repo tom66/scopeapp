@@ -48,6 +48,7 @@ class TriggerTab(object):
 
     inner_tab_sel = 0
     inner_tabs = []
+    inner_tab_extra_icons = []
     
     last_state = None
     now_state = None
@@ -74,6 +75,9 @@ class TriggerTab(object):
 
         # Initialise the menu dropdown with trigger options
         self.menubtn = self.builder.get_object("mub_trigger")
+        self.menubtn_label = self.builder.get_object("mub_trigger")
+        self.menubtn_image = self.builder.get_object("mub_trigger")
+
         self.trigger_menu = Gtk.Menu()
         self.inner_tabs = []
         row = 0
@@ -82,8 +86,10 @@ class TriggerTab(object):
             log.info("Initialising trigger option: %r" % obj)
 
             img = Gtk.Image()
+            img2 = Gtk.Image()
             if obj.icon != None:
                 Utils.set_svg_image(img, os.path.join(self.cfgmgr.Theme.resourcedir, obj.icon), self.cfgmgr.Theme.TriggerIconSize)
+                Utils.set_svg_image(img2, os.path.join(self.cfgmgr.Theme.resourcedir, obj.icon), self.cfgmgr.Theme.TriggerIconSize)
 
             lbl = Gtk.Label()
             lbl.set_markup("<b>%s</b>\n<small>%s</small>" % (obj.name, obj.desc))
@@ -97,11 +103,14 @@ class TriggerTab(object):
 
             self.trigger_menu.attach(item, 0, 1, row, row + 1)
             self.inner_tabs.append(obj)
+            self.inner_tab_extra_icons.append(img2)
             self.css_manager.add_widget(hbox, "trigger_menuitem")
             row += 1
 
         self.trigger_menu.show_all()
         self.menubtn.set_popup(self.trigger_menu)
+
+        self.refresh_mub()
 
         # Create a button containing a label which is placed in the tab label position
         # The button captures tab clicked events to activate our click tab action (channel enable/disable)
@@ -116,6 +125,11 @@ class TriggerTab(object):
         # Refresh channel object connection
         self.refresh_object_attach()
     
+    def refresh_mub(self):
+        # Clear as mub.  Refreshes the menubutton.
+        self.menubtn_label.set_markup(self.inner_tabs[self.inner_tab_sel].name)
+        self.menubtn_image.set_markup(self.inner_tab_extra_icons[self.inner_tab_sel])
+
     def refresh_object_attach(self):
         pass
 
