@@ -136,7 +136,7 @@ class ArmwaveRenderEngine(zs.BaseRenderEngine):
         # Setup armwave
         aw.cleanup()
         aw.setup_render(self.wave_params[0], self.wave_params[1], self.wave_params[2], self.wave_params[3], width, height, 0)
-        log.info("setup_render done")
+        log.warning("setup_render done")
 
         # setup test wavesets
         #self.test_waveset_count = 10
