@@ -121,6 +121,8 @@ class TriggerTab(object):
         self.lbl_btn.connect("clicked", self.tab_clicked)
         self.lbl_btn.show_all()
         
+        self.css_manager.refresh_css()
+
         # Refresh channel object connection
         self.refresh_object_attach()
     
