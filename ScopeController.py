@@ -589,6 +589,7 @@ class ScopeController(object):
         """Syncs changes to real world if needed.  If the oscilloscope is stopped changes are
         queued until the instrument resumes running."""
         log.info("sync_if_needed() run_state: %r in sync_if_needed" % self.run_state)
+        
         if self.run_state == ACQ_IS_RUNNING:
             log.info("Syncing to real world")
             self.zst.stop_acquisition()

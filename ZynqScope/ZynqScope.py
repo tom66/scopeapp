@@ -9,6 +9,7 @@ import Utils # from parent directory
 
 import ZynqScope.Standard4chAFE as AFE # For now, we import the standard 4ch AFE as the only supported AFE
 import ZynqScope.ZynqSPI, ZynqScope.ZynqCommands as zc
+import ZynqScope.ZynqScopeTrigger as zstrg
 
 # Rawcam library
 import ZynqScope.pirawcam.rawcam as rawcam
@@ -198,6 +199,9 @@ class ZynqScope(object):
     
     # Current parameters data set.  Can be passed back to the host process for UI purposes.
     params = ZynqScopeCurrentParameters()
+
+    # Current trigger engine
+    trig_eng = zstrg.ZynqScopeTriggerManager()
     
     # Next timebase and current timebase
     next_tb = None

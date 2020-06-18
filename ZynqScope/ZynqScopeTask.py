@@ -106,6 +106,14 @@ class ZynqScopeRenderChangeChannelIntensity(ZynqScopeTaskQueueCommand):
         self.ch = ch
         self.ints = ints
 
+class ZynqScopeApplyTrigger(ZynqScopeTaskQueueCommand):
+    def __init__(self, trig):
+        self.trig = trig
+
+class ZynqScopeApplyADCMapping(ZynqScopeTaskQueueCommand):
+    def __init__(self, adc_map):
+        self.adc_map = adc_map
+
 class ZynqScopeAcqStats(object):
     num_waves_acqd = 0
 
@@ -328,6 +336,14 @@ class ZynqScopeSubprocess(multiprocessing.Process):
             log.info("ZynqScopeRenderChangeChannelColour: setting channel %d colour to %s" % (msg.ch, repr(msg.colour)))
             self.rengine.set_channel_colour(msg.ch, msg.colour)
 
+        elif typ is ZynqScopeApplyTrigger:
+            log.info("ZynqScopeApplyTrigger: applying trigger %r" % msg)
+            self.zs.trig_eng.set_config(msg)
+
+        elif typ is ZynqScopeApplyADCMapping:
+            log.info("ZynqScopeApplyADCMapping: applying ADC mapping %r" % msg)
+            self.zs.trig_eng.set_adc_mapping(msg)
+
         else:
             if not isinstance(msg, ZynqScopeTaskQueueCommand):
                 raise RuntimeError("Queue message not subclass of ZynqScopeTaskQueueCommand")
@@ -366,6 +382,7 @@ class ZynqScopeSubprocess(multiprocessing.Process):
         self.zs.zcmd.flush()
 
         self.zs.zcmd.setup_trigger_edge(zc.TRIG_CH_ADCSRC1, 0x7f, 0x10, zc.TRIG_EDGE_RISING) # write default trigger
+
         #self.zs.zcmd.start_acquisition()
         log.info("Writing period: %d us" % int(1e6 / DEFAULT_ACQUISITION_RATE))
         self.zs.zcmd.ac_setup_acq_and_stream(1e6 / DEFAULT_ACQUISITION_RATE)

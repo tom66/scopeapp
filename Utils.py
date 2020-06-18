@@ -243,3 +243,8 @@ def unpack_json(obj, json_dict, vars_):
 def clamp(y, lo, hi):
     """Clip argument `y` so that it lies between the bounds `lo` and `hi` exclusively.  `lo` < `hi` for correct operation."""
     return max(lo, min(y, hi))
+
+def set_svg_image(widget, file, size):
+    """Set a widget GtkImage with an SVG image of a given size."""
+    pb = GdkPixbuf.Pixbuf.new_from_file_at_scale(file, size, size, 1)
+    widget.set_from_pixbuf(pb)

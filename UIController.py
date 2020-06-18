@@ -244,11 +244,17 @@ class MainApplication(object):
             ui_tab.append_to_notebook()
             self.ui_tabs.append(ui_tab)
 
+        # Add display tab
         ui_tab = UIDisplayTab.DisplayTab(self, self.nbk_main_settings, len(self.ui_tabs) + 1)
         ui_tab.append_to_notebook()
         self.ui_tabs.append(ui_tab)
 
-        # TODO: acquire, trigger, math, reference, storage, utility...
+        # Add trigger tab
+        trig_tab = UITriggerTab.TriggerTab(self, self.nbk_main_settings, len(self.ui_tabs) + 1)
+        ui_tab.append_to_notebook()
+        self.ui_tabs.append(ui_tab)
+
+        # TODO: acquire, math, reference, storage, utility...
 
     def setup_channel_widgets(self):
         """Setup the channel widgets for the UI."""
@@ -504,10 +510,8 @@ class MainApplication(object):
             size = self.resource_icon_size
         else:
             raise ValueError(_("size parameter invalid"))
-        
-        pb = GdkPixbuf.Pixbuf.new_from_file_at_scale(self.resource_root + file + ".svg", size, size, 1)
-        w = self.builder.get_object(widget)
-        w.set_from_pixbuf(pb)
+
+        Utils.set_svg_image(self.builder.get_object(widget), self.resource_root + file + ".svg", size)
     
     def ui_tick(self, *args, **kwargs):
         """
