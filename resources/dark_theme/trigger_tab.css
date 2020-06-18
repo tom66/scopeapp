@@ -1,3 +1,7 @@
-.trigger_menuitem > image {
+.trigger_menuitem image {
     background-color: #ff0000;
+}
+
+.trigger_menuitem label {
+    color: #0000ff;
 }
