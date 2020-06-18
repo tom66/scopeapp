@@ -92,6 +92,8 @@ class TriggerTab(object):
         self.menubtn = self.builder.get_object("mub_trigger")
         self.menubtn_label = self.builder.get_object("lbl_mub_trig_name")
         self.menubtn_image = self.builder.get_object("img_mub_trig_image")
+        self.menubtn.set_valign(Gtk.Align.START)
+        self.menubtn.set_vexpand(False)
 
         self.trigger_pages = Gtk.Notebook()
         self.trigger_pages.set_show_tabs(False)
@@ -126,7 +128,7 @@ class TriggerTab(object):
             self.css_manager.add_widget(hbox, "trigger_option_menuitem")
 
             cont = obj.get_embedded_container()
-            cont.set_valign(Gtk.Align.START)
+            cont.set_valign(Gtk.Align.FILL)
             cont.set_hexpand(True)
             cont.set_vexpand(True)
             self.trigger_pages.append_page(cont, None)
