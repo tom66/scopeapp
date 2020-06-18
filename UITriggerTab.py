@@ -26,7 +26,7 @@ OUTER_TRIGGER_TAB_CSS_FILE = "trigger_tab.css"
 EDGE_TRIGGER_LAYOUT_FILE = "resources/edge_trigger_tab.gtkbuilder"
 
 ICON_RISE_EDGE = "trigger_rising_edge.svg"
-ICON_FALL_EDGE = "trigger_always_edge.svg"
+ICON_FALL_EDGE = "trigger_falling_edge.svg"
 ICON_BOTH_EDGE = "trigger_either_edge.svg"
 
 class TriggerContainerSuperclass(object): pass
