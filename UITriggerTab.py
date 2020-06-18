@@ -77,7 +77,7 @@ class TriggerTab(object):
 
         for obj in supported_triggers:
             log.info("Initialising trigger option: %r" % obj)
-            log.info("Dump: %r" % (dir(obj),))
+
             img = Gtk.Image()
             if obj.icon != None:
                 Utils.set_svg_image(img, os.path.join(self.cfgmgr.Theme.resourcedir, obj.icon), 32)
@@ -144,7 +144,9 @@ class TriggerTab(object):
         self.init_refresh = True
     
     def append_to_notebook(self):
+        log.info("Append to Notebook")
         self.notebook.append_page(self.get_embedded_container(), self.get_embedded_label())
+        log.info("Done Append to Notebook")
     
     def get_embedded_label(self):
         return self.lbl_btn
