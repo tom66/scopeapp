@@ -17,6 +17,9 @@ import CSSManager
 
 import os, copy
 
+import logging
+log = logging.getLogger()
+
 OUTER_TRIGGER_TAB_LAYOUT_FILE = "resources/outer_trigger_tab.gtkbuilder"
 OUTER_TRIGGER_TAB_CSS_FILE = "trigger_tab.css"
 
