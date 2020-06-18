@@ -123,7 +123,9 @@ class TriggerTab(object):
             self.css_manager.add_widget(img, "trigger_option_menuitem")
             self.css_manager.add_widget(hbox, "trigger_option_menuitem")
 
-            self.trigger_pages.pack_start(obj.get_embedded_container(), True, True, 0)
+            cont = obj.get_embedded_container()
+            cont.set_visible(False)
+            self.trigger_pages.pack_start(obj, True, True, 0)
 
             row += 1
 
@@ -154,6 +156,9 @@ class TriggerTab(object):
         obj = self.inner_tabs[self.inner_tab_sel]
         self.menubtn_label.set_markup(obj.name)
         Utils.set_svg_image(self.menubtn_image, os.path.join(self.cfgmgr.Theme.resourcedir, obj.icon), self.cfgmgr.Theme.TriggerIconSize)
+
+        # Make the selection visible for the active item
+        obj.set_visible(True)
 
     def refresh_object_attach(self):
         pass
