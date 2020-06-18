@@ -69,8 +69,6 @@ class TriggerTab(object):
 
         # Initialise the menu dropdown with trigger options
         self.menubtn = self.builder.get_object("mub_trigger")
-
-        # Initialise each inner tab
         self.trigger_menu = Gtk.Menu()
         self.inner_tabs = []
         row = 0
@@ -89,6 +87,8 @@ class TriggerTab(object):
             self.trigger_menu.attach(item, 0, 1, row, row + 1)
             self.inner_tabs.append(obj)
             row += 1
+
+        self.menubtn.set_menu(self.trigger_menu)
 
         # Create a button containing a label which is placed in the tab label position
         # The button captures tab clicked events to activate our click tab action (channel enable/disable)
