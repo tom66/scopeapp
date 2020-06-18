@@ -415,7 +415,7 @@ combobox > window.popup {
 }
 
 combobox > window.popup menu {
-    background-color: #303030;
+    background-color: #282828;
     border: 1px solid #555555;
 }
 
@@ -535,16 +535,14 @@ scale value {
 /* Menus, including dropdowns */
 menu {
     background-image: none;
-    background-color: #202020;   
+    background-color: #282828;   
     margin: 1px;
     padding: 0px;
-    border: 1px solid #333333;
-    border-radius: 3px;
 }
 
 menuitem {
     background-image: none;
-    background-color: #303030;   
+    background-color: #282828;   
 }
 
 menuitem:hover {
