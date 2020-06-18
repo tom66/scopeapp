@@ -265,7 +265,7 @@ class ZynqScopeSubprocess(multiprocessing.Process):
         elif typ is ZynqScopeSimpleCommand:
             # This is a simple command: we call the relevant method on the ZynqScope interface.
             # This is used, e.g. to set acquisition parameters.  
-            log.debug("ZynqScopeSimpleCommand: %r" % (msg, msg.args, msg.kwargs))
+            log.debug("ZynqScopeSimpleCommand: %r" % tuple(msg, msg.args, msg.kwargs))
             getattr(self.zs, msg.cmd_name)(*msg.args, **msg.kwargs)
             
         elif typ is ZynqScopeStartAutoAcquisition:
