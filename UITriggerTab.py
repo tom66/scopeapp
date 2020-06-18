@@ -80,7 +80,7 @@ class TriggerTab(object):
             log.info("Dump: %r" % (dir(obj),))
             img = Gtk.Image()
             if obj.icon != None:
-                Utils.set_svg_image(img, os.path.join(global_cfg.Theme.resourcedir, obj.icon))
+                Utils.set_svg_image(img, os.path.join(self.cfgmgr.Theme.resourcedir, obj.icon))
 
             item = Gtk.ImageMenuItem()
             item.set_image(img)
