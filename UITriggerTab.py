@@ -38,7 +38,7 @@ class EdgeTriggerContainer(TriggerContainerSuperclass):
         icon = "trigger_rising_edge.svg"
 
 supported_triggers = [
-    AlwaysTriggerContainer, EdgeTriggerContainer
+    AlwaysTriggerContainer(), EdgeTriggerContainer()
 ]
 
 class TriggerTab(object):
@@ -75,10 +75,8 @@ class TriggerTab(object):
         self.inner_tabs = []
         row = 0
 
-        for opt in supported_triggers:
-            log.info("Initialising trigger option: %r" % opt)
-
-            obj = opt()
+        for obj in supported_triggers:
+            log.info("Initialising trigger option: %r" % obj)
             log.info("Dump: %r" % (dir(obj),))
             img = Gtk.Image()
             if obj.icon != None:
