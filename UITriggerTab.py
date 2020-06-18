@@ -97,7 +97,8 @@ class TriggerTab(object):
         self.inner_tabs = []
         row = 0
 
-        self.trigger_pages = Gtk.Box(Gtk.Orientation.VERTICAL)
+        self.trigger_pages = Gtk.Notebook()
+        self.trigger_pages.set_show_tabs(False)
 
         for obj in supported_triggers:
             log.info("Initialising trigger option: %r" % obj)
@@ -126,7 +127,7 @@ class TriggerTab(object):
             cont = obj.get_embedded_container()
             #cont.hide_all()
 
-            self.trigger_pages.pack_start(cont, True, True, 0)
+            self.trigger_pages.append_page(cont, None)
 
             row += 1
 
@@ -159,19 +160,7 @@ class TriggerTab(object):
         Utils.set_svg_image(self.menubtn_image, os.path.join(self.cfgmgr.Theme.resourcedir, obj.icon), self.cfgmgr.Theme.TriggerIconSize)
 
         # Make the selection visible for the active item.  Hide all other items.
-        """
-        for other_obj in self.inner_tabs:
-            log.warn("Hide %r" % other_obj)
-            other_obj.get_embedded_container().hide_all()
-        """
-        def hide_for_all(widget, *args):
-            widget.hide()
-            widget.set_visible(False)
-
-        self.trigger_pages.forall(hide_for_all, None)
-
-        cont = obj.get_embedded_container()
-        cont.show_all()
+        self.trigger_pages.set_tab_pos(self.inner_tab_sel)
 
     def refresh_object_attach(self):
         pass
