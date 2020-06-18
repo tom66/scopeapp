@@ -207,7 +207,7 @@ dialog {
 }
 
 #nbk_main_settings > header tab:checked {
-    background-image: linear-gradient(90deg, #202020, #db6e00);
+    background-image: linear-gradient(90deg, #202020, #282828);
     margin-right: 5px;
     box-shadow: none;
 }
