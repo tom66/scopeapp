@@ -158,6 +158,7 @@ class TriggerTab(object):
 
         # Make the selection visible for the active item.  Hide all other items.
         for other_obj in self.inner_tabs:
+            log.warn("Hide %r" % other_obj)
             other_obj.get_embedded_container().set_visible(False)
 
         cont = obj.get_embedded_container()
