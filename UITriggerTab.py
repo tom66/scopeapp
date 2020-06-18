@@ -100,11 +100,12 @@ class TriggerTab(object):
 
             self.trigger_menu.attach(item, 0, 1, row, row + 1)
             self.inner_tabs.append(obj)
-            self.css_manager.add_widget(lbl, "trigger_menuitem")
-            self.css_manager.add_widget(img, "trigger_menuitem")
-            self.css_manager.add_widget(hbox, "trigger_menuitem")
+            self.css_manager.add_widget(lbl, "trigger_option_menuitem")
+            self.css_manager.add_widget(img, "trigger_option_menuitem")
+            self.css_manager.add_widget(hbox, "trigger_option_menuitem")
             row += 1
 
+        self.css_manager.add_widget(self.trigger_menu, "trigger_option_menu")
         self.trigger_menu.show_all()
         self.menubtn.set_popup(self.trigger_menu)
 

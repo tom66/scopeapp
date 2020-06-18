@@ -1,11 +1,16 @@
-box.trigger_menuitem {
+.trigger_option_menu {
+    margin: 0px;
+    padding: 0px;
+}
+
+box.trigger_option_menuitem {
     margin-left: 0px;
 }
 
-image.trigger_menuitem {
+image.trigger_option_menuitem {
     padding-left: 5px;
 }
 
-label.trigger_menuitem {
+label.trigger_option_menuitem {
     padding-left: 5px;
 }
