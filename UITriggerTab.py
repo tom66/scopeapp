@@ -126,6 +126,8 @@ class TriggerTab(object):
             self.css_manager.add_widget(hbox, "trigger_option_menuitem")
 
             cont = obj.get_embedded_container()
+            cont.set_valign(Gtk.Align.START)
+            cont.set_hexpand(True)
             self.trigger_pages.append_page(cont, None)
 
             row += 1
