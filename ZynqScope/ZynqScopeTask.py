@@ -427,7 +427,7 @@ class ZynqScopeSubprocess(multiprocessing.Process):
         elif self.acq_state == TSTATE_ACQ_WAITING_FOR_CSI_TRANSFER:
             # Stop, if we get a signal
             if self.stop_signal:
-                self.handle_stop()
+                self._handle_stop()
             else:
                 # Acknowledge any pending packet
                 self.cleanup_rawcam_buffers()
