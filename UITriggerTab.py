@@ -27,15 +27,15 @@ class TriggerContainerSuperclass(object): pass
 
 class AlwaysTriggerContainer(TriggerContainerSuperclass):
     def __init__(self):
-        name = _("Always Trigger")
-        desc = _("Continuously generates a trigger")
-        icon = None
+        self.name = _("Always Trigger")
+        self.desc = _("Continuously generates a trigger")
+        self.icon = None
 
 class EdgeTriggerContainer(TriggerContainerSuperclass):
     def __init__(self):
-        name = _("Edge Trigger")
-        desc = _("Generates a trigger when the input signal rises and/or falls through a threshold")
-        icon = "trigger_rising_edge.svg"
+        self.name = _("Edge Trigger")
+        self.desc = _("Generates a trigger when the input signal rises and/or falls through a threshold")
+        self.icon = "trigger_rising_edge.svg"
 
 supported_triggers = [
     AlwaysTriggerContainer(), EdgeTriggerContainer()
