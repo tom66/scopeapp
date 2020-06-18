@@ -33,8 +33,8 @@ class AlwaysTriggerContainer(TriggerContainerSuperclass):
         self.desc = _("Continuously generates a trigger")
         self.icon = "trigger_always.svg"
 
-        self.bin = Gtk.Bin()
-        self.bin.add(Gtk.Label(_("Always trigger enabled")))
+        self.bin = Gtk.Box()
+        self.bin.pack_start(Gtk.Label(_("Always trigger enabled")), False, False, 0)
 
     def get_embedded_container(self):
         return self.bin
@@ -124,7 +124,7 @@ class TriggerTab(object):
             self.css_manager.add_widget(hbox, "trigger_option_menuitem")
 
             self.trigger_pages.pack_start(obj.get_embedded_container(), True, True, 0)
-            
+
             row += 1
 
         self.css_manager.add_widget(self.trigger_menu, "popdown_menu")
