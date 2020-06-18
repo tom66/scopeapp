@@ -48,7 +48,6 @@ class TriggerTab(object):
 
     inner_tab_sel = 0
     inner_tabs = []
-    inner_tab_extra_icons = []
     
     last_state = None
     now_state = None
@@ -86,7 +85,6 @@ class TriggerTab(object):
             log.info("Initialising trigger option: %r" % obj)
 
             img = Gtk.Image()
-            img2 = Gtk.Image()
             if obj.icon != None:
                 Utils.set_svg_image(img, os.path.join(self.cfgmgr.Theme.resourcedir, obj.icon), self.cfgmgr.Theme.TriggerIconSize)
 
@@ -102,8 +100,8 @@ class TriggerTab(object):
 
             self.trigger_menu.attach(item, 0, 1, row, row + 1)
             self.inner_tabs.append(obj)
-            self.inner_tab_extra_icons.append(img2)
-            self.css_manager.add_widget(hbox, "trigger_menuitem")
+            self.css_manager.add_widget(lbl, "trigger_menuitem")
+            self.css_manager.add_widget(img, "trigger_menuitem")
             row += 1
 
         self.trigger_menu.show_all()
