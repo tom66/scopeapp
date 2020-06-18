@@ -14,12 +14,12 @@ EDGE_TYPES = {
     'BOTH' : zc.TRIG_EDGE_BOTH
 }
 
-DEFAULT_CHANNEL_MAP = [
+DEFAULT_CHANNEL_MAP = {
     'CH1': zc.TRIG_CH_ADCSRC1,
     'CH2': zc.TRIG_CH_ADCSRC2,
     'CH3': zc.TRIG_CH_ADCSRC3,
     'CH4': zc.TRIG_CH_ADCSRC4
-]
+}
 
 class ZynqScopeTriggerSuperclass(object): 
     """Picklable superclass for the trigger configuration.  Designed to be passed
