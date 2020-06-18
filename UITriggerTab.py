@@ -55,8 +55,8 @@ class EdgeTriggerContainer(TriggerContainerSuperclass):
         self.vbox = self.builder.get_object("vbox_trigger_controller_edge")
         self.vbox.set_hexpand(True)
         self.vbox.set_vexpand(True)
-        self.bin.set_valign(Gtk.Align.START)
-        self.bin.set_halign(Gtk.Align.FILL)
+        self.vbox.set_valign(Gtk.Align.START)
+        self.vbox.set_halign(Gtk.Align.FILL)
 
     def get_embedded_container(self):
         return self.vbox
