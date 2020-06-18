@@ -482,7 +482,7 @@ class ZynqScopeSubprocess(multiprocessing.Process):
         self.acq_state = TSTATE_ACQ_IDLE
         self.cleanup_rawcam_buffers()
         self.zs.rawcam_stop()
-        self.zcmd.stop_acquisition()
+        self.zs.zcmd.stop_acquisition()
         self.stop_signal = False
         self.rsq.put(ZynqScopeStopCompleted())
 
