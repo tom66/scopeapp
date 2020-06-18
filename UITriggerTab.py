@@ -78,7 +78,7 @@ class TriggerTab(object):
 
             img = Gtk.Image()
             if obj.icon != None:
-                Utils.set_svg_image(img, os.path.join(self.cfgmgr.Theme.resourcedir, obj.icon), 32)
+                Utils.set_svg_image(img, os.path.join(self.cfgmgr.Theme.resourcedir, obj.icon), self.cfgmgr.Theme.TriggerIconSize)
 
             lbl = Gtk.Label()
             lbl.set_markup("<b>%s</b>\n<small>%s</small>" % (obj.name, obj.desc))
