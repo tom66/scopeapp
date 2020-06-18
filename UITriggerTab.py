@@ -124,7 +124,6 @@ class TriggerTab(object):
             self.css_manager.add_widget(hbox, "trigger_option_menuitem")
 
             cont = obj.get_embedded_container()
-            cont.set_visible(False)
             self.trigger_pages.pack_start(cont, True, True, 0)
 
             row += 1
@@ -157,7 +156,10 @@ class TriggerTab(object):
         self.menubtn_label.set_markup(obj.name)
         Utils.set_svg_image(self.menubtn_image, os.path.join(self.cfgmgr.Theme.resourcedir, obj.icon), self.cfgmgr.Theme.TriggerIconSize)
 
-        # Make the selection visible for the active item
+        # Make the selection visible for the active item.  Hide all other items.
+        for other_obj in self.inner_tabs:
+            other_obj.get_embedded_container().set_visible(False)
+
         cont = obj.get_embedded_container()
         cont.set_visible(True)
 
