@@ -20,6 +20,8 @@ import os, copy
 OUTER_TRIGGER_TAB_LAYOUT_FILE = "resources/outer_trigger_tab.gtkbuilder"
 OUTER_TRIGGER_TAB_CSS_FILE = "trigger_tab.css"
 
+class TriggerContainerSuperclass(object): pass
+
 class AlwaysTriggerContainer(TriggerContainerSuperclass):
     def __init__(self):
         name = _("Always Trigger")
@@ -35,8 +37,6 @@ class EdgeTriggerContainer(TriggerContainerSuperclass):
 supported_triggers = [
     AlwaysTriggerContainer, EdgeTriggerContainer
 ]
-
-class TriggerContainerSuperclass(object): pass
 
 class TriggerTab(object):
     cssprov = None
