@@ -92,9 +92,6 @@ class TriggerTab(object):
         self.menubtn = self.builder.get_object("mub_trigger")
         self.menubtn_label = self.builder.get_object("lbl_mub_trig_name")
         self.menubtn_image = self.builder.get_object("img_mub_trig_image")
-        self.menubtn.set_valign(Gtk.Align.START)
-        self.menubtn.set_vexpand(False)
-        self.menubtn.set_vexpand_set(True)
 
         self.trigger_pages = Gtk.Notebook()
         self.trigger_pages.set_show_tabs(False)
@@ -141,7 +138,11 @@ class TriggerTab(object):
         self.css_manager.add_widget(self.trigger_menu, "trigger_option_menu")
         self.css_manager.add_widget(self.menubtn, "trigger_option_menubutton")
         self.trigger_menu.show_all()
+        
         self.menubtn.set_popup(self.trigger_menu)
+        self.menubtn.set_valign(Gtk.Align.START)
+        self.menubtn.set_vexpand(False)
+        self.menubtn.set_vexpand_set(True)
 
         self.vbox.pack_start(self.trigger_pages, True, True, 0)
 
