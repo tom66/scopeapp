@@ -23,6 +23,8 @@ log = logging.getLogger()
 OUTER_TRIGGER_TAB_LAYOUT_FILE = "resources/outer_trigger_tab.gtkbuilder"
 OUTER_TRIGGER_TAB_CSS_FILE = "trigger_tab.css"
 
+EDGE_TRIGGER_LAYOUT_FILE = "edge_trigger_tab.gtkbuilder"
+
 class TriggerContainerSuperclass(object): pass
 
 class AlwaysTriggerContainer(TriggerContainerSuperclass):
@@ -31,11 +33,25 @@ class AlwaysTriggerContainer(TriggerContainerSuperclass):
         self.desc = _("Continuously generates a trigger")
         self.icon = "trigger_always.svg"
 
+        self.bin = Gtk.Bin()
+        self.bin.add(Gtk.Label(_("Always trigger enabled")))
+
+    def get_embedded_container(self):
+        return self.bin
+
 class EdgeTriggerContainer(TriggerContainerSuperclass):
     def __init__(self):
         self.name = _("Edge Trigger")
         self.desc = _("Generates a trigger when the input signal rises and/or falls through a threshold")
         self.icon = "trigger_rising_edge.svg"
+
+        self.builder = Gtk.Builder()
+        self.builder.add_from_file(EDGE_TRIGGER_LAYOUT_FILE)
+
+        self.vbox = self.builder.get_object("vbox_trigger_controller_edge")
+
+    def get_embedded_container(self):
+        return self.vbox
 
 supported_triggers = [
     AlwaysTriggerContainer(), EdgeTriggerContainer()
@@ -81,6 +97,8 @@ class TriggerTab(object):
         self.inner_tabs = []
         row = 0
 
+        self.trigger_pages = Gtk.Box(Gtk.Orientation.VERTICAL)
+
         for obj in supported_triggers:
             log.info("Initialising trigger option: %r" % obj)
 
@@ -104,14 +122,18 @@ class TriggerTab(object):
             self.css_manager.add_widget(lbl, "trigger_option_menuitem")
             self.css_manager.add_widget(img, "trigger_option_menuitem")
             self.css_manager.add_widget(hbox, "trigger_option_menuitem")
+
+            self.trigger_pages.pack_start(obj.get_embedded_container(), True, True, 0)
+            
             row += 1
 
         self.css_manager.add_widget(self.trigger_menu, "popdown_menu")
         self.css_manager.add_widget(self.trigger_menu, "trigger_option_menu")
+        self.css_manager.add_widget(self.menubtn, "trigger_option_menubutton")
         self.trigger_menu.show_all()
         self.menubtn.set_popup(self.trigger_menu)
 
-        self.refresh_mub()
+        self.vbox.pack_start(self.trigger_pages, True, True, 0)
 
         # Create a button containing a label which is placed in the tab label position
         # The button captures tab clicked events to activate our click tab action (channel enable/disable)
@@ -124,13 +146,11 @@ class TriggerTab(object):
         self.lbl_btn.show_all()
         
         self.css_manager.refresh_css()
-
-        # Refresh channel object connection
+        self.refresh_ui()
         self.refresh_object_attach()
     
-    def refresh_mub(self):
-        # Clear as mub.  Refreshes the menubutton.
-        # TODO: Should we cache the pixbufs used?
+    def refresh_ui(self):
+        # Refresh the mub (menubutton)
         obj = self.inner_tabs[self.inner_tab_sel]
         self.menubtn_label.set_markup(obj.name)
         Utils.set_svg_image(self.menubtn_image, os.path.join(self.cfgmgr.Theme.resourcedir, obj.icon), self.cfgmgr.Theme.TriggerIconSize)

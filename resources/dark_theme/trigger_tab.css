@@ -9,3 +9,7 @@ image.trigger_option_menuitem {
 label.trigger_option_menuitem {
     padding-left: 5px;
 }
+
+.trigger_option_menubutton {
+    padding: 5px;
+}
