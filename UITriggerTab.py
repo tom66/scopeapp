@@ -165,7 +165,7 @@ class TriggerTab(object):
         self.css_manager.add_widget(self.trigger_menu, "popdown_menu")
         self.css_manager.add_widget(self.trigger_menu, "trigger_option_menu")
         self.css_manager.add_widget(self.menubtn, "trigger_option_menubutton")
-        self.trigger_menu.show_all()
+        self.trigger_pages.show_all()
 
         self.menubtn.set_popup(self.trigger_menu)
         self.menubtn.set_valign(Gtk.Align.START)
