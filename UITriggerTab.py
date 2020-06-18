@@ -200,9 +200,7 @@ class TriggerTab(object):
         self.init_refresh = True
     
     def append_to_notebook(self):
-        log.info("Append to Notebook")
         self.notebook.append_page(self.get_embedded_container(), self.get_embedded_label())
-        log.info("Done Append to Notebook")
     
     def get_embedded_label(self):
         return self.lbl_btn

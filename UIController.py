@@ -247,6 +247,7 @@ class MainApplication(object):
         # Add trigger tab
         ui_tab = UITriggerTab.TriggerTab(self, self.nbk_main_settings, len(self.ui_tabs) + 1)
         ui_tab.append_to_notebook()
+        ui_tab.refresh_ui()
         self.ui_tabs.append(ui_tab)
 
         # TODO: acquire, math, reference, storage, utility...
