@@ -177,7 +177,7 @@ class ZynqScope(object):
     
     # Split transition point: below this point, two buffers are maintained to improve update rate.
     # Nominally set to 2.5us/div so anything below 2us/div is included
-    split_transition_tb = 2.5e-6
+    split_transition_tb = 100 # 2.5e-6
     
     # Target display samples.  This is filled from the GL frontend.
     # Our acquisition must always target this in the fastest mode to get the best performance.
