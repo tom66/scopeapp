@@ -585,11 +585,15 @@ class ZynqScopeTaskController(object):
         log.info("Wait for Stop...")
 
         # Wait for stop... up to ZST_TIMEOUT seconds
-        resp = self.rsq.get(True, ZST_TIMEOUT)
+        try:
+            resp = self.rsq.get(True, ZST_TIMEOUT)
 
-        if type(resp) == ZynqScopeStopCompleted:
-            log.info("Got stop")
-            return True
+            if type(resp) == ZynqScopeStopCompleted:
+                log.info("Got stop")
+                return True
+        except Exception as e:
+            log.warn("Stop failed?: %r" % e)
+            return False
     
     def start_acquisition(self):
         log.debug("ZSTC: ZynqScopeStartAutoAcquisition")
