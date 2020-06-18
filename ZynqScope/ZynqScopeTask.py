@@ -468,7 +468,11 @@ class ZynqScopeSubprocess(multiprocessing.Process):
                             resp.buffers = self.buffers_working
                             #resp.status = self.acq_comp0_response['AcqStatus']
                             self.acq_response_queue.put(resp)
+
+                            log.info("Try to render ...")
                             self.do_render(resp)
+                            log.info("Done render")
+
                             self.zs.zynq_set_ready()
                             #self.zs.rawcam_stop()
                             #self.acq_state = TSTATE_ACQ_IDLE
