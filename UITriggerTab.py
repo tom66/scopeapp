@@ -87,7 +87,7 @@ class TriggerTab(object):
             hbox = Gtk.Box(Gtk.Orientation.HORIZONTAL, 0)
             hbox.pack_start(img, False, False, 0)
             hbox.pack_start(lbl, True, True, 0)
-            hbox.show_all()
+            item.add(hbox)
 
             self.trigger_menu.attach(item, 0, 1, row, row + 1)
             self.inner_tabs.append(obj)
