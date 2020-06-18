@@ -34,7 +34,7 @@ class AlwaysTriggerContainer(TriggerContainerSuperclass):
         self.icon = "trigger_always.svg"
 
         self.bin = Gtk.Box()
-        self.bin.pack_start(Gtk.Label(_("Always trigger enabled")), False, False, 0)
+        self.bin.pack_start(Gtk.Label(_("This trigger has no options")), False, False, 0)
 
     def get_embedded_container(self):
         return self.bin
