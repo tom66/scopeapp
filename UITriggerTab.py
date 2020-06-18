@@ -93,12 +93,12 @@ class TriggerTab(object):
         self.menubtn_label = self.builder.get_object("lbl_mub_trig_name")
         self.menubtn_image = self.builder.get_object("img_mub_trig_image")
 
+        self.trigger_pages = Gtk.Notebook()
+        self.trigger_pages.set_show_tabs(False)
+
         self.trigger_menu = Gtk.Menu()
         self.inner_tabs = []
         row = 0
-
-        self.trigger_pages = Gtk.Notebook()
-        self.trigger_pages.set_show_tabs(False)
 
         for obj in supported_triggers:
             log.info("Initialising trigger option: %r" % obj)
@@ -117,6 +117,7 @@ class TriggerTab(object):
             hbox.pack_start(img, False, False, 0)
             hbox.pack_start(lbl, True, True, 0)
             item.add(hbox)
+            item.connect("select", self._trig_menu_select)
 
             self.trigger_menu.attach(item, 0, 1, row, row + 1)
             self.inner_tabs.append(obj)
@@ -168,6 +169,9 @@ class TriggerTab(object):
     def make_state(self):
         pass
     
+    def _trig_menu_select(self, *args):
+        log.critical("%r" % (args,))
+
     def __user_exception_handler(func):
         def wrapper(self, *args):
             try:
