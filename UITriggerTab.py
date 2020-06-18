@@ -25,13 +25,19 @@ OUTER_TRIGGER_TAB_CSS_FILE = "trigger_tab.css"
 
 EDGE_TRIGGER_LAYOUT_FILE = "resources/edge_trigger_tab.gtkbuilder"
 
+ICON_RISE_EDGE = "trigger_rising_edge.svg"
+ICON_FALL_EDGE = "trigger_always_edge.svg"
+ICON_BOTH_EDGE = "trigger_either_edge.svg"
+
 class TriggerContainerSuperclass(object): pass
 
 class AlwaysTriggerContainer(TriggerContainerSuperclass):
-    def __init__(self):
+    def __init__(self, root):
         self.name = _("Always Trigger")
         self.desc = _("Continuously generates a trigger")
         self.icon = "trigger_always.svg"
+
+        self.root = root
 
         self.bin = Gtk.Box()
         self.bin.pack_start(Gtk.Label(_("This trigger has no options")), False, False, 0)
@@ -44,10 +50,12 @@ class AlwaysTriggerContainer(TriggerContainerSuperclass):
         return self.bin
 
 class EdgeTriggerContainer(TriggerContainerSuperclass):
-    def __init__(self):
+    def __init__(self, root):
         self.name = _("Edge Trigger")
         self.desc = _("Generates a trigger when the input signal rises and/or falls through a threshold")
         self.icon = "trigger_rising_edge.svg"
+
+        self.root = root
 
         self.builder = Gtk.Builder()
         self.builder.add_from_file(EDGE_TRIGGER_LAYOUT_FILE)
@@ -57,6 +65,22 @@ class EdgeTriggerContainer(TriggerContainerSuperclass):
         self.vbox.set_vexpand(True)
         self.vbox.set_valign(Gtk.Align.START)
         self.vbox.set_halign(Gtk.Align.FILL)
+
+        self.img_fall = Gtk.Image()
+        self.img_both = Gtk.Image()
+        self.img_rise = Gtk.Image()
+
+        self.btn_fall = self.builder.get_object("btn_edge_fall")
+        self.btn_both = self.builder.get_object("btn_edge_both")
+        self.btn_rise = self.builder.get_object("btn_edge_rise")
+
+        self.btn_fall.add(self.img_fall)
+        self.btn_both.add(self.img_both)
+        self.btn_rise.add(self.img_rise)
+
+        Utils.set_svg_image(self.img_fall, os.path.join(self.root.cfgmgr.Theme.resourcedir, ICON_FALL_EDGE), self.root.cfgmgr.Theme.TriggerSubIconSize)
+        Utils.set_svg_image(self.img_both, os.path.join(self.root.cfgmgr.Theme.resourcedir, ICON_BOTH_EDGE), self.root.cfgmgr.Theme.TriggerSubIconSize)
+        Utils.set_svg_image(self.img_rise, os.path.join(self.root.cfgmgr.Theme.resourcedir, ICON_RISE_EDGE), self.root.cfgmgr.Theme.TriggerSubIconSize)
 
     def get_embedded_container(self):
         return self.vbox
