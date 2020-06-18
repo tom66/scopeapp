@@ -129,6 +129,7 @@ class TriggerTab(object):
             cont = obj.get_embedded_container()
             cont.set_valign(Gtk.Align.START)
             cont.set_hexpand(True)
+            cont.set_vexpand(True)
             self.trigger_pages.append_page(cont, None)
 
             row += 1
