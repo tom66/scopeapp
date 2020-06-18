@@ -146,7 +146,7 @@ class TriggerTab(object):
         self.menubtn.set_popup(self.trigger_menu)
         self.menubtn.set_valign(Gtk.Align.START)
         self.menubtn.set_vexpand(False)
-        self.menubtn.set_vexpand_set(True)
+        #self.menubtn.set_vexpand_set(True)
 
         self.vbox.pack_start(self.trigger_pages, True, True, 0)
 
