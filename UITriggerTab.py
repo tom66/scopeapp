@@ -117,10 +117,10 @@ class TriggerTab(object):
             hbox.pack_start(img, False, False, 0)
             hbox.pack_start(lbl, True, True, 0)
             item.add(hbox)
-            item.connect("select", self._trig_menu_select)
+            item.connect("activate", self._trig_menu_select, row)
 
             self.trigger_menu.attach(item, 0, 1, row, row + 1)
-            self.inner_tabs.append([obj, item])
+            self.inner_tabs.append(obj)
             self.css_manager.add_widget(lbl, "trigger_option_menuitem")
             self.css_manager.add_widget(img, "trigger_option_menuitem")
             self.css_manager.add_widget(hbox, "trigger_option_menuitem")
@@ -156,7 +156,7 @@ class TriggerTab(object):
     
     def refresh_ui(self):
         # Refresh the mub (menubutton)
-        obj = self.inner_tabs[self.inner_tab_sel][0]
+        obj = self.inner_tabs[self.inner_tab_sel]
         self.menubtn_label.set_markup(obj.name)
         Utils.set_svg_image(self.menubtn_image, os.path.join(self.cfgmgr.Theme.resourcedir, obj.icon), self.cfgmgr.Theme.TriggerIconSize)
 
@@ -169,11 +169,9 @@ class TriggerTab(object):
     def make_state(self):
         pass
     
-    def _trig_menu_select(self, wdg):
-        for item in self.inner_tabs:
-            if wdg == item[1]:
-                log.critical("we got a match!")
-
+    def _trig_menu_select(self, wdg, row):
+        log.critical("%r %d" % (wdg, row))
+    
     def __user_exception_handler(func):
         def wrapper(self, *args):
             try:
