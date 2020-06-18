@@ -389,19 +389,12 @@ class ZynqScopeSubprocess(multiprocessing.Process):
 
         if self.acq_state == TSTATE_ACQ_IDLE:
             if self.stop_signal:
-                self._handle_stop()
-                self.acq_state = STATE_ACQ_STOPPED
+                log.warn("Got stop while idle, ignorning")
+                self.stop_signal = False
 
             if self.start_signal:
                 self.acq_state = TSTATE_ACQ_PREPARE_TO_START
         
-        elif self.acq_state == TSTATE_ACQ_STOPPED:
-            log.info("Stopped")
-
-            if self.start_signal:
-                self.zs.rawcam_disable()
-                self.acq_state = TSTATE_ACQ_PREPARE_TO_START
-
         elif self.acq_state == TSTATE_ACQ_PREPARE_TO_START:
             # Rawcam must be stopped.  If not this is an error
             if self.zs.rawcam_running:
