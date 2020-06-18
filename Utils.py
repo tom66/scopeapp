@@ -9,6 +9,10 @@ gettext.bindtextdomain('yaosapp', '/lang')
 gettext.textdomain('yaosapp')
 _ = gettext.gettext
 
+import gi
+gi.require_version('Gtk', '3.0')
+from gi.repository import GdkPixbuf
+
 import math, colorsys, logging
 
 log = logging.getLogger()
