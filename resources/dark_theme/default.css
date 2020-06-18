@@ -184,7 +184,7 @@ dialog {
 
 /* A button is used so we can absorb the event */
 #nbk_main_settings > header tab > button {
-    margin: 2px;
+    margin: 3px;
     padding: 3px;
     border: none;
     background: none;
