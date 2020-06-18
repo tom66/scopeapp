@@ -127,11 +127,9 @@ class ArmwaveRenderEngine(zs.BaseRenderEngine):
     def set_target_dimensions(self, width, height):
         """Set new target dimensions and return requested size."""
         new_size = width * height * 4  # 4 bytes per pixel
-        if self._shm_size == new_size:
-            return
-        self._shm_size = new_size
-
-        self._resize_shms(new_size)
+        if self._shm_size != new_size:
+            self._shm_size = new_size
+            self._resize_shms(new_size)
 
         # Setup armwave
         aw.cleanup()
