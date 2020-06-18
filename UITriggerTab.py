@@ -92,8 +92,6 @@ class TriggerTab(object):
         self.menubtn = self.builder.get_object("mub_trigger")
         self.menubtn_label = self.builder.get_object("lbl_mub_trig_name")
         self.menubtn_image = self.builder.get_object("img_mub_trig_image")
-        self.menubtn.set_valign(Gtk.Align.START)
-        self.menubtn.set_vexpand(False)
 
         self.trigger_pages = Gtk.Notebook()
         self.trigger_pages.set_show_tabs(False)
