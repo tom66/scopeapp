@@ -202,7 +202,6 @@ dialog {
 }
 
 #nbk_main_settings > header tab:hover {
-    background-image: linear-gradient(90deg, #404040, #808080);
     box-shadow: none;
 }
 
