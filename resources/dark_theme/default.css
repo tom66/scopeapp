@@ -559,6 +559,13 @@ menu > separator {
     margin-bottom: 4px;
 }
 
+.popdown_menu {
+    margin: 0px;
+    padding: 0px;
+    border: 1px solid #333333;
+    border-radius: 3px;
+}
+
 /* Dialog box */
 messagedialog {
     background-color: #202020;  

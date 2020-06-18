@@ -106,6 +106,7 @@ class TriggerTab(object):
             self.css_manager.add_widget(hbox, "trigger_option_menuitem")
             row += 1
 
+        self.css_manager.add_widget(self.trigger_menu, "popdown_menu")
         self.css_manager.add_widget(self.trigger_menu, "trigger_option_menu")
         self.trigger_menu.show_all()
         self.menubtn.set_popup(self.trigger_menu)
