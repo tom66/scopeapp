@@ -102,6 +102,7 @@ class TriggerTab(object):
             self.inner_tabs.append(obj)
             self.css_manager.add_widget(lbl, "trigger_menuitem")
             self.css_manager.add_widget(img, "trigger_menuitem")
+            self.css_manager.add_widget(hbox, "trigger_menuitem")
             row += 1
 
         self.trigger_menu.show_all()
