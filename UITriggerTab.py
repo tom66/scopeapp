@@ -76,7 +76,7 @@ class TriggerTab(object):
         row = 0
 
         for opt in supported_triggers:
-            log.info("Initialising trigger option: %r" % obj)
+            log.info("Initialising trigger option: %r" % opt)
 
             obj = opt()
             img = Gtk.Image()
