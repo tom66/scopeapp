@@ -82,6 +82,7 @@ class TriggerTab(object):
 
             lbl = Gtk.Label()
             lbl.set_markup("<b>%s</b>\n<small>%s</small>" % (obj.name, obj.desc))
+            lbl.set_xalign(0.0)
 
             item = Gtk.MenuItem()
             hbox = Gtk.Box(Gtk.Orientation.HORIZONTAL, 0)
