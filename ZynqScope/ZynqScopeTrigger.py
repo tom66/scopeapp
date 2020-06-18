@@ -10,7 +10,7 @@ import ZynqScope.ZynqScopeADCMapping as zsadcmap
 
 EDGE_TYPES = {
     'RISE' : zc.TRIG_EDGE_RISING,
-    'FALL' : zc.TRIG_EDGE_FALL,
+    'FALL' : zc.TRIG_EDGE_FALLING,
     'BOTH' : zc.TRIG_EDGE_BOTH
 }
 
