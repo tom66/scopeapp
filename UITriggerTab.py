@@ -160,7 +160,7 @@ class TriggerTab(object):
 
         # Make the selection visible for the active item.  Hide all other items.
         self.trigger_pages.set_current_page(self.inner_tab_sel)
-        log.critical("tabpos=%d" % self.trigger_pages.get_tab_pos())
+        log.critical("tabpos=%d" % self.trigger_pages.get_current_page())
 
     def refresh_object_attach(self):
         pass
