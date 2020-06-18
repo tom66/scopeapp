@@ -159,7 +159,7 @@ class TriggerTab(object):
         Utils.set_svg_image(self.menubtn_image, os.path.join(self.cfgmgr.Theme.resourcedir, obj.icon), self.cfgmgr.Theme.TriggerIconSize)
 
         # Make the selection visible for the active item.  Hide all other items.
-        self.trigger_pages.set_tab_pos(self.inner_tab_sel)
+        self.trigger_pages.set_current_page(self.inner_tab_sel)
         log.critical("tabpos=%d" % self.trigger_pages.get_tab_pos())
 
     def refresh_object_attach(self):
