@@ -89,7 +89,6 @@ class TriggerTab(object):
             img2 = Gtk.Image()
             if obj.icon != None:
                 Utils.set_svg_image(img, os.path.join(self.cfgmgr.Theme.resourcedir, obj.icon), self.cfgmgr.Theme.TriggerIconSize)
-                Utils.set_svg_image(img2, os.path.join(self.cfgmgr.Theme.resourcedir, obj.icon), self.cfgmgr.Theme.TriggerIconSize)
 
             lbl = Gtk.Label()
             lbl.set_markup("<b>%s</b>\n<small>%s</small>" % (obj.name, obj.desc))
@@ -127,8 +126,10 @@ class TriggerTab(object):
     
     def refresh_mub(self):
         # Clear as mub.  Refreshes the menubutton.
-        self.menubtn_label.set_markup(self.inner_tabs[self.inner_tab_sel].name)
-        self.menubtn_image.set_markup(self.inner_tab_extra_icons[self.inner_tab_sel])
+        # TODO: Should we cache the pixbufs used?
+        obj = self.inner_tabs[self.inner_tab_sel]
+        self.menubtn_label.set_markup(obj.name)
+        Utils.set_svg_image(self.menubtn_image, os.path.join(self.cfgmgr.Theme.resourcedir, obj.icon), self.cfgmgr.Theme.TriggerIconSize)
 
     def refresh_object_attach(self):
         pass
