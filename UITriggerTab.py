@@ -20,6 +20,18 @@ import os, copy
 OUTER_TRIGGER_TAB_LAYOUT_FILE = "resources/outer_trigger_tab.gtkbuilder"
 OUTER_TRIGGER_TAB_CSS_FILE = "trigger_tab.css"
 
+class AlwaysTriggerContainer(TriggerContainerSuperclass):
+    def __init__(self):
+        name = _("Always Trigger")
+        desc = _("Continuously generates a trigger")
+        icon = None
+
+class EdgeTriggerContainer(TriggerContainerSuperclass):
+    def __init__(self):
+        name = _("Edge Trigger")
+        desc = _("Generates a trigger when the input signal rises and/or falls through a threshold")
+        icon = "trigger_rising_edge.svg"
+
 supported_triggers = [
     AlwaysTriggerContainer, EdgeTriggerContainer
 ]
@@ -137,15 +149,3 @@ class TriggerTab(object):
     
     def get_embedded_container(self):
         return self.vbox
-
-class AlwaysTriggerContainer(TriggerContainerSuperclass):
-    def __init__(self):
-        name = _("Always Trigger")
-        desc = _("Continuously generates a trigger")
-        icon = None
-
-class EdgeTriggerContainer(TriggerContainerSuperclass):
-    def __init__(self):
-        name = _("Edge Trigger")
-        desc = _("Generates a trigger when the input signal rises and/or falls through a threshold")
-        icon = "trigger_rising_edge.svg"
