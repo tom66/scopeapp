@@ -86,7 +86,7 @@ class EdgeTriggerContainer(TriggerContainerSuperclass):
         return self.vbox
 
 supported_triggers = [
-    AlwaysTriggerContainer(), EdgeTriggerContainer()
+    AlwaysTriggerContainer, EdgeTriggerContainer
 ]
 
 class TriggerTab(object):
@@ -132,7 +132,8 @@ class TriggerTab(object):
         self.inner_tabs = []
         row = 0
 
-        for obj in supported_triggers:
+        for trig in supported_triggers:
+            obj = trig()
             log.info("Initialising trigger option: %r" % obj)
 
             img = Gtk.Image()
