@@ -535,7 +535,7 @@ class ScopeController(object):
         log.debug("ScopeController.connect() - setting default ADC mapping and trigger")
 
         self.adc_map = zsadcmap.ZynqScopeADCMapping()
-        self.adc_map.set_mapping(-10.0, +10.0, 0xff)
+        self.adc_map.set_mapping(-11.0, +11.0, 0xff)
         log.info("ADCMapping: %r" % self.adc_map)
         self.zst.apply_adc_mapping(self.adc_map)
 

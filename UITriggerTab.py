@@ -144,6 +144,10 @@ class EdgeTriggerContainer(TriggerContainerSuperclass):
         self.btn_trig_lvl_up.connect("clicked", self._btn_trig_lvl_up_clicked)
         self.btn_trig_lvl_dn.connect("clicked", self._btn_trig_lvl_dn_clicked)
 
+        self.btn_fall.connect("clicked", self._btn_fall_clicked)
+        self.btn_both.connect("clicked", self._btn_both_clicked)
+        self.btn_rise.connect("clicked", self._btn_rise_clicked)
+
         Utils.set_svg_image(self.img_fall, os.path.join(self.root.cfgmgr.Theme.resourcedir, ICON_FALL_EDGE), self.root.cfgmgr.Theme.TriggerSubIconSize)
         Utils.set_svg_image(self.img_both, os.path.join(self.root.cfgmgr.Theme.resourcedir, ICON_BOTH_EDGE), self.root.cfgmgr.Theme.TriggerSubIconSize)
         Utils.set_svg_image(self.img_rise, os.path.join(self.root.cfgmgr.Theme.resourcedir, ICON_RISE_EDGE), self.root.cfgmgr.Theme.TriggerSubIconSize)
@@ -163,6 +167,18 @@ class EdgeTriggerContainer(TriggerContainerSuperclass):
             raise Utils.UserRequestError(_("Trigger level at limit"))
 
         self.trigger.set_parameter('Level', level)
+
+    def _btn_fall_clicked(self, *args):
+        self.trigger.set_parameter('Edge', 'FALL')
+        self.refresh_ui()
+
+    def _btn_both_clicked(self, *args):
+        self.trigger.set_parameter('Edge', 'BOTH')
+        self.refresh_ui()
+
+    def _btn_rise_clicked(self, *args):
+        self.trigger.set_parameter('Edge', 'RISE')
+        self.refresh_ui()
 
     def _btn_trig_lvl_up_clicked(self, *args):
         self.adjust_level(+self.root.get_adc_minor_increment())
