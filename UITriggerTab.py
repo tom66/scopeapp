@@ -89,24 +89,31 @@ class EdgeTriggerContainer(TriggerContainerSuperclass):
         self.cmb_trig_chan_sel = self.builder.get_object("cmb_trig_chan_sel")
         
         # Create the TreeModel for the channel name options
+        col_cell_text_short = Gtk.CellRendererText()
+        col_name = Gtk.TreeViewColumn(_("Name"))
+        col_name.pack_start(col_cell_text_short, True)
+        col_name.add_attribute(col_cell_text_short, "text", 0)
+
         col_cell_text_long = Gtk.CellRendererText()
         col_name = Gtk.TreeViewColumn(_("Name"))
         col_name.pack_start(col_cell_text_long, True)
-        col_name.add_attribute(col_cell_text_long, "text", 0)
+        col_name.add_attribute(col_cell_text_long, "text", 1)
         col_cell_text_long.set_property("ellipsize", Pango.EllipsizeMode.END)
         col_cell_text_long.set_property("ellipsize_set", True)
         col_cell_text_long.set_property("wrap_mode", Pango.WrapMode.WORD)
         col_cell_text_long.set_property("wrap_width", 50)
         col_cell_text_long.set_property("max_width_chars", 20)
 
-        tree_store = Gtk.TreeStore(GObject.TYPE_STRING)
+        tree_store = Gtk.TreeStore(GObject.TYPE_STRING, GObject.TYPE_STRING)
         
         for ch in channels:
-            sub_tree = tree_store.append(None, [ch[1].get_display_name()])
+            sub_tree = tree_store.append(None, [ch[1].get_short_display_name(), ch[1].get_display_name()])
         
         self.cmb_trig_chan_sel.set_model(tree_store)
         self.cmb_trig_chan_sel.pack_start(col_cell_text_long, True)
         self.cmb_trig_chan_sel.add_attribute(col_cell_text_long, "text", 0)
+        self.cmb_trig_chan_sel.pack_start(col_cell_text_short, True)
+        self.cmb_trig_chan_sel.add_attribute(col_cell_text_short, "text", 0)
         self.cmb_trig_chan_sel.set_active(0)
         #self.cmb_trig_chan_sel.connect("changed", self._cmb_chan_label_changed)
         self.cmb_trig_chan_sel.show_all()

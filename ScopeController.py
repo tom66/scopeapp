@@ -221,6 +221,9 @@ class ScopeChannelController(object):
 
     def get_display_name(self):
         return self.long_name
+
+    def get_short_display_name(self):
+        return self.short_name
         
     def get_computed_attenuation(self):
         return self.atten_div * self.probe_multiplier
