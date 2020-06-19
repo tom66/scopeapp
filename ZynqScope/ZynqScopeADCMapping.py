@@ -18,7 +18,7 @@ class ZynqScopeADCMapping(object):
         zero_adc should be the voltage at an ADC code of 0x00;
         full_adc should be the voltage at an ADC full code;
         adc_range is the range of the ADC codes (typically 255)."""
-        assert (full_adc < zero_adc)
+        assert (zero_adc < full_adc)
 
         self.zero_adc = zero_adc
         self.full_adc = full_adc
