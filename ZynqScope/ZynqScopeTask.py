@@ -214,6 +214,7 @@ class ZynqScopeSubprocess(multiprocessing.Process):
         self.shared_dict['running_state'] = ACQSTATE_STOPPED
         self.shared_dict['render_to_mmap'] = False
         self.shared_dict['mmap_display'] = None
+        self.shared_dict['params'] = zs.ZynqScopeCurrentParameters()
 
         self.stats.num_waves_sent = 0
         
