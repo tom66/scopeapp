@@ -193,7 +193,7 @@ class ZynqScope(object):
     
     # Desired acquisition proportion for the frame time.  This should be tweaked to determine
     # the maximum performance possible.  
-    acq_frametime_frac = 0.05 # = 0.12
+    acq_frametime_frac = 0.1 # = 0.12
     
     # Sample rate model.  Defines the dividers and clock rates available to the ADC and PLL.
     samprate_mdl = None
