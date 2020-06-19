@@ -63,18 +63,16 @@ def pack_channel_options(combo, channels, active):
     #self.cmb_trig_chan_sel.connect("changed", self._cmb_chan_label_changed)
     combo.show_all()
 
-class TriggerContainerSuperclass(object): 
-    @staticmethod
-    def __user_exception_handler(func):
-        def wrapper(self, *args):
-            try:
-                return func(self, *args)
-            except Utils.UserRequestError as e:
-                # Pass the higher-order exception back to the application root manager
-                self.root.root_mgr._user_exception(e)
-                return True # stop events being duplicated
-        
-        return wrapper
+def user_exception_handler(func):
+    def wrapper(self, *args):
+        try:
+            return func(self, *args)
+        except Utils.UserRequestError as e:
+            # Pass the higher-order exception back to the application root manager
+            self.root.root_mgr._user_exception(e)
+            return True # stop events being duplicated
+    
+    return wrapper
 
 class AlwaysTriggerContainer(TriggerContainerSuperclass):
     def __init__(self, root, trigger_class):
@@ -149,7 +147,7 @@ class EdgeTriggerContainer(TriggerContainerSuperclass):
 
         self.refresh_ui()
 
-    @TriggerContainerSuperclass.__user_exception_handler
+    @user_exception_handler
     def adjust_level(self, amount):
         level = self.trigger.get_parameter('Level')
         level += amount
