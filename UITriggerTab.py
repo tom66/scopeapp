@@ -113,7 +113,7 @@ class EdgeTriggerContainer(TriggerContainerSuperclass):
         self.cmb_trig_chan_sel.pack_start(col_cell_text_long, True)
         self.cmb_trig_chan_sel.add_attribute(col_cell_text_long, "text", 0)
         self.cmb_trig_chan_sel.pack_start(col_cell_text_short, True)
-        self.cmb_trig_chan_sel.add_attribute(col_cell_text_short, "text", 0)
+        self.cmb_trig_chan_sel.add_attribute(col_cell_text_short, "text", 1)
         self.cmb_trig_chan_sel.set_active(0)
         #self.cmb_trig_chan_sel.connect("changed", self._cmb_chan_label_changed)
         self.cmb_trig_chan_sel.show_all()
