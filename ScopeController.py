@@ -531,6 +531,8 @@ class ScopeController(object):
         self.arena = ScopeArena.ScopeArenaController(self, self.root_mgr.cfgmgr)
 
         # Apply default ADC mapping.  This will need to change in future with real AFE
+        log.debug("ScopeController.connect() - setting default ADC mapping and trigger")
+
         self.adc_map.set_mapping(-9.0, +9.0, 0xff)
         log.info("ADCMapping: %r" % self.adc_map)
         #self.zst.apply_adc_mapping(self.adc_map)
