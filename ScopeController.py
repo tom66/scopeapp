@@ -531,12 +531,14 @@ class ScopeController(object):
         # Wait for task to start
         log.debug("Waiting for controller task to start")
         t0 = time.time()
+        t1 = t0
 
         while not self.zst.shared_dict['connected']:
-            if (time.time() - t0) > 10.0:
+            t1 = time.time()
+            if (t1 - t0) > 10.0:
                 raise RuntimeError("Timeout: task did not start in time")
 
-        log.debug("Task started")
+        log.debug("Task started in %.1f ms" % ((t1 - t0) * 1000))
 
         self.timebase = ScopeTimebaseController(self.zst)
         self.timebase.set_change_notifier(self.change_notifier)
