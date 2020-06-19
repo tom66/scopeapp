@@ -149,4 +149,4 @@ class ZynqScopeTriggerManager(object):
             raise NotImplementedError("Unsupported trigger, must be subclass of ZynqScopeTriggerSuperclass")
         else:
             self._last_config_obj = config_obj
-            config_obj.commit(self.zs.zcmd, self._adc_map, DEFAULT_CHANNEL_MAP)
+            pass#config_obj.commit(self.zs.zcmd, self._adc_map, DEFAULT_CHANNEL_MAP)
