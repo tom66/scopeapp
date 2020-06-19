@@ -171,9 +171,9 @@ class ArmwaveRenderEngine(zs.BaseRenderEngine):
 
         #log.info("start fill into pixbuf")
 
-        if not aw.fill_pixbuf_into_pybuffer(mmap_obj):
-            mmap_obj.close()
-            raise RuntimeError("Pixbuf render failed with PyFalse: possibly corrupt pointer?")
+        #if not aw.fill_pixbuf_into_pybuffer(mmap_obj):
+        #    mmap_obj.close()
+        #    raise RuntimeError("Pixbuf render failed with PyFalse: possibly corrupt pointer?")
 
         # Close the mmap.  We're done working with it.
         #mmap_obj.close()
