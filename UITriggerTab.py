@@ -51,6 +51,7 @@ def pack_channel_options(combo, channels, active):
     for ch in channels:
         sub_tree = tree_store.append(None, [ch[1].get_colour_formatted_short_display_name(), ch[1].get_colour_formatted_display_name()])
     
+    combo.clear()
     combo.set_model(tree_store)
     combo.pack_start(col_cell_text_long, True)
     combo.add_attribute(col_cell_text_long, "markup", 0)
