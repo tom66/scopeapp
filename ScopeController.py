@@ -617,6 +617,12 @@ class ScopeController(object):
     def get_sample_rate(self):
         return self.zst.get_attributes_cache().params.sample_rate
     
+    def get_channels(self):
+        ch = []
+        for channel in self.channels:
+            ch.append((channel.internal_name, channel.long_name))
+        return ch
+
     def get_run_state_str(self):
         if self.run_state == ACQ_IS_STOPPED:
             return "STOP"

@@ -82,6 +82,8 @@ class EdgeTriggerContainer(TriggerContainerSuperclass):
         Utils.set_svg_image(self.img_both, os.path.join(self.root.cfgmgr.Theme.resourcedir, ICON_BOTH_EDGE), self.root.cfgmgr.Theme.TriggerSubIconSize)
         Utils.set_svg_image(self.img_rise, os.path.join(self.root.cfgmgr.Theme.resourcedir, ICON_RISE_EDGE), self.root.cfgmgr.Theme.TriggerSubIconSize)
 
+        log.info("Trigger channels available: %r" % (self.root.get_channels(),))
+
     def get_embedded_container(self):
         return self.vbox
 
@@ -243,8 +245,12 @@ class TriggerTab(object):
     def append_to_notebook(self):
         self.notebook.append_page(self.get_embedded_container(), self.get_embedded_label())
     
+    def get_channels(self):
+        return self.root_mgr.ctrl.get_channels()
+
     def get_embedded_label(self):
         return self.lbl_btn
     
     def get_embedded_container(self):
         return self.vbox
+
