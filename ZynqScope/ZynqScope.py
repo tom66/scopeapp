@@ -202,10 +202,10 @@ class ZynqScope(object):
     params = ZynqScopeCurrentParameters()
 
     # Current trigger engine
-    trig_eng = zstrg.ZynqScopeTriggerManager()
+    trig_eng = None
 
     # Current ADC mapping
-    adc_map = zsadcmap.ZynqScopeADCMapping()
+    adc_map = None
     
     # Next timebase and current timebase
     next_tb = None
@@ -251,8 +251,10 @@ class ZynqScope(object):
 
         # Connect trigger engine to us.  Start with a default ADC mapping.
         log.debug("ZynqScope connect(): connecting trigger, loading default ADC mapping")
+        self.trig_eng = zstrg.ZynqScopeTriggerManager()
         print(dir(self.trig_eng))
         pass#self.trig_eng.connect_execute_cb(self.zcmd_execute_cb)
+        self.adc_map = zsadcmap.ZynqScopeADCMapping()
         self.adc_map.set_mapping(-1, +1, 255)
         self.trig_eng.set_adc_mapping(self.adc_map)
         self.trig_eng.set_config(zstrg.ZynqScopeTriggerEdge())
