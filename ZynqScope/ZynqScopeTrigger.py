@@ -118,14 +118,14 @@ AVAILABLE_TRIGGERS = [
 
 class ZynqScopeTriggerManager(object):
     def __init__(self):
-        self.zs = None
+        self.zcmd = None
         self.ch_map = [zc.TRIG_CH_ADCSRC1, zc.TRIG_CH_ADCSRC2, zc.TRIG_CH_ADCSRC3, zc.TRIG_CH_ADCSRC4]
         self._adc_map = None
         self._last_config_obj = None
 
-    def connect(self, zs):
-        log.info("ZynqScopeTriggerManager: connect(%r)" % zs)
-        self.zs = zs
+    def connect(self, zcmd):
+        log.info("ZynqScopeTriggerManager: connect(%r)" % zcmd)
+        self.zcmd = zcmd
 
     def set_adc_mapping(self, mapping):
         log.info("ZynqScopeTriggerManager: set_adc_mapping(%r)" % mapping)
@@ -156,6 +156,6 @@ class ZynqScopeTriggerManager(object):
 
             for entry in seq:
                 log.debug("Trigger commit: %s (%r)" % (entry[0], entry[1]))
-                getattr(self.zs.zcmd, entry[0])(*entry[1])
+                getattr(self.zcmd, entry[0])(*entry[1])
 
             log.info(repr(seq))
