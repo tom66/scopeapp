@@ -582,7 +582,7 @@ class ZynqScopeTaskController(object):
         self.evq_cache('ZynqScopeGetAttributes')
         resp = self.rsq.get()
 
-        #print("get_attributes response:", resp)
+        log.info("get_attributes response: %r" % resp)
         self.attribs_cache = resp
         return resp
     
