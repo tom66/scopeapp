@@ -74,6 +74,9 @@ def user_exception_handler(func):
     
     return wrapper
 
+class TriggerContainerSuperclass(object):
+    pass
+
 class AlwaysTriggerContainer(TriggerContainerSuperclass):
     def __init__(self, root, trigger_class):
         self.name = _("Always Trigger")
