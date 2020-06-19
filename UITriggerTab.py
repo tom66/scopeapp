@@ -376,7 +376,7 @@ class TriggerTab(object):
     def get_embedded_container(self):
         return self.vbox
 
-    def get_adc_valid_range(self, chidx):
+    def get_adc_valid_range(self):
         return self.root_mgr.ctrl.get_adc_volt_limits()
 
     def get_adc_minor_increment(self):
