@@ -242,9 +242,11 @@ class ZynqScope(object):
         self.next_tb = self.timebase_settings[default_timebase]
 
         # Connect trigger engine to us
+        log.debug("ZynqScope connect(): connecting trigger")
         self.trig_eng.connect(self)
 
         # Set IOs as inputs
+        log.debug("ZynqScope connect(): setup GPIO")
         RPi.GPIO.setmode(RPi.GPIO.BCM)
         RPi.GPIO.setup(RASPI_PIN_SEND, RPi.GPIO.OUT)
         RPi.GPIO.setup(RASPI_PIN_PKT_READY, RPi.GPIO.IN)
@@ -252,6 +254,7 @@ class ZynqScope(object):
         self.zynq_stop_ready()
 
         # Ensure AcqCtrl is reset...
+        log.debug("ZynqScope connect(): reset acq_ctrl block on FPGA")
         self.zcmd.ac_reset()
 
         # Instead of blindly returning True we should check that the hardware is ready first...
