@@ -78,13 +78,14 @@ class TriggerContainerSuperclass(object):
     pass
 
 class AlwaysTriggerContainer(TriggerContainerSuperclass):
-    def __init__(self, root, trigger_class):
+    def __init__(self, root, trigger_class, change_cb):
         self.name = _("Always Trigger")
         self.desc = _("Continuously generates a trigger")
         self.icon = "trigger_always.svg"
 
         self.root = root
         self.trigger = trigger_class()
+        self.change_callback = change_cb
 
         self.bin = Gtk.Box()
         self.bin.pack_start(Gtk.Label(_("This trigger has no options")), False, False, 0)
