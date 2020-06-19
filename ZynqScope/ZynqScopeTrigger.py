@@ -118,7 +118,7 @@ AVAILABLE_TRIGGERS = [
 
 class ZynqScopeTriggerManager(object):
     def __init__(self):
-        log.info("ZynqScopeTriggerManager __init__()")
+        log.critical("ZynqScopeTriggerManager __init__()")
         self.ch_map = [zc.TRIG_CH_ADCSRC1, zc.TRIG_CH_ADCSRC2, zc.TRIG_CH_ADCSRC3, zc.TRIG_CH_ADCSRC4]
         self._adc_map = None
         self._last_config_obj = None
