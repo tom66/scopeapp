@@ -254,7 +254,7 @@ class ZynqScopeSubprocess(multiprocessing.Process):
 
                 self.shared_dict['timebase_settings'] = self.zs.timebase_settings
                 self.shared_dict['connected'] = True
-                
+
             elif self.state == STATE_ZYNQ_IDLE:
                 # Process any commands in the queue
                 while not self.evq.empty():
@@ -458,7 +458,7 @@ class ZynqScopeSubprocess(multiprocessing.Process):
                 self.cleanup_rawcam_buffers()
 
                 if self.zs.zynq_acknowledge_if_pending():
-                    log.info("Zynq has packet; try to read it...")
+                    #log.info("Zynq has packet; try to read it...")
 
                     while len(self.buffers_working) < self.zs.rawcam_buffer_dims[2]:
                         while self.zs.rawcam_get_buffer_count() > 0: 
@@ -494,9 +494,9 @@ class ZynqScopeSubprocess(multiprocessing.Process):
                             #resp.status = self.acq_comp0_response['AcqStatus']
                             self.acq_response_queue.put(resp)
 
-                            log.info("Try to render ...")
+                            #log.info("Try to render ...")
                             self.do_render(resp)
-                            log.info("Done render")
+                            #log.info("Done render")
 
                             self.zs.zynq_set_ready()
                             #self.zs.rawcam_stop()
