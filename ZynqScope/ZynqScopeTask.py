@@ -215,6 +215,7 @@ class ZynqScopeSubprocess(multiprocessing.Process):
         self.shared_dict['render_to_mmap'] = False
         self.shared_dict['mmap_display'] = None
         self.shared_dict['params'] = zs.ZynqScopeCurrentParameters()
+        self.shared_dict['timebase_settings'] = []
 
         self.stats.num_waves_sent = 0
         
@@ -249,6 +250,8 @@ class ZynqScopeSubprocess(multiprocessing.Process):
                     self.state = STATE_ZYNQ_IDLE
                 else:
                     raise RuntimeError("Unable to connect hardware resources")
+                self.shared_dict['timebase_settings'] = self.zs.timebase_settings
+                
             elif self.state == STATE_ZYNQ_IDLE:
                 # Process any commands in the queue
                 while not self.evq.empty():
@@ -579,8 +582,7 @@ class ZynqScopeTaskController(object):
         return self.shared_dict['params']
     
     def get_supported_timebases(self):
-        attrs = self.get_attributes()
-        return attrs.timebase_settings
+        return self.shared_dict['timebase_settings']
 
     def set_next_timebase_index(self, tb):
         log.info("Set next timebase %d" % int(tb))
