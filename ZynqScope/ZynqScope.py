@@ -388,7 +388,7 @@ class ZynqScope(object):
             return False
 
     def gpio_irq_pkt_ready(self, *args):
-        log.info("gpio_irq_pkt_ready(%r)" % args)
+        #log.info("gpio_irq_pkt_ready(%r)" % args)
         self.zynq_pkt_ready = True
 
     def calc_real_sample_rate_for_index(self, index):
