@@ -29,6 +29,7 @@ class ZynqScopeTriggerSuperclass(object):
     """Picklable superclass for the trigger configuration.  Designed to be passed
     via the multiprocessing queue."""
     def __init__(self):
+        log.info("ZynqScopeTriggerSuperclass(): __init__()")
         self._params_types = {}
         self._params_dict = {}
 
@@ -59,6 +60,7 @@ class ZynqScopeTriggerSuperclass(object):
 class ZynqScopeTriggerAlways(ZynqScopeTriggerSuperclass):
     def __init__(self): 
         super(ZynqScopeTriggerSuperclass, self).__init__()
+        log.info("ZynqScopeTriggerAlways(): __init__()")
 
     def get_name(self):
         return "ALWAYS_TRIGGER"
@@ -72,11 +74,14 @@ class ZynqScopeTriggerAlways(ZynqScopeTriggerSuperclass):
 class ZynqScopeTriggerEdge(ZynqScopeTriggerSuperclass):
     def __init__(self): 
         super(ZynqScopeTriggerSuperclass, self).__init__()
-        
+        log.info("ZynqScopeTriggerEdge(): __init__()")
+
         self._params_types = {'Channel'    : 'ChannelSelection',
                               'Level'      : 'VoltageLevel',
                               'Hysteresis' : 'VoltageLevel',
                               'Edge'       : 'EdgeType'}
+
+        self._params_dict = {}
 
         # Defaults
         self.set_parameter('Level', 0.0)
