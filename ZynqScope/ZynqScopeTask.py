@@ -487,6 +487,8 @@ class ZynqScopeSubprocess(multiprocessing.Process):
                             #print("Buffer count: %d, size of list: %d (total %d), new buffer: %r, us_delta: %d" % (count, len(self.buffers_working), self.rawcam_seq, buff, us_delta))
 
                         if len(self.buffers_working) >= self.zs.rawcam_buffer_dims[2]:
+                            self.zs.zynq_set_ready()
+                            
                             # Create the response and send it
                             resp = ZynqScopeAcquisitionResponse()
                             resp.time = time.time()
@@ -501,7 +503,6 @@ class ZynqScopeSubprocess(multiprocessing.Process):
                             self.time_last_acq = time.time()
                             #log.info("Done render")
 
-                            self.zs.zynq_set_ready()
                             #self.zs.rawcam_stop()
                             #self.acq_state = TSTATE_ACQ_IDLE
                             self.acq_state = TSTATE_ACQ_WAITING_FOR_CSI_TRANSFER
