@@ -633,7 +633,7 @@ class MainApplication(object):
         bits = self.ctrl.get_sample_depth()
 
         _acq_params = (waveforms_per_second, memory_depth, sample_rate, bits)
-        log.info("acq_params: %r" % acq_params)
+        log.info("acq_params: %r" % _acq_params)
 
         if _acq_params != self.last_acq_params:
             # TRANSLATORS: lbl_status_bits_samplerate contains a bit depth (8-bit; compare 'audio' and 'graphics' bit depths, for instance)
