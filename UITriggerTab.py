@@ -164,9 +164,11 @@ class EdgeTriggerContainer(TriggerContainerSuperclass):
 
     def _btn_trig_lvl_up_clicked(self, *args):
         self.adjust_level(+self.ctrl.get_adc_minor_increment())
+        self.refresh_ui()
         
     def _btn_trig_lvl_dn_clicked(self, *args):
         self.adjust_level(-self.ctrl.get_adc_minor_increment())
+        self.refresh_ui()
 
     def refresh_ui(self):
         channels = self.root.get_channels()
