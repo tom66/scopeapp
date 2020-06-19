@@ -382,4 +382,5 @@ class TriggerTab(object):
         return self.root_mgr.ctrl.get_adc_volt_limits()
 
     def get_adc_minor_increment(self):
-        return self.root_mgr.ctrl.get_adc_volt_span() / self.cfgmgr.UI.StepsIncrementVoltages
+        # We need a better way to do this
+        return self.cfgmgr.UI.StepsIncrementVoltageAmount
