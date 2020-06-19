@@ -180,6 +180,9 @@ class ScopeChannelController(object):
         """Get RGB representation (e.g. (0, 255, 0)) of channel colour assuming 100% value."""
         return Utils.get_rgb_colour_hsv(self.hue, self.sat, 1.0)
 
+    def get_colour_formatted(self, str_, value=1.0):
+        return '<span foreground="%s">%s</span>' % (self.get_hex_colour(value), str_)
+
     def enable_channel(self):
         self.enabled = True
         self.change_notifier('enable-state')
@@ -224,6 +227,12 @@ class ScopeChannelController(object):
 
     def get_short_display_name(self):
         return self.short_name
+
+    def get_colour_formatted_display_name(self):
+        return self.get_colour_formatted(self.get_display_name())
+
+    def get_colour_formatted_short_display_name(self):
+        return self.get_colour_formatted(self.get_short_display_name())
         
     def get_computed_attenuation(self):
         return self.atten_div * self.probe_multiplier

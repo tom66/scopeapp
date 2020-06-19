@@ -49,7 +49,7 @@ def pack_channel_options(combo, channels, active):
     tree_store = Gtk.TreeStore(GObject.TYPE_STRING, GObject.TYPE_STRING)
     
     for ch in channels:
-        sub_tree = tree_store.append(None, ['<span foreground="red">' + ch[1].get_short_display_name() + '</span>', ch[1].get_display_name()])
+        sub_tree = tree_store.append(None, [ch[1].get_colour_formatted_short_display_name(), ch[1].get_colour_formatted_display_name()])
     
     combo.set_model(tree_store)
     combo.pack_start(col_cell_text_long, True)
@@ -104,7 +104,7 @@ class EdgeTriggerContainer(TriggerContainerSuperclass):
         self.btn_fall = self.builder.get_object("btn_edge_fall")
         self.btn_both = self.builder.get_object("btn_edge_both")
         self.btn_rise = self.builder.get_object("btn_edge_rise")
-        
+
         self.cmb_trig_chan_sel = self.builder.get_object("cmb_trig_chan_sel")
 
         self.btn_fall.add(self.img_fall)
