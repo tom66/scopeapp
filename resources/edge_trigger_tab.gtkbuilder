@@ -226,10 +226,24 @@
                 <property name="can_focus">True</property>
                 <property name="adjustment">adj_hysteresis</property>
                 <property name="round_digits">1</property>
+                <property name="draw_value">False</property>
               </object>
               <packing>
                 <property name="left_attach">0</property>
                 <property name="top_attach">0</property>
+                <property name="width">3</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkLabel" id="lbl_trig_hyst">
+                <property name="name">lbl_trig_hyst</property>
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="label" translatable="yes">X</property>
+              </object>
+              <packing>
+                <property name="left_attach">0</property>
+                <property name="top_attach">1</property>
                 <property name="width">3</property>
               </packing>
             </child>
