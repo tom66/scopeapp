@@ -60,6 +60,7 @@ class ZynqScopeTriggerSuperclass(object):
 class ZynqScopeTriggerAlways(ZynqScopeTriggerSuperclass):
     def __init__(self): 
         #super(ZynqScopeTriggerSuperclass, self).__init__()
+        super().__init__()
         log.info("ZynqScopeTriggerAlways(): __init__()")
 
     def get_name(self):
@@ -74,6 +75,7 @@ class ZynqScopeTriggerAlways(ZynqScopeTriggerSuperclass):
 class ZynqScopeTriggerEdge(ZynqScopeTriggerSuperclass):
     def __init__(self): 
         #super(ZynqScopeTriggerSuperclass, self).__init__()
+        super().__init__()
         log.info("ZynqScopeTriggerEdge(): __init__()")
 
         self.params_types = {'Channel'    : 'ChannelSelection',
