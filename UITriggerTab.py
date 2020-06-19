@@ -148,7 +148,7 @@ class EdgeTriggerContainer(TriggerContainerSuperclass):
 
         self.refresh_ui()
 
-    @__user_exception_handler
+    @super().__user_exception_handler
     def adjust_level(self, amount):
         level = self.trigger.get_parameter('Level')
         level += amount
