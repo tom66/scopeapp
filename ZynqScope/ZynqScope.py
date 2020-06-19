@@ -241,10 +241,6 @@ class ZynqScope(object):
         self.init_timebases()
         self.next_tb = self.timebase_settings[default_timebase]
 
-        # Connect trigger engine to us
-        #log.debug("ZynqScope connect(): connecting trigger")
-        #self.trig_eng.connect(self)
-
         # Set IOs as inputs
         log.debug("ZynqScope connect(): setup GPIO")
         RPi.GPIO.setmode(RPi.GPIO.BCM)
@@ -252,6 +248,11 @@ class ZynqScope(object):
         RPi.GPIO.setup(RASPI_PIN_PKT_READY, RPi.GPIO.IN)
         RPi.GPIO.add_event_detect(RASPI_PIN_PKT_READY, RPi.GPIO.RISING, callback=self.gpio_irq_pkt_ready)
         self.zynq_stop_ready()
+
+        # Connect trigger engine to us
+        log.debug("ZynqScope connect(): connecting trigger")
+        self.trig_eng.connect(self)
+        self.trig_eng.set_config(ZynqScopeTriggerEdge())
 
         # Ensure AcqCtrl is reset...
         log.debug("ZynqScope connect(): reset acq_ctrl block on FPGA")
