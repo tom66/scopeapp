@@ -226,7 +226,7 @@ class EdgeTriggerContainer(TriggerContainerSuperclass):
             self.btn_fall_ctx.remove_class("button_off")
 
         self.lbl_trig_lvl.set_markup(channels[channel][1].get_unit().unit_format(level * channels[channel][1].get_probe_gain()))
-        self.lbl_trig_hyst.set_markup(channels[channel][1].get_unit().unit_format(hyst * channels[channel][1].get_probe_gain()))
+        self.lbl_trig_hyst.set_markup("&#8723;" + channels[channel][1].get_unit().unit_format(hyst * 0.5 * channels[channel][1].get_probe_gain()))
 
     def get_embedded_container(self):
         return self.vbox
