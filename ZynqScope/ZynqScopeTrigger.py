@@ -145,7 +145,7 @@ class ZynqScopeTriggerManager(object):
         if self._adc_map is None:
             raise RuntimeError("ADC mapping not yet provided; how am I going to work this out?")
 
-        if isinstance(config_obj, ZynqScopeTriggerSuperclass):
+        if issubclass(config_obj, ZynqScopeTriggerSuperclass):
             raise NotImplementedError("Unsupported trigger, must be subclass of ZynqScopeTriggerSuperclass")
         else:
             self._last_config_obj = config_obj
