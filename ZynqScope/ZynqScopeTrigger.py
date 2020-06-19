@@ -41,6 +41,7 @@ class ZynqScopeTriggerSuperclass(object):
         return self.params_types
 
     def set_parameter(self, key, value):
+        log.info("SupportedDict: %r" % self.params_types)
         if key not in self.params_types:
             raise NotImplementedError("Parameter not supported: %s" % key)
         self.params_dict[key] = value
