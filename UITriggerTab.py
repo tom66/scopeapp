@@ -66,13 +66,13 @@ def pack_channel_options(combo, channels, active):
 class TriggerContainerSuperclass(object): pass
 
 class AlwaysTriggerContainer(TriggerContainerSuperclass):
-    def __init__(self, root, trigger):
+    def __init__(self, root, trigger_class):
         self.name = _("Always Trigger")
         self.desc = _("Continuously generates a trigger")
         self.icon = "trigger_always.svg"
 
         self.root = root
-        self.trigger = trigger
+        self.trigger = trigger_class()
 
         self.bin = Gtk.Box()
         self.bin.pack_start(Gtk.Label(_("This trigger has no options")), False, False, 0)
@@ -88,13 +88,13 @@ class AlwaysTriggerContainer(TriggerContainerSuperclass):
         pass
 
 class EdgeTriggerContainer(TriggerContainerSuperclass):
-    def __init__(self, root, trigger):
+    def __init__(self, root, trigger_class):
         self.name = _("Edge Trigger")
         self.desc = _("Generates a trigger when the input signal rises and/or falls through a threshold")
         self.icon = "trigger_rising_edge.svg"
 
         self.root = root
-        self.trigger = trigger
+        self.trigger = trigger_class()
 
         self.builder = Gtk.Builder()
         self.builder.add_from_file(EDGE_TRIGGER_LAYOUT_FILE)

@@ -72,6 +72,7 @@ class ZynqScopeTriggerAlways(ZynqScopeTriggerSuperclass):
 class ZynqScopeTriggerEdge(ZynqScopeTriggerSuperclass):
     def __init__(self): 
         super(ZynqScopeTriggerSuperclass, self).__init__()
+        
         self._params_types = {'Channel'    : 'ChannelSelection',
                               'Level'      : 'VoltageLevel',
                               'Hysteresis' : 'VoltageLevel',
