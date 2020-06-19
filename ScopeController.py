@@ -536,6 +536,8 @@ class ScopeController(object):
             if (time.time() - t0) > 10.0:
                 raise RuntimeError("Timeout: task did not start in time")
 
+        log.debug("Task started")
+
         self.timebase = ScopeTimebaseController(self.zst)
         self.timebase.set_change_notifier(self.change_notifier)
         self.arena = ScopeArena.ScopeArenaController(self, self.root_mgr.cfgmgr)
