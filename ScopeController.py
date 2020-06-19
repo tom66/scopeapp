@@ -492,11 +492,15 @@ class ScopeController(object):
     # ZynqScopeTaskController object.  Used as an interface to the "Real World"
     zst = None
 
+    # ADC mapping, shared with the ZynqScopeTaskController
+    adc_map = None
+
     # ScopeArena object.  Used as the render target
     arena = None
     
     def __init__(self, root_mgr):
         self.root_mgr = root_mgr
+
 
         if AFE_module.get_channel_count() == 4:
             self.channels.append(ScopeChannelController(SCOPE_CH_1))
@@ -525,6 +529,14 @@ class ScopeController(object):
         self.timebase = ScopeTimebaseController(self.zst)
         self.timebase.set_change_notifier(self.change_notifier)
         self.arena = ScopeArena.ScopeArenaController(self, self.root_mgr.cfgmgr)
+
+        # Apply default ADC mapping.  This will need to change in future with real AFE
+        self.adc_map.set_mapping(-9.0, +9.0, 0xff)
+        log.info("ADCMapping: %r" % self.adc_map)
+        self.zst.apply_adc_mapping(self.adc_map)
+
+        # Apply default 'Always' trigger
+        self.zst.apply_trigger(ZynqScopeTriggerAlways())
 
     def save_settings_temp(self):
         self.save_settings(TEMP_SETTING_FILE)

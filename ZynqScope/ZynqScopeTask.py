@@ -338,11 +338,11 @@ class ZynqScopeSubprocess(multiprocessing.Process):
 
         elif typ is ZynqScopeApplyTrigger:
             log.info("ZynqScopeApplyTrigger: applying trigger %r" % msg)
-            self.zs.trig_eng.set_config(msg)
+            self.zs.trig_eng.set_config(msg.trig)
 
         elif typ is ZynqScopeApplyADCMapping:
             log.info("ZynqScopeApplyADCMapping: applying ADC mapping %r" % msg)
-            self.zs.trig_eng.set_adc_mapping(msg)
+            self.zs.set_adc_mapping(msg.adc_map)
 
         else:
             if not isinstance(msg, ZynqScopeTaskQueueCommand):
@@ -544,7 +544,9 @@ class ZynqScopeTaskController(object):
             'ZynqScopeStopAutoAcquisition' : ZynqScopeStopAutoAcquisition(),
             'ZynqScopeRenderSetupTargetDimensions' : ZynqScopeRenderSetupTargetDimensions(0, 0),
             'ZynqScopeRenderChangeChannelColour' : ZynqScopeRenderChangeChannelColour(0, None),
-            'ZynqScopeRenderChangeChannelIntensity' : ZynqScopeRenderChangeChannelIntensity(0, 0)
+            'ZynqScopeRenderChangeChannelIntensity' : ZynqScopeRenderChangeChannelIntensity(0, 0),
+            'ZynqScopeApplyADCMapping' : ZynqScopeApplyADCMapping(None),
+            'ZynqScopeApplyTrigger' : ZynqScopeApplyTrigger(None)
         }
         
         # Cache for last fetched attributes
@@ -628,6 +630,16 @@ class ZynqScopeTaskController(object):
         cmd = self.roc['ZynqScopeRenderChangeChannelIntensity']
         cmd.ch = idx
         cmd.ints = intensity
+        self.evq.put(cmd)
+
+    def apply_adc_mapping(self, adc_map):
+        cmd = self.roc['ZynqScopeApplyADCMapping']
+        cmd.adc_map = adc_map
+        self.evq.put(cmd)
+
+    def apply_trigger(self, trig):
+        cmd = self.roc['ZynqScopeApplyTrigger']
+        cmd.trig = trig
         self.evq.put(cmd)
 
     def get_render_from_queue(self):

@@ -10,6 +10,7 @@ import Utils # from parent directory
 import ZynqScope.Standard4chAFE as AFE # For now, we import the standard 4ch AFE as the only supported AFE
 import ZynqScope.ZynqSPI, ZynqScope.ZynqCommands as zc
 import ZynqScope.ZynqScopeTrigger as zstrg
+import ZynqScope.ZynqScopeADCMapping as zsadcmap
 
 # Rawcam library
 import ZynqScope.pirawcam.rawcam as rawcam
@@ -202,6 +203,9 @@ class ZynqScope(object):
 
     # Current trigger engine
     trig_eng = zstrg.ZynqScopeTriggerManager()
+
+    # Current ADC mapping
+    adc_map = zsadcmap.ZynqScopeADCMapping()
     
     # Next timebase and current timebase
     next_tb = None
@@ -237,6 +241,9 @@ class ZynqScope(object):
         self.init_timebases()
         self.next_tb = self.timebase_settings[default_timebase]
 
+        # Connect trigger engine to us
+        self.trig_eng.connect(self)
+
         # Set IOs as inputs
         RPi.GPIO.setmode(RPi.GPIO.BCM)
         RPi.GPIO.setup(RASPI_PIN_SEND, RPi.GPIO.OUT)
@@ -249,6 +256,11 @@ class ZynqScope(object):
 
         # Instead of blindly returning True we should check that the hardware is ready first...
         return True
+
+    def set_adc_mapping(self, amap):
+        self.adc_map = amap
+        self.trig_eng.set_adc_mapping(self.adc_map)
+        self.trig_eng.refresh_for_adc_map_change()
 
     def rawcam_init(self):
         log.debug("ZynqScope rawcam_init(): setting up rawcam")

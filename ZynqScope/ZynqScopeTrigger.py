@@ -21,6 +21,10 @@ DEFAULT_CHANNEL_MAP = {
     'CH4': zc.TRIG_CH_ADCSRC4
 }
 
+# Load debug logger
+import logging
+log = logging.getLogger()
+
 class ZynqScopeTriggerSuperclass(object): 
     """Picklable superclass for the trigger configuration.  Designed to be passed
     via the multiprocessing queue."""
@@ -31,7 +35,7 @@ class ZynqScopeTriggerSuperclass(object):
     def get_name(self):
         return "UNDEFINED"
 
-    def get_parameters(self):
+    def get_supported_parameters(self):
         return self._params_types
 
     def set_parameter(self, key, value):
@@ -39,6 +43,9 @@ class ZynqScopeTriggerSuperclass(object):
             raise NotImplementedError("Parameter not supported")
         self._params_dict[key] = value
         self._validate_params()
+
+    def get_parameter(self, key):
+        return self._params_dict[key]
 
     def _validate_params(self):
         pass
@@ -70,12 +77,18 @@ class ZynqScopeTriggerEdge(ZynqScopeTriggerSuperclass):
                               'Hysteresis' : 'VoltageLevel',
                               'Edge'       : 'EdgeType'}
 
+        # Defaults
+        self.set_parameter('Level', 0.0)
+        self.set_parameter('Hysteresis', 0.0)
+        self.set_parameter('Channel', 'CH1')
+        self.set_parameter('Edge', 'RISE')
+
     def get_name(self):
-        return "SIMPLE_EDGE_TRIGGER"
+        return "EDGE_TRIGGER"
 
     def commit(self, zcmd, adc_map, chan_map):
-        level = self.adc_map.apply_map(self._params_dict['Level'], adc_mapping)
-        hyst = self.adc_map.apply_map(self._params_dict['Hysteresis'])
+        level = self.adc_map.apply_map_volt(self._params_dict['Level'])
+        hyst = self.adc_map.apply_map_volt_rel(self._params_dict['Hysteresis'])
         channel = self.chan_map[self._params_dict['Channel']]
 
         zcmd.setup_trigger_edge(channel, level, hyst, EDGE_TYPES[self._params_dict['EdgeType']])
@@ -94,21 +107,32 @@ class ZynqScopeTriggerManager(object):
         self.zs = None
         self.ch_map = [zc.TRIG_CH_ADCSRC1, zc.TRIG_CH_ADCSRC2, zc.TRIG_CH_ADCSRC3, zc.TRIG_CH_ADCSRC4]
         self.adc_map = None
+        self._last_config_obj = None
 
     def connect(self, zs):
+        log.info("ZynqScopeTriggerManager: connect(%r)" % zs)
         self.zs = zs
 
     def set_adc_mapping(self, mapping):
+        log.info("ZynqScopeTriggerManager: set_adc_mapping(%r)" % mapping)
+
         if not isinstance(mapping, zsadcmap.ZynqScopeADCMapping):
             raise RuntimeError("Unsupported alternative ADC mapping class, must be subclass of ZynqScopeADCMapping")
 
         self._adc_map = mapping
 
+    def refresh_for_adc_map_change(self):
+        log.info("ZynqScopeTriggerManager: refresh_for_adc_map_change()")
+        self.set_config(self._last_config_obj)
+
     def set_config(self, config_obj):
+        log.info("ZynqScopeTriggerManager: set_config(%r)" % config_obj)
+
         if self.adc_map is None:
             raise RuntimeError("ADC mapping not yet provided; how am I going to work this out?")
 
         if isinstance(config_obj, ZynqScopeTriggerSuperclass):
             raise NotImplementedError("Unsupported trigger, must be subclass of ZynqScopeTriggerSuperclass")
         else:
+            self._last_config_obj = config_obj
             config_obj.commit(self.zs.zcmd, self._adc_map, DEFAULT_CHANNEL_MAP)

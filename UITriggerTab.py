@@ -15,6 +15,8 @@ import Utils
 import UIController
 import CSSManager
 
+import ZynqScope.ZynqScopeTrigger as zstrig
+
 import os, copy
 
 import logging
@@ -64,12 +66,13 @@ def pack_channel_options(combo, channels, active):
 class TriggerContainerSuperclass(object): pass
 
 class AlwaysTriggerContainer(TriggerContainerSuperclass):
-    def __init__(self, root):
+    def __init__(self, root, trigger):
         self.name = _("Always Trigger")
         self.desc = _("Continuously generates a trigger")
         self.icon = "trigger_always.svg"
 
-        self.root = root
+        self.root = root_mgr
+        self.trigger = trigger
 
         self.bin = Gtk.Box()
         self.bin.pack_start(Gtk.Label(_("This trigger has no options")), False, False, 0)
@@ -85,12 +88,13 @@ class AlwaysTriggerContainer(TriggerContainerSuperclass):
         pass
 
 class EdgeTriggerContainer(TriggerContainerSuperclass):
-    def __init__(self, root):
+    def __init__(self, root, trigger):
         self.name = _("Edge Trigger")
         self.desc = _("Generates a trigger when the input signal rises and/or falls through a threshold")
         self.icon = "trigger_rising_edge.svg"
 
         self.root = root
+        self.trigger = trigger
 
         self.builder = Gtk.Builder()
         self.builder.add_from_file(EDGE_TRIGGER_LAYOUT_FILE)
@@ -125,11 +129,21 @@ class EdgeTriggerContainer(TriggerContainerSuperclass):
         channels = self.root.get_channels()
         pack_channel_options(self.cmb_trig_chan_sel, channels, 0)
 
+        channel = self.trigger.get_parameter('Channel')
+        level = self.trigger.get_parameter('Level')
+        hyst = self.trigger.get_parameter('Hysteresis')
+        edge = self.trigger.get_parameter('Edge')
+
     def get_embedded_container(self):
         return self.vbox
 
 supported_triggers = [
     AlwaysTriggerContainer, EdgeTriggerContainer
+]
+
+zynq_trigger_mapping = [
+    zstrig.ZynqScopeTriggerAlways, 
+    zstrig.ZynqScopeTriggerEdge
 ]
 
 class TriggerTab(object):
@@ -175,8 +189,8 @@ class TriggerTab(object):
         self.inner_tabs = []
         row = 0
 
-        for trig in supported_triggers:
-            obj = trig(self)
+        for idx, trig in enumerate(supported_triggers):
+            obj = trig(self, zynq_trigger_mapping[idx])
             log.info("Initialising trigger option: %r" % obj)
 
             img = Gtk.Image()
