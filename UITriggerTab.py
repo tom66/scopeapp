@@ -82,11 +82,11 @@ class EdgeTriggerContainer(TriggerContainerSuperclass):
         Utils.set_svg_image(self.img_both, os.path.join(self.root.cfgmgr.Theme.resourcedir, ICON_BOTH_EDGE), self.root.cfgmgr.Theme.TriggerSubIconSize)
         Utils.set_svg_image(self.img_rise, os.path.join(self.root.cfgmgr.Theme.resourcedir, ICON_RISE_EDGE), self.root.cfgmgr.Theme.TriggerSubIconSize)
 
-        self.cmb_channel_select = self.builder.get_object("cmb_channel_select")
+        self.refresh_ui()
 
     def refresh_ui(self):
         channels = self.root.get_channels()
-        self.cmb_chan_label = self.builder.get_object("cmb_trig_chan_sel")
+        self.cmb_trig_chan_sel = self.builder.get_object("cmb_trig_chan_sel")
         
         # Create the TreeModel for the channel name options
         col_cell_text_long = Gtk.CellRendererText()
@@ -104,11 +104,12 @@ class EdgeTriggerContainer(TriggerContainerSuperclass):
         for ch in channels:
             sub_tree = tree_store.append(None, ["", ch.get_display_name()])
         
-        self.cmb_chan_label.set_model(tree_store)
-        self.cmb_chan_label.pack_start(col_cell_text_long, True)
-        self.cmb_chan_label.add_attribute(col_cell_text_long, "text", 0)
-        self.cmb_chan_label.set_active(0)
-        self.cmb_chan_label.connect("changed", self._cmb_chan_label_changed)
+        self.cmb_trig_chan_sel.set_model(tree_store)
+        self.cmb_trig_chan_sel.pack_start(col_cell_text_long, True)
+        self.cmb_trig_chan_sel.add_attribute(col_cell_text_long, "text", 0)
+        self.cmb_trig_chan_sel.set_active(0)
+        #self.cmb_trig_chan_sel.connect("changed", self._cmb_chan_label_changed)
+        self.cmb_trig_chan_sel.show_all()
 
     def get_embedded_container(self):
         return self.vbox
