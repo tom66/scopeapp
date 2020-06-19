@@ -142,7 +142,7 @@ class EdgeTriggerContainer(TriggerContainerSuperclass):
         self.btn_trig_lvl_dn = self.builder.get_object("btn_trig_lvl_dn")
 
         self.btn_trig_lvl_up.connect("clicked", self._btn_trig_lvl_up_clicked)
-        self.btn_trig_lvl_up.connect("clicked", self._btn_trig_lvl_dn_clicked)
+        self.btn_trig_lvl_dn.connect("clicked", self._btn_trig_lvl_dn_clicked)
 
         Utils.set_svg_image(self.img_fall, os.path.join(self.root.cfgmgr.Theme.resourcedir, ICON_FALL_EDGE), self.root.cfgmgr.Theme.TriggerSubIconSize)
         Utils.set_svg_image(self.img_both, os.path.join(self.root.cfgmgr.Theme.resourcedir, ICON_BOTH_EDGE), self.root.cfgmgr.Theme.TriggerSubIconSize)
@@ -153,6 +153,8 @@ class EdgeTriggerContainer(TriggerContainerSuperclass):
     @user_exception_handler
     def adjust_level(self, amount):
         level = self.trigger.get_parameter('Level')
+        log.info("Trigger Adjust Level: %.2f Incr: %.2f" % (level, amount))
+
         level += amount
         clamp_range = self.root.get_adc_valid_range()
         clamp_level = Utils.clamp(level, clamp_range[0], clamp_range[1])
