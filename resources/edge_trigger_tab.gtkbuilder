@@ -82,8 +82,8 @@
             <property name="column_spacing">10</property>
             <property name="column_homogeneous">True</property>
             <child>
-              <object class="GtkButton" id="btn_trig_lvl_down">
-                <property name="name">btn_trig_lvl_down</property>
+              <object class="GtkButton" id="btn_trig_lvl_dn">
+                <property name="name">btn_trig_lvl_dn</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>

@@ -24,6 +24,18 @@ class ZynqScopeADCMapping(object):
         self.full_adc = full_adc
         self.adc_range = adc_range
 
+    def get_volt_limits(self):
+        return (self.zero_adc, self.full_adc)
+
+    def get_volt_limits_scaled(self, scale=1.0):
+        return (self.zero_adc * scale, self.full_adc * scale)
+
+    def get_volt_span(self):
+        return (self.full_adc - self.zero_adc)
+
+    def get_volt_span_scaled(self, scale=1.0):
+        return (self.full_adc - self.zero_adc) * scale
+
     def apply_map_adc(self, code):
         """Compute voltage from an ADC code 0x00 ~ adc_range.  Codes out of range 
         raise a ValueError."""

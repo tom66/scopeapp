@@ -63,7 +63,17 @@ def pack_channel_options(combo, channels, active):
     #self.cmb_trig_chan_sel.connect("changed", self._cmb_chan_label_changed)
     combo.show_all()
 
-class TriggerContainerSuperclass(object): pass
+class TriggerContainerSuperclass(object): 
+    def __user_exception_handler(func):
+        def wrapper(self, *args):
+            try:
+                return func(self, *args)
+            except Utils.UserRequestError as e:
+                # Pass the higher-order exception back to the application root manager
+                self.root.root_mgr._user_exception(e)
+                return True # stop events being duplicated
+        
+        return wrapper
 
 class AlwaysTriggerContainer(TriggerContainerSuperclass):
     def __init__(self, root, trigger_class):
@@ -123,11 +133,38 @@ class EdgeTriggerContainer(TriggerContainerSuperclass):
         self.btn_both_ctx = self.btn_both.get_style_context()
         self.btn_rise_ctx = self.btn_rise.get_style_context()
 
+        self.lbl_trig_lvl = self.builder.get_object("lbl_trig_lvl")
+        self.scl_hysteresis = self.builder.get_object("scl_hysteresis")
+
+        self.btn_trig_lvl_up = self.builder.get_object("btn_trig_lvl_up")
+        self.btn_trig_lvl_dn = self.builder.get_object("btn_trig_lvl_dn")
+
+        self.btn_trig_lvl_up.connect("clicked", self._btn_trig_lvl_up_clicked)
+        self.btn_trig_lvl_up.connect("clicked", self._btn_trig_lvl_dn_clicked)
+
         Utils.set_svg_image(self.img_fall, os.path.join(self.root.cfgmgr.Theme.resourcedir, ICON_FALL_EDGE), self.root.cfgmgr.Theme.TriggerSubIconSize)
         Utils.set_svg_image(self.img_both, os.path.join(self.root.cfgmgr.Theme.resourcedir, ICON_BOTH_EDGE), self.root.cfgmgr.Theme.TriggerSubIconSize)
         Utils.set_svg_image(self.img_rise, os.path.join(self.root.cfgmgr.Theme.resourcedir, ICON_RISE_EDGE), self.root.cfgmgr.Theme.TriggerSubIconSize)
 
         self.refresh_ui()
+
+    @__user_exception_handler
+    def adjust_level(self, amount):
+        level = self.trigger.get_parameter('Level')
+        level += amount
+        clamp_range = self.root.get_adc_valid_range()
+        clamp_level = Utils.clamp(level, clamp_range[0], clamp_range[1])
+
+        if clamp_level != level:
+            raise Utils.UserRequestError(_("Trigger level at limit"))
+
+        self.trigger.set_parameter('Level', level)
+
+    def _btn_trig_lvl_up_clicked(self, *args):
+        self.adjust_level(+self.ctrl.get_adc_minor_increment())
+        
+    def _btn_trig_lvl_dn_clicked(self, *args):
+        self.adjust_level(-self.ctrl.get_adc_minor_increment())
 
     def refresh_ui(self):
         channels = self.root.get_channels()
@@ -154,6 +191,8 @@ class EdgeTriggerContainer(TriggerContainerSuperclass):
         elif edge == 'FALL':
             self.btn_fall_ctx.add_class("button_on")
             self.btn_fall_ctx.remove_class("button_off")
+
+        self.lbl_trig_lvl.set_markup(channels[channel].get_unit().unit_format(level * channels[channel].get_probe_gain()))
 
     def get_embedded_container(self):
         return self.vbox
@@ -333,3 +372,8 @@ class TriggerTab(object):
     def get_embedded_container(self):
         return self.vbox
 
+    def get_adc_valid_range(self, chidx):
+        return self.root_mgr.ctrl.get_adc_volt_limits()
+
+    def get_adc_minor_increment(self):
+        return self.root_mgr.ctrl.get_adc_volt_span() / self.cfgmgr.UI.StepsIncrementVoltages

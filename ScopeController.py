@@ -539,6 +539,21 @@ class ScopeController(object):
         # Apply default 'Always' trigger
         #self.zst.apply_trigger(ZynqScopeTriggerAlways())
 
+    def get_adc_mapping(self):
+        return self.adc_map
+
+    def get_adc_volt_limits(self):
+        return self.adc_map.get_volt_limits()
+
+    def get_adc_volt_limits_mapped_to_channel(self, chidx):
+        return self.adc_map.get_volt_limits_scaled(self.channels[chidx].probe_multiplier)
+
+    def get_adc_volt_span(self):
+        return self.adc_map.get_volt_span()
+
+    def get_adc_volt_span_mapped_to_channel(self, chidx):
+        return self.adc_map.get_volt_span_scaled(self.channels[chidx].probe_multiplier)
+
     def save_settings_temp(self):
         self.save_settings(TEMP_SETTING_FILE)
         
