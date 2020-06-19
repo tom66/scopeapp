@@ -72,7 +72,7 @@ class ZynqScopeTriggerAlways(ZynqScopeTriggerSuperclass):
         return "ALWAYS_TRIGGER"
 
     def get_commit_sequence(self, adc_map, chan_map):
-        return [('setup_trigger_always')]
+        return [('setup_trigger_always', ())]
 
     def __repr__(self):
         return "<AlwaysTrigger>"
@@ -149,5 +149,13 @@ class ZynqScopeTriggerManager(object):
             raise NotImplementedError("Unsupported trigger, must be subclass of ZynqScopeTriggerSuperclass")
         else:
             self._last_config_obj = config_obj
+
+            # We need to do this in this way because the config_obj might be in another process and have
+            # no visibility over the SpiDev object
             seq = config_obj.get_commit_sequence(self._adc_map, DEFAULT_CHANNEL_MAP)
+
+            for entry in seq:
+                log.debug("Trigger commit: %s (%r)" % (entry[0], entry[1]))
+                getattr(self.zs.zcmd, entry[0])(*entry[1])
+
             log.info(repr(seq))
