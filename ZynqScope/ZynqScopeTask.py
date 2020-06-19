@@ -291,8 +291,8 @@ class ZynqScopeSubprocess(multiprocessing.Process):
             
         elif typ is ZynqScopeGetAcqStatus:
             # Enquire scope acquisition status.  Returns a ZynqAcqStatus object.
-            self.rsq.put(resp)
             resp = self.zs.zcmd.acq_status()
+            self.rsq.put(resp)
             
         elif typ is ZynqScopeGetAttributes:
             # Return a safed object copy of all scope parameters which can be accessed
@@ -590,6 +590,7 @@ class ZynqScopeTaskController(object):
         self.evq.put(cmd)
     
     def setup_trigger_edge(self, ch, level, hyst, edge):
+        # OBSOLETE
         self.evq.put(ZynqScopeCmdsIfcSimpleCommand("setup_trigger_edge", True, (ch, level, hyst, edge)))
     
     def stop_acquisition(self):
@@ -639,9 +640,11 @@ class ZynqScopeTaskController(object):
         self.evq.put(cmd)
 
     def apply_trigger(self, trig):
+        log.info("Packing ZynqScopeApplyTrigger")
         cmd = self.roc['ZynqScopeApplyTrigger']
         cmd.trig = trig
         self.evq.put(cmd)
+        log.info("Done!")
 
     def get_render_from_queue(self):
         """Get a render from the queue; acquire it and return it. Raises ZynqScopeRenderQueueEmpty 
