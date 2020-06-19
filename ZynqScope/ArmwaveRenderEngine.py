@@ -187,7 +187,7 @@ class ArmwaveRenderEngine(zs.BaseRenderEngine):
         log.info("TC: %.1f" % ((t1 - t0) * 1000))
 
         # Close the mmap.  We're done working with it.
-        #mmap_obj.close()
+        mmap_obj.close()
 
         # Release the working shm.  Swap buffers.
         working = self._shm_working_index
