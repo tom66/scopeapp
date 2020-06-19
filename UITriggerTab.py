@@ -100,13 +100,14 @@ class AlwaysTriggerContainer(TriggerContainerSuperclass):
         pass
 
 class EdgeTriggerContainer(TriggerContainerSuperclass):
-    def __init__(self, root, trigger_class):
+    def __init__(self, root, trigger_class, change_cb):
         self.name = _("Edge Trigger")
         self.desc = _("Generates a trigger when the input signal rises and/or falls through a threshold")
         self.icon = "trigger_rising_edge.svg"
 
         self.root = root
         self.trigger = trigger_class()
+        self.change_callback = change_cb
 
         self.builder = Gtk.Builder()
         self.builder.add_from_file(EDGE_TRIGGER_LAYOUT_FILE)
@@ -173,17 +174,21 @@ class EdgeTriggerContainer(TriggerContainerSuperclass):
             raise Utils.UserRequestError(_("Trigger level at limit"))
 
         self.trigger.set_parameter('Level', level)
+        self.change_callback('trigger-level', self.trigger)
 
     def _btn_fall_clicked(self, *args):
         self.trigger.set_parameter('Edge', 'FALL')
+        self.change_callback('trigger-edge', self.trigger)
         self.refresh_ui()
 
     def _btn_both_clicked(self, *args):
         self.trigger.set_parameter('Edge', 'BOTH')
+        self.change_callback('trigger-edge', self.trigger)
         self.refresh_ui()
 
     def _btn_rise_clicked(self, *args):
         self.trigger.set_parameter('Edge', 'RISE')
+        self.change_callback('trigger-edge', self.trigger)
         self.refresh_ui()
 
     def _btn_trig_lvl_up_clicked(self, *args):
@@ -197,6 +202,7 @@ class EdgeTriggerContainer(TriggerContainerSuperclass):
     def _scl_hysteresis_change(self, *args):
         value = self.scl_hysteresis.get_value()
         self.trigger.set_parameter('Hysteresis', value)
+        self.change_callback('trigger-hyst', self.trigger)
         self.refresh_ui()
 
     def refresh_ui(self):
@@ -226,7 +232,7 @@ class EdgeTriggerContainer(TriggerContainerSuperclass):
             self.btn_fall_ctx.remove_class("button_off")
 
         self.lbl_trig_lvl.set_markup(channels[channel][1].get_unit().unit_format(level * channels[channel][1].get_probe_gain()))
-        self.lbl_trig_hyst.set_markup("&#8723;" + channels[channel][1].get_unit().unit_format(hyst * 0.5 * channels[channel][1].get_probe_gain()))
+        self.lbl_trig_hyst.set_markup("&#177;" + channels[channel][1].get_unit().unit_format(hyst * 0.5 * channels[channel][1].get_probe_gain()))
 
     def get_embedded_container(self):
         return self.vbox
@@ -412,3 +418,10 @@ class TriggerTab(object):
     def get_adc_minor_increment(self):
         # We need a better way to do this
         return self.cfgmgr.UI.StepsIncrementVoltageAmount
+
+    def change_notifier(self, param, obj=None):
+        log.debug("trigger_change_notifier: %s" % param)
+        
+        # Sync for timebase and delay changes
+        if param.startswith("trigger"):
+            self.root_mgr.apply_trigger(param, obj)
