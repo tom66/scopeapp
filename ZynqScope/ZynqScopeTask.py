@@ -499,7 +499,7 @@ class ZynqScopeSubprocess(multiprocessing.Process):
                             #log.info("Try to render ...")
                             self.do_render(resp)
                             td = time.time() - self.time_last_acq
-                            log.info("Last render %.2f ms, effective frame rate %.1f fps" % (td * 1000, 1.0 / td))
+                            log.info("Last render %.2f ms, effective frame rate %.1f fps (%d waves/sec)" % (td * 1000, 1.0 / td, (1.0 / td) * self.zs.params.nwaves))
                             self.time_last_acq = time.time()
                             #log.info("Done render")
 
