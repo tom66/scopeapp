@@ -101,9 +101,9 @@ class ZynqScopeTriggerEdge(ZynqScopeTriggerSuperclass):
         return "EDGE_TRIGGER"
 
     def commit(self, zcmd, adc_map, chan_map):
-        level = self.adc_map.apply_map_volt(self.params_dict['Level'])
-        hyst = self.adc_map.apply_map_volt_rel(self.params_dict['Hysteresis'])
-        channel = self.chan_map[self.params_dict['Channel']]
+        level = adc_map.apply_map_volt(self.params_dict['Level'])
+        hyst = adc_map.apply_map_volt_rel(self.params_dict['Hysteresis'])
+        channel = chan_map[self.params_dict['Channel']]
 
         zcmd.setup_trigger_edge(channel, level, hyst, EDGE_TYPES[self.params_dict['EdgeType']])
 
@@ -120,7 +120,7 @@ class ZynqScopeTriggerManager(object):
     def __init__(self):
         self.zs = None
         self.ch_map = [zc.TRIG_CH_ADCSRC1, zc.TRIG_CH_ADCSRC2, zc.TRIG_CH_ADCSRC3, zc.TRIG_CH_ADCSRC4]
-        self.adc_map = None
+        self._adc_map = None
         self._last_config_obj = None
 
     def connect(self, zs):
@@ -142,7 +142,7 @@ class ZynqScopeTriggerManager(object):
     def set_config(self, config_obj):
         log.info("ZynqScopeTriggerManager: set_config(%r)" % config_obj)
 
-        if self.adc_map is None:
+        if self._adc_map is None:
             raise RuntimeError("ADC mapping not yet provided; how am I going to work this out?")
 
         if isinstance(config_obj, ZynqScopeTriggerSuperclass):
