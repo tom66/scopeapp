@@ -272,7 +272,7 @@ class ZynqScope(object):
 
     def set_adc_mapping(self, amap):
         self.adc_map = amap
-        if self.trig_end != None:
+        if self.trig_eng != None:
             self.trig_eng.set_adc_mapping(self.adc_map)
             self.trig_eng.refresh_for_adc_map_change()
 
