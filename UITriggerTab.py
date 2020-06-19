@@ -102,7 +102,7 @@ class EdgeTriggerContainer(TriggerContainerSuperclass):
         tree_store = Gtk.TreeStore(GObject.TYPE_STRING)
         
         for ch in channels:
-            sub_tree = tree_store.append(None, ["", ch[1].get_display_name()])
+            sub_tree = tree_store.append(None, [ch[1].get_display_name()])
         
         self.cmb_trig_chan_sel.set_model(tree_store)
         self.cmb_trig_chan_sel.pack_start(col_cell_text_long, True)
