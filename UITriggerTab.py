@@ -118,6 +118,7 @@ class EdgeTriggerContainer(TriggerContainerSuperclass):
         self.vbox.set_halign(Gtk.Align.FILL)
 
         self.lbl_trig_lvl = self.builder.get_object("lbl_trig_lvl")
+        self.lbl_trig_hyst = self.builder.get_object("lbl_trig_hyst")
         
         self.img_fall = Gtk.Image()
         self.img_both = Gtk.Image()
