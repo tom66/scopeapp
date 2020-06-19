@@ -71,7 +71,7 @@ class AlwaysTriggerContainer(TriggerContainerSuperclass):
         self.desc = _("Continuously generates a trigger")
         self.icon = "trigger_always.svg"
 
-        self.root = root_mgr
+        self.root = root
         self.trigger = trigger
 
         self.bin = Gtk.Box()
