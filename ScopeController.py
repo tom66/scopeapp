@@ -536,7 +536,7 @@ class ScopeController(object):
         self.zst.apply_adc_mapping(self.adc_map)
 
         # Apply default 'Always' trigger
-        self.zst.apply_trigger(ZynqScopeTriggerAlways())
+        #self.zst.apply_trigger(ZynqScopeTriggerAlways())
 
     def save_settings_temp(self):
         self.save_settings(TEMP_SETTING_FILE)
