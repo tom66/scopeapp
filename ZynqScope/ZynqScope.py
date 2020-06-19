@@ -251,11 +251,16 @@ class ZynqScope(object):
 
         # Connect trigger engine to us.  Start with a default ADC mapping.
         log.debug("ZynqScope connect(): connecting trigger, loading default ADC mapping")
-        pickle.dumps(self)
+
         log.debug("pickles() 1")
-        self.trig_eng = zstrg.ZynqScopeTriggerManager()
         pickle.dumps(self)
+
+        self.trig_eng = zstrg.ZynqScopeTriggerManager()
+
         log.debug("pickles() 2")
+        pickle.dumps(self)
+
+        log.debug("pickles() done")
 
         print(dir(self.trig_eng))
         self.trig_eng.connect_execute_cb(self.zcmd_execute_cb)
