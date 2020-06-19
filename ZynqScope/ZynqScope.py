@@ -249,9 +249,11 @@ class ZynqScope(object):
         RPi.GPIO.add_event_detect(RASPI_PIN_PKT_READY, RPi.GPIO.RISING, callback=self.gpio_irq_pkt_ready)
         self.zynq_stop_ready()
 
-        # Connect trigger engine to us
-        log.debug("ZynqScope connect(): connecting trigger")
+        # Connect trigger engine to us.  Start with a default ADC mapping.
+        log.debug("ZynqScope connect(): connecting trigger, loading default ADC mapping")
         self.trig_eng.connect(self)
+        self.adc_map.set_mapping(-1, +1, 255)
+        self.trig_eng.set_adc_mapping(self.adc_map)
         self.trig_eng.set_config(zstrg.ZynqScopeTriggerEdge())
 
         # Ensure AcqCtrl is reset...
