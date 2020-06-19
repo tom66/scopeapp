@@ -212,10 +212,11 @@ class ZynqScopeSubprocess(multiprocessing.Process):
 
         self.acq_state = TSTATE_ACQ_IDLE
         self.shared_dict['running_state'] = ACQSTATE_STOPPED
+        self.shared_dict['connected'] = False
         self.shared_dict['render_to_mmap'] = False
         self.shared_dict['mmap_display'] = None
         self.shared_dict['params'] = zs.ZynqScopeCurrentParameters()
-        self.shared_dict['timebase_settings'] = []
+        self.shared_dict['timebase_settings'] = [None]
 
         self.stats.num_waves_sent = 0
         
@@ -250,7 +251,9 @@ class ZynqScopeSubprocess(multiprocessing.Process):
                     self.state = STATE_ZYNQ_IDLE
                 else:
                     raise RuntimeError("Unable to connect hardware resources")
+
                 self.shared_dict['timebase_settings'] = self.zs.timebase_settings
+                self.shared_dict['connected'] = True
                 
             elif self.state == STATE_ZYNQ_IDLE:
                 # Process any commands in the queue

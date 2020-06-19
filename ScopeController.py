@@ -527,6 +527,15 @@ class ScopeController(object):
 
         self.zst = zst.ZynqScopeTaskController((self.display_samples_target, self.default_hdiv_span))
         self.zst.start_task()
+
+        # Wait for task to start
+        log.debug("Waiting for controller task to start")
+        t0 = time.time()
+        
+        while not self.zst.shared_dict['connected']:
+            if (time.time() - t0) > 10.0:
+                raise RuntimeError("Timeout: task did not start in time")
+
         self.timebase = ScopeTimebaseController(self.zst)
         self.timebase.set_change_notifier(self.change_notifier)
         self.arena = ScopeArena.ScopeArenaController(self, self.root_mgr.cfgmgr)
