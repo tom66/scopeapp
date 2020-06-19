@@ -290,7 +290,7 @@ class TriggerTab(object):
         row = 0
 
         for idx, trig in enumerate(supported_triggers):
-            obj = trig(self, zynq_trigger_mapping[idx])
+            obj = trig(self, zynq_trigger_mapping[idx], self.change_notifier)
             log.info("Initialising trigger option: %r" % obj)
 
             img = Gtk.Image()
