@@ -7,7 +7,7 @@ gettext.bindtextdomain('yaosapp', '/lang')
 gettext.textdomain('yaosapp')
 _ = gettext.gettext
 
-import colorsys, math, json, logging
+import colorsys, math, json, logging, time
 import Utils
 
 import ZynqScope.ZynqScopeTask as zst
@@ -531,7 +531,7 @@ class ScopeController(object):
         # Wait for task to start
         log.debug("Waiting for controller task to start")
         t0 = time.time()
-        
+
         while not self.zst.shared_dict['connected']:
             if (time.time() - t0) > 10.0:
                 raise RuntimeError("Timeout: task did not start in time")
