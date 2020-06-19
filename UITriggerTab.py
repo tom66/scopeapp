@@ -119,6 +119,10 @@ class EdgeTriggerContainer(TriggerContainerSuperclass):
         self.btn_both.add(self.img_both)
         self.btn_rise.add(self.img_rise)
 
+        self.btn_fall_ctx = self.btn_fall.get_style_context()
+        self.btn_both_ctx = self.btn_both.get_style_context()
+        self.btn_rise_ctx = self.btn_rise.get_style_context()
+
         Utils.set_svg_image(self.img_fall, os.path.join(self.root.cfgmgr.Theme.resourcedir, ICON_FALL_EDGE), self.root.cfgmgr.Theme.TriggerSubIconSize)
         Utils.set_svg_image(self.img_both, os.path.join(self.root.cfgmgr.Theme.resourcedir, ICON_BOTH_EDGE), self.root.cfgmgr.Theme.TriggerSubIconSize)
         Utils.set_svg_image(self.img_rise, os.path.join(self.root.cfgmgr.Theme.resourcedir, ICON_RISE_EDGE), self.root.cfgmgr.Theme.TriggerSubIconSize)
@@ -133,6 +137,23 @@ class EdgeTriggerContainer(TriggerContainerSuperclass):
         level = self.trigger.get_parameter('Level')
         hyst = self.trigger.get_parameter('Hysteresis')
         edge = self.trigger.get_parameter('Edge')
+
+        self.btn_rise_ctx.remove_class("button_on")
+        self.btn_both_ctx.remove_class("button_on")
+        self.btn_fall_ctx.remove_class("button_on")
+        self.btn_rise_ctx.add_class("button_off")
+        self.btn_both_ctx.add_class("button_off")
+        self.btn_fall_ctx.add_class("button_off")
+
+        if edge == 'RISE':
+            self.btn_rise_ctx.add_class("button_on")
+            self.btn_rise_ctx.remove_class("button_off")
+        elif edge == 'BOTH':
+            self.btn_both_ctx.add_class("button_on")
+            self.btn_both_ctx.remove_class("button_off")
+        elif edge == 'FALL':
+            self.btn_fall_ctx.add_class("button_on")
+            self.btn_fall_ctx.remove_class("button_off")
 
     def get_embedded_container(self):
         return self.vbox
