@@ -80,6 +80,9 @@ class AlwaysTriggerContainer(TriggerContainerSuperclass):
     def get_embedded_container(self):
         return self.bin
 
+    def refresh_ui(self):
+        pass
+
 class EdgeTriggerContainer(TriggerContainerSuperclass):
     def __init__(self, root):
         self.name = _("Edge Trigger")
