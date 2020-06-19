@@ -531,16 +531,16 @@ class ScopeController(object):
         self.timebase.set_change_notifier(self.change_notifier)
         self.arena = ScopeArena.ScopeArenaController(self, self.root_mgr.cfgmgr)
 
+        # Setup trigger manager
+        log.debug("ScopeController.connect() - initialising trigger manager")
+        self.zst.init_trigger()
+
         # Apply default ADC mapping.  This will need to change in future with real AFE
         log.debug("ScopeController.connect() - setting default ADC mapping and trigger")
-
         self.adc_map = zsadcmap.ZynqScopeADCMapping()
         self.adc_map.set_mapping(-11.0, +11.0, 0xff)
         log.info("ADCMapping: %r" % self.adc_map)
         self.zst.apply_adc_mapping(self.adc_map)
-
-        # Setup trigger manager
-        self.zst.init_trigger()
 
         # Apply default 'Always' trigger
         #self.zst.apply_trigger(zstrig.ZynqScopeTriggerAlways())
