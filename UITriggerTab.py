@@ -197,6 +197,7 @@ class EdgeTriggerContainer(TriggerContainerSuperclass):
     def _scl_hysteresis_change(self, *args):
         value = self.scl_hysteresis.get_value()
         self.trigger.set_parameter('Hysteresis', value)
+        self.refresh_ui()
 
     def refresh_ui(self):
         channels = self.root.get_channels()
