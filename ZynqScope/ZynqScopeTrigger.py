@@ -71,7 +71,7 @@ class ZynqScopeTriggerAlways(ZynqScopeTriggerSuperclass):
     def get_name(self):
         return "ALWAYS_TRIGGER"
 
-    def get_commit_sequence(self, zcmd, adc_map, chan_map):
+    def get_commit_sequence(self, adc_map, chan_map):
         return [('setup_trigger_always')]
 
     def __repr__(self):
@@ -100,7 +100,7 @@ class ZynqScopeTriggerEdge(ZynqScopeTriggerSuperclass):
     def get_name(self):
         return "EDGE_TRIGGER"
 
-    def get_commit_sequence(self, zcmd, adc_map, chan_map):
+    def get_commit_sequence(self, adc_map, chan_map):
         level = adc_map.apply_map_volt(self.params_dict['Level'])
         hyst = adc_map.apply_map_volt_rel(self.params_dict['Hysteresis'])
         channel = chan_map[self.params_dict['Channel']]
@@ -149,5 +149,5 @@ class ZynqScopeTriggerManager(object):
             raise NotImplementedError("Unsupported trigger, must be subclass of ZynqScopeTriggerSuperclass")
         else:
             self._last_config_obj = config_obj
-            seq = config_obj.get_commit_sequence(self.zs.zcmd, self._adc_map, DEFAULT_CHANNEL_MAP)
+            seq = config_obj.get_commit_sequence(self._adc_map, DEFAULT_CHANNEL_MAP)
             log.info(repr(seq))
