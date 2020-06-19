@@ -123,9 +123,9 @@ class ZynqScopeTriggerManager(object):
         self._adc_map = None
         self._last_config_obj = None
 
-    def connect(self, zcmd):
-        log.info("ZynqScopeTriggerManager: connect(%r)" % zcmd)
-        self.zcmd = zcmd
+    def connect_execute_cb(self, cb):
+        log.info("ZynqScopeTriggerManager: connect_execute_cb(%r)" % cb)
+        self.cb = cb
 
     def set_adc_mapping(self, mapping):
         log.info("ZynqScopeTriggerManager: set_adc_mapping(%r)" % mapping)
@@ -155,7 +155,6 @@ class ZynqScopeTriggerManager(object):
             seq = config_obj.get_commit_sequence(self._adc_map, DEFAULT_CHANNEL_MAP)
 
             for entry in seq:
-                log.debug("Trigger commit: %s (%r)" % (entry[0], entry[1]))
-                getattr(self.zcmd, entry[0])(*entry[1])
+                self.cb(entry[0], entry[1]) # getattr(self.zcmd, entry[0])(*entry[1])
 
             log.info(repr(seq))
