@@ -263,7 +263,7 @@ class ZynqScope(object):
         # Instead of blindly returning True we should check that the hardware is ready first...
         return True
 
-    def zcmd_execute_cb(self, func, args)
+    def zcmd_execute_cb(self, func, args):
         log.debug("Trigger commit: %s (%r)" % (func, args)):
         getattr(self.zcmd, func)(*args)
 
