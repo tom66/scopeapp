@@ -12,6 +12,7 @@ import Utils
 
 import ZynqScope.ZynqScopeTask as zst
 import ZynqScope.ZynqScopeGlobals as zsgl
+import ZynqScope.ZynqScopeADCMapping as zsadcmap
 
 import ScopeArena
 
@@ -532,12 +533,13 @@ class ScopeController(object):
         # Apply default ADC mapping.  This will need to change in future with real AFE
         log.debug("ScopeController.connect() - setting default ADC mapping and trigger")
 
-        #self.adc_map.set_mapping(-9.0, +9.0, 0xff)
-        #log.info("ADCMapping: %r" % self.adc_map)
-        #self.zst.apply_adc_mapping(self.adc_map)
+        self.adc_map = zsadcmap.ZynqScopeADCMapping()
+        self.adc_map.set_mapping(-9.0, +9.0, 0xff)
+        log.info("ADCMapping: %r" % self.adc_map)
+        self.zst.apply_adc_mapping(self.adc_map)
 
         # Apply default 'Always' trigger
-        #self.zst.apply_trigger(ZynqScopeTriggerAlways())
+        self.zst.apply_trigger(ZynqScopeTriggerAlways())
 
     def get_adc_mapping(self):
         return self.adc_map
