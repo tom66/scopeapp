@@ -253,7 +253,7 @@ class ZynqScope(object):
         log.debug("ZynqScope connect(): connecting trigger, loading default ADC mapping")
         self.trig_eng = zstrg.ZynqScopeTriggerManager()
         print(dir(self.trig_eng))
-        pass#self.trig_eng.connect_execute_cb(self.zcmd_execute_cb)
+        self.trig_eng.connect_execute_cb(self.zcmd_execute_cb)
         self.adc_map = zsadcmap.ZynqScopeADCMapping()
         self.adc_map.set_mapping(-1, +1, 255)
         self.trig_eng.set_adc_mapping(self.adc_map)
