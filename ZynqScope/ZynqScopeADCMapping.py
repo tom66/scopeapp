@@ -2,6 +2,8 @@
 This file is part of YAOS and is licenced under the MIT Licence.
 """
 
+import sys
+
 sys.path.append('..')
 import Utils # from parent directory
 
