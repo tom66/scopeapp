@@ -167,7 +167,7 @@ class ArmwaveRenderEngine(zs.BaseRenderEngine):
 
         aw.clear_buffer(0)
         aw.set_wave_pointer_u32(mmal_data_ptr)
-        #aw.generate()
+        aw.generate()
 
         #log.info("start fill into pixbuf")
 
