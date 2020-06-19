@@ -250,8 +250,11 @@ class ZynqScope(object):
         self.zynq_stop_ready()
 
         # Connect trigger engine to us.  Start with a default ADC mapping.
+        def zcmd_execute_cb(func, args):
+            pass
+            
         log.debug("ZynqScope connect(): connecting trigger, loading default ADC mapping")
-        self.trig_eng.connect_execute_cb(self.zcmd_execute_cb)
+        self.trig_eng.connect_execute_cb(zcmd_execute_cb)
         self.adc_map.set_mapping(-1, +1, 255)
         self.trig_eng.set_adc_mapping(self.adc_map)
         self.trig_eng.set_config(zstrg.ZynqScopeTriggerEdge())
