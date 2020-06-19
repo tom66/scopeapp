@@ -425,4 +425,4 @@ class TriggerTab(object):
         
         # Sync for timebase and delay changes
         if param.startswith("trigger"):
-            self.root_mgr.apply_trigger(param, obj)
+            self.root_mgr.ctrl.apply_trigger(param, obj)
