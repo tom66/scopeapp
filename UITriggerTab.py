@@ -29,7 +29,7 @@ ICON_RISE_EDGE = "trigger_rising_edge.svg"
 ICON_FALL_EDGE = "trigger_falling_edge.svg"
 ICON_BOTH_EDGE = "trigger_either_edge.svg"
 
-def pack_channel_options(combo, channels, active, css_manager):
+def pack_channel_options(combo, channels, active):
     # Create the TreeModel for the channel name options
     col_cell_text_short = Gtk.CellRendererText()
     col_name = Gtk.TreeViewColumn(_("Name"))
@@ -104,6 +104,8 @@ class EdgeTriggerContainer(TriggerContainerSuperclass):
         self.btn_fall = self.builder.get_object("btn_edge_fall")
         self.btn_both = self.builder.get_object("btn_edge_both")
         self.btn_rise = self.builder.get_object("btn_edge_rise")
+        
+        self.cmb_trig_chan_sel = self.builder.get_object("cmb_trig_chan_sel")
 
         self.btn_fall.add(self.img_fall)
         self.btn_both.add(self.img_both)
@@ -117,9 +119,7 @@ class EdgeTriggerContainer(TriggerContainerSuperclass):
 
     def refresh_ui(self):
         channels = self.root.get_channels()
-        self.cmb_trig_chan_sel = self.builder.get_object("cmb_trig_chan_sel")
-        
-        
+        pack_channel_options(self.cmb_trig_chan_sel, channels, 0)
 
     def get_embedded_container(self):
         return self.vbox
