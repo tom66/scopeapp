@@ -533,10 +533,10 @@ class ScopeController(object):
         # Apply default ADC mapping.  This will need to change in future with real AFE
         self.adc_map.set_mapping(-9.0, +9.0, 0xff)
         log.info("ADCMapping: %r" % self.adc_map)
-        self.zst.apply_adc_mapping(self.adc_map)
+        #self.zst.apply_adc_mapping(self.adc_map)
 
         # Apply default 'Always' trigger
-        #self.zst.apply_trigger(ZynqScopeTriggerAlways())
+        self.zst.apply_trigger(ZynqScopeTriggerAlways())
 
     def save_settings_temp(self):
         self.save_settings(TEMP_SETTING_FILE)
