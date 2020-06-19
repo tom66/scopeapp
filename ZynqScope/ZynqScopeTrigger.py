@@ -105,7 +105,7 @@ class ZynqScopeTriggerEdge(ZynqScopeTriggerSuperclass):
         hyst = adc_map.apply_map_volt_rel(self.params_dict['Hysteresis'])
         channel = chan_map[self.params_dict['Channel']]
 
-        zcmd.setup_trigger_edge(channel, level, hyst, EDGE_TYPES[self.params_dict['EdgeType']])
+        zcmd.setup_trigger_edge(channel, level, hyst, EDGE_TYPES[self.params_dict['Edge']])
 
     def __repr__(self):
         return "<EdgeTrigger Level=%.2f, Hyst=%.2f, Channel=%d, Edge=%s>" % \
