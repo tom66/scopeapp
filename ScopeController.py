@@ -13,6 +13,7 @@ import Utils
 import ZynqScope.ZynqScopeTask as zst
 import ZynqScope.ZynqScopeGlobals as zsgl
 import ZynqScope.ZynqScopeADCMapping as zsadcmap
+import ZynqScope.ZynqScopeTrigger as zstrig
 
 import ScopeArena
 
@@ -539,7 +540,7 @@ class ScopeController(object):
         self.zst.apply_adc_mapping(self.adc_map)
 
         # Apply default 'Always' trigger
-        self.zst.apply_trigger(ZynqScopeTriggerAlways())
+        self.zst.apply_trigger(zstrig.ZynqScopeTriggerAlways())
 
     def get_adc_mapping(self):
         return self.adc_map
