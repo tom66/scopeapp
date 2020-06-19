@@ -237,8 +237,7 @@ class ZynqScopeSubprocess(multiprocessing.Process):
             log.warn("Render inhibited as render_to_mmap is False")
 
     def run(self):
-        """Runs periodically to check the status of the Zynq.  Presently set to ping at 50Hz,
-        but this can be changed."""
+        """Runs periodically to check the status of the Zynq."""
         while True:
             if self.state == STATE_ZYNQ_NOT_READY:
                 # Well get ready then!
@@ -339,10 +338,12 @@ class ZynqScopeSubprocess(multiprocessing.Process):
         elif typ is ZynqScopeApplyTrigger:
             log.info("ZynqScopeApplyTrigger: applying trigger %r" % msg)
             self.zs.trig_eng.set_config(msg.trig)
+            log.info("Done")
 
         elif typ is ZynqScopeApplyADCMapping:
             log.info("ZynqScopeApplyADCMapping: applying ADC mapping %r" % msg)
             self.zs.set_adc_mapping(msg.adc_map)
+            log.info("Done")
 
         else:
             if not isinstance(msg, ZynqScopeTaskQueueCommand):
