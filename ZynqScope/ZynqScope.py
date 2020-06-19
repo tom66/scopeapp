@@ -242,8 +242,8 @@ class ZynqScope(object):
         self.next_tb = self.timebase_settings[default_timebase]
 
         # Connect trigger engine to us
-        log.debug("ZynqScope connect(): connecting trigger")
-        self.trig_eng.connect(self)
+        #log.debug("ZynqScope connect(): connecting trigger")
+        #self.trig_eng.connect(self)
 
         # Set IOs as inputs
         log.debug("ZynqScope connect(): setup GPIO")
@@ -261,9 +261,10 @@ class ZynqScope(object):
         return True
 
     def set_adc_mapping(self, amap):
-        self.adc_map = amap
-        self.trig_eng.set_adc_mapping(self.adc_map)
-        self.trig_eng.refresh_for_adc_map_change()
+        pass
+        #self.adc_map = amap
+        #self.trig_eng.set_adc_mapping(self.adc_map)
+        #self.trig_eng.refresh_for_adc_map_change()
 
     def rawcam_init(self):
         log.debug("ZynqScope rawcam_init(): setting up rawcam")
