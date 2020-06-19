@@ -678,7 +678,8 @@ class ZynqScopeTaskController(object):
         self.evq_cache('ZynqScopeSimpleCommand_SetupForTimebase')
     
     def acquisition_tick(self):
-        pass
+        self.get_attributes()
+        
         """
         while not self.acq_resp.empty():
             resp = self.acq_resp.get()
