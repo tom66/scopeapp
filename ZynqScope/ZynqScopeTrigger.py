@@ -49,6 +49,19 @@ class ZynqScopeTriggerSuperclass(object):
     def __repr__(self):
         return "<UndefinedTrigger>"
 
+class ZynqScopeTriggerAlways(ZynqScopeTriggerSuperclass):
+    def __init__(self): 
+        super(ZynqScopeTriggerSuperclass, self).__init__()
+
+    def get_name(self):
+        return "ALWAYS_TRIGGER"
+
+    def commit(self, zcmd, adc_map, chan_map):
+        zcmd.setup_trigger_always()
+
+    def __repr__(self):
+        return "<AlwaysTrigger>"
+
 class ZynqScopeTriggerEdge(ZynqScopeTriggerSuperclass):
     def __init__(self): 
         super(ZynqScopeTriggerSuperclass, self).__init__()
@@ -72,7 +85,8 @@ class ZynqScopeTriggerEdge(ZynqScopeTriggerSuperclass):
             (self._params_dict['Level'], self._params_dict['Hysteresis'], self._params_dict['Channel'], self._params_dict['Edge'])
 
 AVAILABLE_TRIGGERS = [
-    ZynqScopeTriggerEdge
+    ZynqScopeTriggerAlways,
+    ZynqScopeTriggerEdge,
 ]
 
 class ZynqScopeTriggerManager(object):
