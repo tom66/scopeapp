@@ -30,26 +30,26 @@ class ZynqScopeTriggerSuperclass(object):
     via the multiprocessing queue."""
     def __init__(self):
         log.info("ZynqScopeTriggerSuperclass(): __init__()")
-        self._params_types = {}
-        self._params_dict = {}
+        self.params_types = {}
+        self.params_dict = {}
+        self._validate_params = None
 
     def get_name(self):
         return "UNDEFINED"
 
     def get_supported_parameters(self):
-        return self._params_types
+        return self.params_types
 
     def set_parameter(self, key, value):
-        if key not in self._params_dict:
+        if key not in self.params_dict:
             raise NotImplementedError("Parameter not supported: %s" % key)
-        self._params_dict[key] = value
-        self._validate_params()
+        self.params_dict[key] = value
+
+        if callable(self._validate_params):
+            self._validate_params()
 
     def get_parameter(self, key):
         return self._params_dict[key]
-
-    def _validate_params(self):
-        pass
 
     def commit(self, *params):
         raise NotImplementedError("Superclass not a valid trigger")
@@ -76,12 +76,13 @@ class ZynqScopeTriggerEdge(ZynqScopeTriggerSuperclass):
         #super(ZynqScopeTriggerSuperclass, self).__init__()
         log.info("ZynqScopeTriggerEdge(): __init__()")
 
-        self._params_types = {'Channel'    : 'ChannelSelection',
-                              'Level'      : 'VoltageLevel',
-                              'Hysteresis' : 'VoltageLevel',
-                              'Edge'       : 'EdgeType'}
+        self.params_types = {'Channel'    : 'ChannelSelection',
+                             'Level'      : 'VoltageLevel',
+                             'Hysteresis' : 'VoltageLevel',
+                             'Edge'       : 'EdgeType'}
 
         self._params_dict = {}
+        self._validate_params = None
 
         # Defaults
         self.set_parameter('Level', 0.0)
