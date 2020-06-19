@@ -141,7 +141,7 @@ class EdgeTriggerContainer(TriggerContainerSuperclass):
         self.adj_hysteresis = self.builder.get_object("adj_hysteresis")
         self.adj_hysteresis.set_lower(0.0)
         self.adj_hysteresis.set_upper(self.root.cfgmgr.Trigger.MaxHysteresis)
-        self.scl_intensity.connect("value-changed", self._scl_intensity_change)
+        self.scl_hysteresis.connect("value-changed", self._scl_hysteresis_change)
 
         self.btn_trig_lvl_up = self.builder.get_object("btn_trig_lvl_up")
         self.btn_trig_lvl_dn = self.builder.get_object("btn_trig_lvl_dn")
@@ -193,8 +193,8 @@ class EdgeTriggerContainer(TriggerContainerSuperclass):
         self.adjust_level(-self.root.get_adc_minor_increment())
         self.refresh_ui()
 
-    def _scl_intensity_change(self, *args):
-        value = self.scl_intensity.get_value()
+    def _scl_hysteresis_change(self, *args):
+        value = self.scl_hysteresis.get_value()
         self.trigger.set_parameter('Hysteresis', value)
 
     def refresh_ui(self):
