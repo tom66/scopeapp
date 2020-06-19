@@ -64,6 +64,7 @@ def pack_channel_options(combo, channels, active):
     combo.show_all()
 
 class TriggerContainerSuperclass(object): 
+    @staticmethod
     def __user_exception_handler(func):
         def wrapper(self, *args):
             try:
@@ -148,7 +149,7 @@ class EdgeTriggerContainer(TriggerContainerSuperclass):
 
         self.refresh_ui()
 
-    @super().__user_exception_handler
+    @TriggerContainerSuperclass.__user_exception_handler
     def adjust_level(self, amount):
         level = self.trigger.get_parameter('Level')
         level += amount
