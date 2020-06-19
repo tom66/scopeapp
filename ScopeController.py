@@ -501,7 +501,6 @@ class ScopeController(object):
     def __init__(self, root_mgr):
         self.root_mgr = root_mgr
 
-
         if AFE_module.get_channel_count() == 4:
             self.channels.append(ScopeChannelController(SCOPE_CH_1))
             self.channels.append(ScopeChannelController(SCOPE_CH_2))
