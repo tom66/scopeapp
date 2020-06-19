@@ -163,11 +163,11 @@ class EdgeTriggerContainer(TriggerContainerSuperclass):
         self.trigger.set_parameter('Level', level)
 
     def _btn_trig_lvl_up_clicked(self, *args):
-        self.adjust_level(+self.ctrl.get_adc_minor_increment())
+        self.adjust_level(+self.root.root_mgr.ctrl.get_adc_minor_increment())
         self.refresh_ui()
         
     def _btn_trig_lvl_dn_clicked(self, *args):
-        self.adjust_level(-self.ctrl.get_adc_minor_increment())
+        self.adjust_level(-self.root.root_mgr.ctrl.get_adc_minor_increment())
         self.refresh_ui()
 
     def refresh_ui(self):
