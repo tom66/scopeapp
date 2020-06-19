@@ -269,6 +269,7 @@ class ZynqScope(object):
     def zcmd_execute_cb(self, func, args):
         log.debug("Trigger commit: %s (%r)" % (func, args))
         getattr(self.zcmd, func)(*args)
+        self.zcmd.flush()
 
     def set_adc_mapping(self, amap):
         log.info("ZynqScope set_adc_mapping %r" % amap)
