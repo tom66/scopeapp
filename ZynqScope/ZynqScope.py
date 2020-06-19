@@ -272,8 +272,9 @@ class ZynqScope(object):
 
     def set_adc_mapping(self, amap):
         self.adc_map = amap
-        self.trig_eng.set_adc_mapping(self.adc_map)
-        self.trig_eng.refresh_for_adc_map_change()
+        if self.trig_end != None:
+            self.trig_eng.set_adc_mapping(self.adc_map)
+            self.trig_eng.refresh_for_adc_map_change()
 
     def rawcam_init(self):
         log.debug("ZynqScope rawcam_init(): setting up rawcam")
