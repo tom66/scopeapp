@@ -239,6 +239,9 @@ class TriggerTab(object):
         self.trigger_pages.set_current_page(self.inner_tab_sel)
         log.critical("tabpos=%d" % self.trigger_pages.get_current_page())
 
+        # Refresh active tab
+        self.inner_tabs[self.inner_tab_sel].refresh_ui()
+
     def refresh_object_attach(self):
         pass
 
