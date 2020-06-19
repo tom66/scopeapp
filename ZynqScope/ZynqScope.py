@@ -255,7 +255,7 @@ class ZynqScope(object):
         log.debug("pickles() 1")
         pickle.dumps(self)
 
-        self.trig_eng = zstrg.ZynqScopeTriggerManager()
+        #self.trig_eng = zstrg.ZynqScopeTriggerManager()
 
         log.debug("pickles() 2")
         pickle.dumps(self)
