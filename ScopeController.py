@@ -218,6 +218,9 @@ class ScopeChannelController(object):
 
     def has_default_name(self):
         return self._using_default_name
+
+    def get_display_name(self):
+        return self.long_name
         
     def get_computed_attenuation(self):
         return self.atten_div * self.probe_multiplier
@@ -620,7 +623,7 @@ class ScopeController(object):
     def get_channels(self):
         ch = []
         for channel in self.channels:
-            ch.append((channel.internal_name, channel.long_name))
+            ch.append((channel.internal_name, channel))
         return ch
 
     def get_run_state_str(self):

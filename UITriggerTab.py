@@ -82,7 +82,33 @@ class EdgeTriggerContainer(TriggerContainerSuperclass):
         Utils.set_svg_image(self.img_both, os.path.join(self.root.cfgmgr.Theme.resourcedir, ICON_BOTH_EDGE), self.root.cfgmgr.Theme.TriggerSubIconSize)
         Utils.set_svg_image(self.img_rise, os.path.join(self.root.cfgmgr.Theme.resourcedir, ICON_RISE_EDGE), self.root.cfgmgr.Theme.TriggerSubIconSize)
 
-        log.info("Trigger channels available: %r" % (self.root.get_channels(),))
+        self.cmb_channel_select = self.builder.get_object("cmb_channel_select")
+
+    def refresh_ui(self):
+        channels = self.root.get_channels()
+        self.cmb_chan_label = self.builder.get_object("cmb_trig_chan_sel")
+        
+        # Create the TreeModel for the channel name options
+        col_cell_text_long = Gtk.CellRendererText()
+        col_name = Gtk.TreeViewColumn(_("Name"))
+        col_name.pack_start(col_cell_text_long, True)
+        col_name.add_attribute(col_cell_text_long, "text", 0)
+        col_cell_text_long.set_property("ellipsize", Pango.EllipsizeMode.END)
+        col_cell_text_long.set_property("ellipsize_set", True)
+        col_cell_text_long.set_property("wrap_mode", Pango.WrapMode.WORD)
+        col_cell_text_long.set_property("wrap_width", 50)
+        col_cell_text_long.set_property("max_width_chars", 20)
+
+        tree_store = Gtk.TreeStore(GObject.TYPE_STRING)
+        
+        for ch in channels:
+            sub_tree = tree_store.append(None, ["", ch.get_display_name()])
+        
+        self.cmb_chan_label.set_model(tree_store)
+        self.cmb_chan_label.pack_start(col_cell_text_long, True)
+        self.cmb_chan_label.add_attribute(col_cell_text_long, "text", 0)
+        self.cmb_chan_label.set_active(0)
+        self.cmb_chan_label.connect("changed", self._cmb_chan_label_changed)
 
     def get_embedded_container(self):
         return self.vbox
