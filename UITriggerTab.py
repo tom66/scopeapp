@@ -117,6 +117,8 @@ class EdgeTriggerContainer(TriggerContainerSuperclass):
         self.vbox.set_valign(Gtk.Align.START)
         self.vbox.set_halign(Gtk.Align.FILL)
 
+        self.lbl_trig_lvl = self.builder.get_object("lbl_trig_lvl")
+        
         self.img_fall = Gtk.Image()
         self.img_both = Gtk.Image()
         self.img_rise = Gtk.Image()
@@ -135,8 +137,10 @@ class EdgeTriggerContainer(TriggerContainerSuperclass):
         self.btn_both_ctx = self.btn_both.get_style_context()
         self.btn_rise_ctx = self.btn_rise.get_style_context()
 
-        self.lbl_trig_lvl = self.builder.get_object("lbl_trig_lvl")
         self.scl_hysteresis = self.builder.get_object("scl_hysteresis")
+        self.adj_hysteresis = self.builder.get_object("adj_hysteresis")
+        self.adj_hysteresis.set_lower(0.0)
+        self.adj_hysteresis.set_upper(self.root.cfgmgr.Trigger.MaxHysteresis)
 
         self.btn_trig_lvl_up = self.builder.get_object("btn_trig_lvl_up")
         self.btn_trig_lvl_dn = self.builder.get_object("btn_trig_lvl_dn")
