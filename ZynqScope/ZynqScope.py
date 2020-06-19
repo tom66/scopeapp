@@ -2,7 +2,7 @@
 This file is part of YAOS and is licenced under the MIT Licence.
 """
 
-import sys, operator, math
+import sys, operator, math, pickle
 
 sys.path.append('..')
 import Utils # from parent directory
@@ -251,7 +251,9 @@ class ZynqScope(object):
 
         # Connect trigger engine to us.  Start with a default ADC mapping.
         log.debug("ZynqScope connect(): connecting trigger, loading default ADC mapping")
+        pickle.pickle(self)
         self.trig_eng = zstrg.ZynqScopeTriggerManager()
+        pickle.pickle(self)
         print(dir(self.trig_eng))
         self.trig_eng.connect_execute_cb(self.zcmd_execute_cb)
         self.adc_map = zsadcmap.ZynqScopeADCMapping()
