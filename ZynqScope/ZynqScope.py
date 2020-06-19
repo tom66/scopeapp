@@ -252,7 +252,7 @@ class ZynqScope(object):
         # Connect trigger engine to us
         log.debug("ZynqScope connect(): connecting trigger")
         self.trig_eng.connect(self)
-        self.trig_eng.set_config(ZynqScopeTriggerEdge())
+        self.trig_eng.set_config(zstrg.ZynqScopeTriggerEdge())
 
         # Ensure AcqCtrl is reset...
         log.debug("ZynqScope connect(): reset acq_ctrl block on FPGA")
