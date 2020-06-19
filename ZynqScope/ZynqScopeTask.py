@@ -410,6 +410,7 @@ class ZynqScopeSubprocess(multiprocessing.Process):
         # This function should be cleaned up: we need to use ZynqScope API where possible, 
         # and not send our own ZynqCommands...
         #log.debug("aq=%d" % self.acq_state)
+        self.shared_dict['params'] = self.zs.params
 
         if self.acq_state == TSTATE_ACQ_IDLE:
             if self.stop_signal:
@@ -573,18 +574,8 @@ class ZynqScopeTaskController(object):
         time.sleep(0.2)
         self.zstask.kill()
     
-    def get_attributes_cache(self):
-        if self.attribs_cache == None:
-            self.get_attributes()
-        return self.attribs_cache
-    
     def get_attributes(self):
-        self.evq_cache('ZynqScopeGetAttributes')
-        resp = self.rsq.get()
-
-        log.info("get_attributes response: %r" % resp)
-        self.attribs_cache = resp
-        return resp
+        return self.shared_dict['params']
     
     def get_supported_timebases(self):
         attrs = self.get_attributes()
@@ -678,8 +669,6 @@ class ZynqScopeTaskController(object):
         self.evq_cache('ZynqScopeSimpleCommand_SetupForTimebase')
     
     def acquisition_tick(self):
-        self.get_attributes()
-        
         """
         while not self.acq_resp.empty():
             resp = self.acq_resp.get()

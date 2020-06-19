@@ -655,19 +655,19 @@ class ScopeController(object):
     
     def get_memory_depth(self):
         # ZynqScopeCurrentParameters
-        return self.zst.get_attributes_cache().params.memory_depth
+        return self.zst.get_attributes().params.memory_depth
     
     def get_waves_per_second(self):
-        return self.zst.get_attributes_cache().params.wave_rate
+        return self.zst.get_attributes().params.wave_rate
     
     def get_nwaves(self):
-        return self.zst.get_attributes_cache().params.nwaves
+        return self.zst.get_attributes().params.nwaves
     
     def get_sample_depth(self):
-        return self.zst.get_attributes_cache().params.sample_depth
+        return self.zst.get_attributes().params.sample_depth
     
     def get_sample_rate(self):
-        return self.zst.get_attributes_cache().params.sample_rate
+        return self.zst.get_attributes().params.sample_rate
     
     def get_channels(self):
         ch = []
