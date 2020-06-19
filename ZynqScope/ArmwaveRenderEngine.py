@@ -2,7 +2,7 @@
 This file is part of YAOS and is licenced under the MIT Licence.
 """
 
-import sys, os, mmap, ctypes, stat
+import sys, os, mmap, ctypes, stat, time
 from ctypes import util, cdll
 
 import ZynqScope.ZynqScope as zs
