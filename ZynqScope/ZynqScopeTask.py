@@ -17,7 +17,7 @@ import ZynqScope.pirawcam.rawcam as rawcam
 AFE = zs.AFE
 
 DEFAULT_ZYNQ_TASK_RATE = 1000       # Run internal task at 1000Hz
-DEFAULT_ACQUISITION_RATE = 30       # By default acquire data at xx Hz from Zynq
+DEFAULT_ACQUISITION_RATE = 10       # By default acquire data at xx Hz from Zynq
 
 STATE_ZYNQ_NOT_READY = 0
 STATE_ZYNQ_IDLE = 1
