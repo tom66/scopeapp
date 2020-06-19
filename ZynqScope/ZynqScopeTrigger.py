@@ -42,7 +42,7 @@ class ZynqScopeTriggerSuperclass(object):
 
     def set_parameter(self, key, value):
         log.info("SupportedDict: %r" % self.params_types)
-        
+
         try:
             self.params_types[key]
         except KeyError:
@@ -54,7 +54,7 @@ class ZynqScopeTriggerSuperclass(object):
             self._validate_params()
 
     def get_parameter(self, key):
-        return self._params_dict[key]
+        return self.params_dict[key]
 
     def commit(self, *params):
         raise NotImplementedError("Superclass not a valid trigger")
@@ -88,7 +88,7 @@ class ZynqScopeTriggerEdge(ZynqScopeTriggerSuperclass):
                              'Hysteresis' : 'VoltageLevel',
                              'Edge'       : 'EdgeType'}
 
-        self._params_dict = {}
+        self.params_dict = {}
         self._validate_params = None
 
         # Defaults
@@ -101,15 +101,15 @@ class ZynqScopeTriggerEdge(ZynqScopeTriggerSuperclass):
         return "EDGE_TRIGGER"
 
     def commit(self, zcmd, adc_map, chan_map):
-        level = self.adc_map.apply_map_volt(self._params_dict['Level'])
-        hyst = self.adc_map.apply_map_volt_rel(self._params_dict['Hysteresis'])
-        channel = self.chan_map[self._params_dict['Channel']]
+        level = self.adc_map.apply_map_volt(self.params_dict['Level'])
+        hyst = self.adc_map.apply_map_volt_rel(self.params_dict['Hysteresis'])
+        channel = self.chan_map[self.params_dict['Channel']]
 
-        zcmd.setup_trigger_edge(channel, level, hyst, EDGE_TYPES[self._params_dict['EdgeType']])
+        zcmd.setup_trigger_edge(channel, level, hyst, EDGE_TYPES[self.params_dict['EdgeType']])
 
     def __repr__(self):
         return "<EdgeTrigger Level=%.2f, Hyst=%.2f, Channel=%d, Edge=%s>" % \
-            (self._params_dict['Level'], self._params_dict['Hysteresis'], self._params_dict['Channel'], self._params_dict['Edge'])
+            (self.params_dict['Level'], self.params_dict['Hysteresis'], self.params_dict['Channel'], self.params_dict['Edge'])
 
 AVAILABLE_TRIGGERS = [
     ZynqScopeTriggerAlways,
