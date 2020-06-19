@@ -15,10 +15,10 @@ EDGE_TYPES = {
 }
 
 DEFAULT_CHANNEL_MAP = {
-    'CH1': zc.TRIG_CH_ADCSRC1,
-    'CH2': zc.TRIG_CH_ADCSRC2,
-    'CH3': zc.TRIG_CH_ADCSRC3,
-    'CH4': zc.TRIG_CH_ADCSRC4
+    1: zc.TRIG_CH_ADCSRC1,
+    2: zc.TRIG_CH_ADCSRC2,
+    3: zc.TRIG_CH_ADCSRC3,
+    4: zc.TRIG_CH_ADCSRC4
 }
 
 # Load debug logger
@@ -94,7 +94,7 @@ class ZynqScopeTriggerEdge(ZynqScopeTriggerSuperclass):
         # Defaults
         self.set_parameter('Level', 0.0)
         self.set_parameter('Hysteresis', 0.0)
-        self.set_parameter('Channel', 'CH1')
+        self.set_parameter('Channel', 1)
         self.set_parameter('Edge', 'RISE')
 
     def get_name(self):
