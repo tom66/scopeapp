@@ -539,6 +539,9 @@ class ScopeController(object):
         log.info("ADCMapping: %r" % self.adc_map)
         self.zst.apply_adc_mapping(self.adc_map)
 
+        # Setup trigger manager
+        self.zst.init_trigger()
+
         # Apply default 'Always' trigger
         #self.zst.apply_trigger(zstrig.ZynqScopeTriggerAlways())
 

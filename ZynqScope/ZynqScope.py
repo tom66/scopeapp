@@ -249,23 +249,6 @@ class ZynqScope(object):
         RPi.GPIO.add_event_detect(RASPI_PIN_PKT_READY, RPi.GPIO.RISING, callback=self.gpio_irq_pkt_ready)
         self.zynq_stop_ready()
 
-        # Connect trigger engine to us.  Start with a default ADC mapping.
-        log.debug("ZynqScope connect(): connecting trigger, loading default ADC mapping")
-
-        log.debug("pickles() 1")
-        pickle.dumps(zstrg.ZynqScopeTriggerEdge())
-        log.debug("pickles() done")
-
-        self.trig_eng = zstrg.ZynqScopeTriggerManager()
-
-        print(dir(self.trig_eng))
-        self.trig_eng.connect_execute_cb(self.zcmd_execute_cb)
-        self.adc_map = zsadcmap.ZynqScopeADCMapping()
-        self.adc_map.set_mapping(-1, +1, 255)
-        self.trig_eng.set_adc_mapping(self.adc_map)
-        self.trig_eng.set_config(zstrg.ZynqScopeTriggerEdge())
-        print(dir(self.trig_eng))
-
         # Ensure AcqCtrl is reset...
         log.debug("ZynqScope connect(): reset acq_ctrl block on FPGA")
         self.zcmd.ac_reset()
@@ -273,9 +256,18 @@ class ZynqScope(object):
         # Instead of blindly returning True we should check that the hardware is ready first...
         return True
 
+    def connect_trigger(self):
+        # Connect trigger engine to us.  Start with a default ADC mapping.
+        log.debug("ZynqScope connect(): connecting trigger, loading default ADC mapping")
+        self.trig_eng = zstrg.ZynqScopeTriggerManager()
+        self.trig_eng.connect_execute_cb(self.zcmd_execute_cb)
+        self.adc_map = zsadcmap.ZynqScopeADCMapping()
+        self.adc_map.set_mapping(-1, +1, 255)
+        self.trig_eng.set_adc_mapping(self.adc_map)
+        self.trig_eng.set_config(zstrg.ZynqScopeTriggerEdge())
+
     def zcmd_execute_cb(self, func, args):
-        pass
-        #log.debug("Trigger commit: %s (%r)" % (func, args))
+        log.debug("Trigger commit: %s (%r)" % (func, args))
         #getattr(self.zcmd, func)(*args)
 
     def set_adc_mapping(self, amap):

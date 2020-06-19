@@ -106,6 +106,8 @@ class ZynqScopeRenderChangeChannelIntensity(ZynqScopeTaskQueueCommand):
         self.ch = ch
         self.ints = ints
 
+class ZynqScopeInitTrigger(ZynqScopeTaskQueueCommand): pass
+
 class ZynqScopeApplyTrigger(ZynqScopeTaskQueueCommand):
     def __init__(self, trig):
         self.trig = trig
@@ -335,6 +337,10 @@ class ZynqScopeSubprocess(multiprocessing.Process):
             log.info("ZynqScopeRenderChangeChannelColour: setting channel %d colour to %s" % (msg.ch, repr(msg.colour)))
             self.rengine.set_channel_colour(msg.ch, msg.colour)
 
+        elif typ is ZynqScopeInitTrigger:
+            log.info("ZynqScopeInitTrigger: connect trigger manager")
+            self.zs.connect_trigger()
+
         elif typ is ZynqScopeApplyTrigger:
             log.info("ZynqScopeApplyTrigger: applying trigger %r" % msg)
             self.zs.trig_eng.set_config(msg.trig)
@@ -547,7 +553,8 @@ class ZynqScopeTaskController(object):
             'ZynqScopeRenderChangeChannelColour' : ZynqScopeRenderChangeChannelColour(0, None),
             'ZynqScopeRenderChangeChannelIntensity' : ZynqScopeRenderChangeChannelIntensity(0, 0),
             'ZynqScopeApplyADCMapping' : ZynqScopeApplyADCMapping(None),
-            'ZynqScopeApplyTrigger' : ZynqScopeApplyTrigger(None)
+            'ZynqScopeApplyTrigger' : ZynqScopeApplyTrigger(None),
+            'ZynqScopeInitTrigger' : ZynqScopeInitTrigger()
         }
         
         # Cache for last fetched attributes
@@ -684,3 +691,6 @@ class ZynqScopeTaskController(object):
                 #b.dump_to_file("rxtest/test%d.bin" % self.acqstat.num_waves_acqd)
                 self.acqstat.num_waves_acqd += 1
         """
+
+    def init_trigger(self):
+        self.evq_cache('ZynqScopeInitTrigger')
