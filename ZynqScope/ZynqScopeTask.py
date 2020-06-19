@@ -17,7 +17,7 @@ import ZynqScope.pirawcam.rawcam as rawcam
 AFE = zs.AFE
 
 DEFAULT_ZYNQ_TASK_RATE = 1000       # Run internal task at 1000Hz
-DEFAULT_ACQUISITION_RATE = 60       # By default acquire data at xx Hz from Zynq
+DEFAULT_ACQUISITION_RATE = 40       # By default acquire data at xx Hz from Zynq
 
 STATE_ZYNQ_NOT_READY = 0
 STATE_ZYNQ_IDLE = 1
@@ -488,7 +488,7 @@ class ZynqScopeSubprocess(multiprocessing.Process):
 
                         if len(self.buffers_working) >= self.zs.rawcam_buffer_dims[2]:
                             self.zs.zynq_set_ready()
-                            
+
                             # Create the response and send it
                             resp = ZynqScopeAcquisitionResponse()
                             resp.time = time.time()
