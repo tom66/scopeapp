@@ -22,4 +22,4 @@ obj = zst.ZynqScopeSubprocess(evq, rsq, acqrsp, renq, mdict, (2048, 12))
 evq.put(zst.ZynqScopeInitTrigger())
 evq.put(zst.ZynqScopeStartAutoAcquisition(None))
 
-zst.run()
+obj.run()
