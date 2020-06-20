@@ -219,6 +219,8 @@ class ZynqScopeSubprocess(multiprocessing.Process):
         self.shared_dict['timebase_settings'] = [None]
 
         self.stats.num_waves_sent = 0
+
+        self.tlast = 0.0
         
         # Prepare the render engine (in future we'll support other render targets)
         self.rengine = awre.ArmwaveRenderEngine()
@@ -420,6 +422,10 @@ class ZynqScopeSubprocess(multiprocessing.Process):
         # This function should be cleaned up: we need to use ZynqScope API where possible, 
         # and not send our own ZynqCommands...
         #log.debug("aq=%d" % self.acq_state)
+        if (time.time() - self.tlast) > 1.0:
+            log.info("acquisition_tick() iterating")
+            self.tlast = time.time()
+
         self.shared_dict['params'] = self.zs.params
 
         if self.acq_state == TSTATE_ACQ_IDLE:
