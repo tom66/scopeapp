@@ -33,7 +33,7 @@ ACQSTATE_RUNNING_AUTO_TRIGD = 2
 ACQSTATE_STOPPED = 3
 
 RAWCAM_BITRATE = 0.4e9              # 300MHz, 2 lanes, DDR: 1.2Gbit/s
-RAWCAM_OVERHEAD = 1.50              # 30% overhead (estimated)
+RAWCAM_OVERHEAD = 1.50              # 50% overhead (estimated)
 
 ZYNQ_CSI_HEADER_SIZE = 512
 
@@ -369,7 +369,7 @@ class ZynqScopeSubprocess(multiprocessing.Process):
             entry = self.buffers_freeable.pop()
             self.zs.rawcam_buffer_free_friendly(entry)
             del entry
-        
+
         self.buffers_working = []
 
     def start_auto_acquisition(self):
