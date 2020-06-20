@@ -193,7 +193,7 @@ class ZynqScope(object):
     
     # Desired acquisition proportion for the frame time.  This should be tweaked to determine
     # the maximum performance possible.  
-    acq_frametime_frac = 0.06 # = 0.12
+    acq_frametime_frac = 0.12 # = 0.12
     
     # Sample rate model.  Defines the dividers and clock rates available to the ADC and PLL.
     samprate_mdl = None
@@ -476,7 +476,7 @@ class ZynqScope(object):
         set to a maximum of 2048, a minimum of 1, or X% of the frame time."""
         #print("acq_time:", acq_time)
         nwaves = math.floor(((1.0 / self.acq_framerate) * self.acq_frametime_frac) / acq_time)
-        return int(max(1, min(1024, nwaves)))
+        return int(max(1, min(750, nwaves)))
     
     def setup_for_timebase(self):
         """
