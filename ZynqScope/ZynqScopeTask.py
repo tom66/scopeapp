@@ -231,9 +231,9 @@ class ZynqScopeSubprocess(multiprocessing.Process):
 
     def do_render(self, resp):
         if self.shared_dict['render_to_mmap']:
-            #log.critical("render from:    0x%08x" % resp.buffers[0].data_ptr)
-            #log.critical("render buffers: %s" % repr(resp.buffers))
-            #log.critical("zs_params:      %s" % repr(self.zs.params))
+            log.critical("render from:    0x%08x" % resp.buffers[0].data_ptr)
+            log.critical("render buffers: %s" % repr(resp.buffers))
+            log.critical("zs_params:      %s" % repr(self.zs.params))
 
             # Max 2 items in the queue.
             if self.render_queue.qsize() <= 1:
