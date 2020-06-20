@@ -426,6 +426,7 @@ class ZynqScopeSubprocess(multiprocessing.Process):
 
             if self.start_signal:
                 self.acq_state = TSTATE_ACQ_PREPARE_TO_START
+                self.start_signal = False
         
         elif self.acq_state == TSTATE_ACQ_PREPARE_TO_START:
             # Rawcam must be stopped.  If not this is an error
@@ -517,6 +518,7 @@ class ZynqScopeSubprocess(multiprocessing.Process):
         self.zs.rawcam_stop()
         self.zs.zcmd.stop_acquisition()
         self.stop_signal = False
+        self.start_signal = False
         self.rsq.put(ZynqScopeStopCompleted())
 
     def die_cleanup(self):
