@@ -539,11 +539,13 @@ class ScopeController(object):
                 raise RuntimeError("Timeout: task did not start in time")
 
         log.debug("Task started in %.1f ms" % ((t1 - t0) * 1000))
-
         self.timebase = ScopeTimebaseController(self.zst)
         self.timebase.set_change_notifier(self.change_notifier)
         self.arena = ScopeArena.ScopeArenaController(self, self.root_mgr.cfgmgr)
 
+        self.connect_prep_task()
+
+    def connect_prep_task(self):
         # Setup trigger manager
         log.debug("ScopeController.connect() - initialising trigger manager")
         self.zst.init_trigger()
