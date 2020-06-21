@@ -235,22 +235,22 @@ class ZynqScopeSubprocess(multiprocessing.Process):
         log.info("ZynqScopeSubprocess __init__(): task_period=%2.6f, target_acq_period=%2.2f" % (self.task_period, self.target_acq_period))
 
     def do_render(self, resp):
-        log.info("start do_render")
+        #log.info("start do_render")
 
         if self.shared_dict['render_to_mmap']:
-            log.critical("render from:    0x%08x" % resp.buffers[0].data_ptr)
-            log.critical("render buffers: %s" % repr(resp.buffers))
-            log.critical("zs_params:      %s" % repr(self.zs.params))
+            #log.critical("render from:    0x%08x" % resp.buffers[0].data_ptr)
+            #log.critical("render buffers: %s" % repr(resp.buffers))
+            #log.critical("zs_params:      %s" % repr(self.zs.params))
 
             # Max 2 items in the queue.
             if self.render_queue.qsize() <= 1:
-                log.info("Put in queue")
+                #log.info("Put in queue")
                 self.render_queue.put(self.rengine.render_single_mmal(resp.buffers[0].data_ptr + 512))  # 512 byte offset for header; header to be decoded later
-                log.info("Done put")
+                #log.info("Done put")
         else:
             log.warn("Render inhibited as render_to_mmap is False")
 
-        log.info("end do_render")
+        #log.info("end do_render")
 
     def run(self):
         """Runs periodically to check the status of the Zynq."""

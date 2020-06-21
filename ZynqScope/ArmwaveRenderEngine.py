@@ -173,14 +173,14 @@ class ArmwaveRenderEngine(zs.BaseRenderEngine):
         t0 = time.time()
         aw.clear_buffer(0)
         t1 = time.time()
-        log.info("TA: %.1f" % ((t1 - t0) * 1000))
+        #log.info("TA: %.1f" % ((t1 - t0) * 1000))
 
         aw.set_wave_pointer_u32(mmal_data_ptr)
         
         t0 = time.time()
         aw.generate()
         t1 = time.time()
-        log.info("TB: %.1f" % ((t1 - t0) * 1000))
+        #log.info("TB: %.1f" % ((t1 - t0) * 1000))
 
         #log.info("start fill into pixbuf")
 
@@ -189,7 +189,7 @@ class ArmwaveRenderEngine(zs.BaseRenderEngine):
             mmap_obj.close()
             raise RuntimeError("Pixbuf render failed with PyFalse: possibly corrupt pointer?")
         t1 = time.time()
-        log.info("TC: %.1f" % ((t1 - t0) * 1000))
+        #log.info("TC: %.1f" % ((t1 - t0) * 1000))
 
         # Close the mmap.  We're done working with it.
         mmap_obj.close()
