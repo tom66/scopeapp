@@ -23,6 +23,7 @@ APP_VERSION_MINOR = 1
 class UserRequestError(Exception): pass
 class UserRequestOutOfRange(UserRequestError): pass
 class UserRequestUnsupported(UserRequestError): pass
+class SystemUnstable(UserRequestError): pass
 class StateSaveFileCorrupted(UserRequestError): pass
 
 class ObjectUnpickled(Exception): pass
