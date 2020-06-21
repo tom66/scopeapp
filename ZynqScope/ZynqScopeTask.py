@@ -234,6 +234,9 @@ class ZynqScopeSubprocess(multiprocessing.Process):
         
         log.info("ZynqScopeSubprocess __init__(): task_period=%2.6f, target_acq_period=%2.2f" % (self.task_period, self.target_acq_period))
 
+    def process_header(self, resp):
+        log.critical("buffer: %r" % resp)
+
     def do_render(self, resp):
         #log.info("start do_render")
 
@@ -418,6 +421,8 @@ class ZynqScopeSubprocess(multiprocessing.Process):
 
         #self.zs.zcmd.start_acquisition()
         log.info("Writing period: %d us" % int(1e6 / DEFAULT_ACQUISITION_RATE))
+        self.zs.zcmd.ac_stop()
+        self.zs.zcmd.flush()
         self.zs.zcmd.ac_setup_acq_and_stream(1e6 / DEFAULT_ACQUISITION_RATE)
         self.zs.zcmd.ac_start()
         self.zs.zcmd.flush()
@@ -525,6 +530,7 @@ class ZynqScopeSubprocess(multiprocessing.Process):
                             #self.acq_response_queue.put(resp)
 
                             #log.info("Try to render ...")
+                            self.process_header(self.buffers_freeable[0])
                             self.do_render(resp)
                             td = time.time() - self.time_last_acq
                             if print_acq:
