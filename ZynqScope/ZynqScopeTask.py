@@ -582,6 +582,7 @@ class ZynqScopeTaskController(object):
         self.acqstat.num_waves_acqd = 0
 
         # Create task queues and manager then initialise process with these resources
+        self.zs_init_args = zs_init_args
         self.init_zynq_task()
 
     def init_zynq_task(self):
@@ -591,7 +592,7 @@ class ZynqScopeTaskController(object):
         self.render_queue = multiprocessing.Queue()
         self.shared_dict = multiprocessing.Manager().dict()
 
-        self.zstask = ZynqScopeSubprocess(self.evq, self.rsq, self.acq_resp, self.render_queue, self.shared_dict, zs_init_args)
+        self.zstask = ZynqScopeSubprocess(self.evq, self.rsq, self.acq_resp, self.render_queue, self.shared_dict, self.zs_init_args)
         self.status = zc.ZynqAcqStatus()
         self.rawcam_running = False
 
