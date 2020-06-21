@@ -414,7 +414,7 @@ class ZynqScopeSubprocess(multiprocessing.Process):
 
         self.zs.zcmd.flush()
 
-        self.zs.zcmd.setup_trigger_edge(zc.TRIG_CH_ADCSRC1, 0x7f, 0x10, zc.TRIG_EDGE_RISING) # write default trigger
+        #self.zs.zcmd.setup_trigger_edge(zc.TRIG_CH_ADCSRC1, 0x7f, 0x10, zc.TRIG_EDGE_RISING) # write default trigger
 
         #self.zs.zcmd.start_acquisition()
         log.info("Writing period: %d us" % int(1e6 / DEFAULT_ACQUISITION_RATE))
