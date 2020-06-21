@@ -661,6 +661,8 @@ class ZynqScopeTaskController(object):
         cmd.width = width
         cmd.height = height
         self.evq.put(cmd)
+
+        log.info("host: setup_render_dimensions(%d,%d)" % (width, height))
         self.target_dims = (width, height)
 
     def setup_render_channel_colour(self, idx, colour_tuple):
