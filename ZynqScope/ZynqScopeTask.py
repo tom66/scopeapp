@@ -716,8 +716,8 @@ class ZynqScopeTaskController(object):
 
             if self.acq_running:
                 log.critical("Restarting acquisition to pre-crash state")
-                self.start_acquisition()
                 self.setup_render_dimensions(*self.target_dims)
+                self.start_acquisition()
 
     def init_trigger(self):
         self.evq_cache('ZynqScopeInitTrigger')
