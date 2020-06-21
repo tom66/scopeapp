@@ -274,6 +274,7 @@ class ScopeArenaController(object):
         
         self.size_allocated = False
         self.size_alloc = (0, 0)
+        self.last_target_dims = (0, 0)
         self.first_draw = False
         self.test_mod = 0.0
         self.stat_waves = 0
@@ -429,10 +430,14 @@ class ScopeArenaController(object):
         self.fixed.move(self.img, ox, oy)
         
         # Drive the renderer
-        self.ctrl.zst.setup_render_dimensions(width, height)
+        if width != self.last_target_dims[0] or height != self.last_target_dims[1]:
+            self.ctrl.zst.setup_render_dimensions(width, height)
+
         #self.local_aobj.update_wave_params(0, width, 96, width)
         #self.local_aobj.set_target_dimensions(width, height)
+        
         self.first_draw = True
+        self.last_target_dims = (width, height)
 
         # Make a new pixbuf and force a redraw(?)
         #self.wave_pb = GdkPixbuf.Pixbuf.new_from_bytes(GLib.Bytes(bytes(mmap_obj)), GdkPixbuf.Colorspace.RGB, True, 8, width, height, width * 4)
