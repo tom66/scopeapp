@@ -2,7 +2,7 @@
 This file is part of YAOS and is licenced under the MIT Licence.
 """
 
-import sys, os, mmap, ctypes, stat, time
+import sys, os, mmap, ctypes, stat, time, random
 from ctypes import util, cdll
 
 import ZynqScope.ZynqScope as zs
@@ -17,7 +17,7 @@ faulthandler.enable()
 import logging
 log = logging.getLogger()
 
-SHM_NAME_TEMPLATE = b"scopeapp_aw_dbuff%d_x"
+SHM_NAME_TEMPLATE = b"scopeapp_aw_dbuff%d_0x%08x"
 
 # Portions based on:-
 # https://gist.github.com/jakirkham/100a7f5e86b0ff2a22de0850723a4c5c
@@ -87,7 +87,7 @@ class ArmwaveRenderEngine(zs.BaseRenderEngine):
 
         for i in range(2):
             # Create a new shm and store the fd (ID) and shm name
-            shm_name = SHM_NAME_TEMPLATE % i
+            shm_name = SHM_NAME_TEMPLATE % (i, random.randint(0, 0xffffffff))
             shm_id = shm_open(shm_name)
             os.ftruncate(shm_id, size)
             #m = mmap.mmap(shm_id, size)
