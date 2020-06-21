@@ -721,7 +721,7 @@ class ZynqScopeTaskController(object):
             raise Utils.SystemUnstable("Acquisition task crash detected.  Restarting -- system may be unstable.")
 
             if self.acq_running:
-                log.critical("Restarting acquisition to pre-crash state")
+                log.critical("Restarting acquisition to pre-crash state (%r)" % self.target_dims)
                 self.setup_render_dimensions(*self.target_dims)
                 self.start_acquisition()
 
