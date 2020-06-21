@@ -383,7 +383,7 @@ class ZynqScopeSubprocess(multiprocessing.Process):
             log.info("Deleted entry")
 
         self.buffers_working = []
-        log.info("Done cleanup, list length F:%d W:%d" % (len(self.buffers_freeable, self.buffers_working)))
+        log.info("Done cleanup, list length F:%d W:%d" % (len(self.buffers_freeable), len(self.buffers_working)))
 
     def start_auto_acquisition(self):
         """Start automatic acquisition (i.e. continuous running as opposed to single shot.)
