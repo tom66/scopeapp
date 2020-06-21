@@ -383,7 +383,7 @@ class ZynqScopeSubprocess(multiprocessing.Process):
             log.info("Deleted entry")
 
         self.buffers_working = []
-        log.info("Done cleanup")
+        log.info("Done cleanup, list length F:%d W:%d" % (len(self.buffers_freeable, self.buffers_working)))
 
     def start_auto_acquisition(self):
         """Start automatic acquisition (i.e. continuous running as opposed to single shot.)
@@ -477,9 +477,10 @@ class ZynqScopeSubprocess(multiprocessing.Process):
             else:
                 # Acknowledge any pending packet
                 self.cleanup_rawcam_buffers()
+                log.info("Now waiting for Zynq to ack")
 
                 if self.zs.zynq_acknowledge_if_pending():
-                    #log.info("Zynq has packet; try to read it...")
+                    log.info("Zynq has packet; try to read it...")
 
                     while len(self.buffers_working) < self.zs.rawcam_buffer_dims[2]:
                         while self.zs.rawcam_get_buffer_count() > 0: 
