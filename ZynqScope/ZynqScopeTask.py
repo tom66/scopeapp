@@ -382,7 +382,7 @@ class ZynqScopeSubprocess(multiprocessing.Process):
             del entry
             log.info("Deleted entry")
 
-        self.buffers_freeable = []
+        self.buffers_working = []
         log.info("Done cleanup")
 
     def start_auto_acquisition(self):
@@ -475,7 +475,7 @@ class ZynqScopeSubprocess(multiprocessing.Process):
             if self.stop_signal:
                 self._handle_stop()
             else:
-                # Cleanup buffers
+                # Acknowledge any pending packet
                 self.cleanup_rawcam_buffers()
 
                 if self.zs.zynq_acknowledge_if_pending():
