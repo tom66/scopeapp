@@ -702,18 +702,8 @@ class ZynqScopeTaskController(object):
         self.evq_cache('ZynqScopeSimpleCommand_SetupForTimebase')
     
     def acquisition_tick(self):
-        """
-        while not self.acq_resp.empty():
-            resp = self.acq_resp.get()
-            #log.debug("Got AcqResponse: %r" % resp)
-            f = open("test.bin", "wb")
-            bufs = sorted(resp.buffers)
-            for b in bufs:
-                log.debug("Buffer: %r" % b)
-                log.debug("Deref:  %r" % b.get_memoryview())
-                #b.dump_to_file("rxtest/test%d.bin" % self.acqstat.num_waves_acqd)
-                self.acqstat.num_waves_acqd += 1
-        """
+        # Check if the subtask has crashed.  It shouldn't ... but if it does, restart it.
+        log.info("Subtask exit: %r" % self.zstask.exitcode) 
 
     def init_trigger(self):
         self.evq_cache('ZynqScopeInitTrigger')
