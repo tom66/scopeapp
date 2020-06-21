@@ -20,6 +20,8 @@ log = logging.getLogger()
 APP_VERSION_MAJOR = 0
 APP_VERSION_MINOR = 1
 
+# This class should probably be renamed to be a more general warning/error rather than a user initiated one
+# as SystemUnstable is not caused (necessarily) by user input.
 class UserRequestError(Exception): pass
 class UserRequestOutOfRange(UserRequestError): pass
 class UserRequestUnsupported(UserRequestError): pass

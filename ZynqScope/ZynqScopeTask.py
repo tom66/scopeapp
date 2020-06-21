@@ -6,6 +6,9 @@ import sys, operator, math, inspect, copy, time, spidev, pickle
 import multiprocessing, ctypes
 from types import ModuleType
 
+sys.path.append('..')
+import Utils
+
 import ZynqScope.ZynqScope as zs
 import ZynqScope.ZynqCommands as zc
 

@@ -587,7 +587,12 @@ class MainApplication(object):
     
     def ui_tick_scope(self):
         #t0 = time.time()
-        self.ctrl.tick()
+        try:
+            self.ctrl.tick()
+        except Utils.UserRequestError as e:
+            log.critical("UserException passed from tick controller: %r" % e)
+            self._user_exception(e)
+
         #t1 = time.time()
 
         #log.info("ctrl_tick %.1f ms" % ((t1 - t0) * 1000))
