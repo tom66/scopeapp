@@ -436,7 +436,10 @@ class ZynqScopeSubprocess(multiprocessing.Process):
         # This function should be cleaned up: we need to use ZynqScope API where possible, 
         # and not send our own ZynqCommands...
         #log.debug("aq=%d" % self.acq_state)
+        print_acq = False
+
         if (time.time() - self.tlast) > 1.0:
+            print_acq = True
             log.info("acquisition_tick() iterating")
             self.tlast = time.time()
 
@@ -480,10 +483,10 @@ class ZynqScopeSubprocess(multiprocessing.Process):
             else:
                 # Acknowledge any pending packet
                 self.cleanup_rawcam_buffers()
-                log.info("Now waiting for Zynq to ack")
+                #log.info("Now waiting for Zynq to ack")
 
                 if self.zs.zynq_acknowledge_if_pending():
-                    log.info("Zynq has packet; try to read it...")
+                    #log.info("Zynq has packet; try to read it...")
 
                     while len(self.buffers_working) < self.zs.rawcam_buffer_dims[2]:
                         while self.zs.rawcam_get_buffer_count() > 0: 
@@ -524,7 +527,8 @@ class ZynqScopeSubprocess(multiprocessing.Process):
                             #log.info("Try to render ...")
                             self.do_render(resp)
                             td = time.time() - self.time_last_acq
-                            log.info("Last render %.2f ms, effective frame rate %.1f fps (%d waves/sec)" % (td * 1000, 1.0 / td, (1.0 / td) * self.zs.params.nwaves))
+                            if print_acq:
+                                log.info("Last render %.2f ms, effective frame rate %.1f fps (%d waves/sec)" % (td * 1000, 1.0 / td, (1.0 / td) * self.zs.params.nwaves))
                             self.time_last_acq = time.time()
                             #log.info("Done render")
 
@@ -548,7 +552,7 @@ class ZynqScopeSubprocess(multiprocessing.Process):
     def die_cleanup(self):
         """Stub - to be fleshed out later."""
         return
-            
+
 class ZynqScopeTaskController(object):
     """
     Container class that wraps the ZynqScopeSubprocess module and provides a convenient
