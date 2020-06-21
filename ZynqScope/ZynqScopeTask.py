@@ -475,6 +475,9 @@ class ZynqScopeSubprocess(multiprocessing.Process):
             if self.stop_signal:
                 self._handle_stop()
             else:
+                # Cleanup buffers
+                self.cleanup_rawcam_buffers()
+
                 if self.zs.zynq_acknowledge_if_pending():
                     #log.info("Zynq has packet; try to read it...")
 
@@ -520,9 +523,6 @@ class ZynqScopeSubprocess(multiprocessing.Process):
                             log.info("Last render %.2f ms, effective frame rate %.1f fps (%d waves/sec)" % (td * 1000, 1.0 / td, (1.0 / td) * self.zs.params.nwaves))
                             self.time_last_acq = time.time()
                             #log.info("Done render")
-
-                            # Cleanup buffers
-                            self.cleanup_rawcam_buffers()
 
                             #self.zs.rawcam_stop()
                             #self.acq_state = TSTATE_ACQ_IDLE
