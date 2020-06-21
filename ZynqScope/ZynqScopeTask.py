@@ -553,23 +553,6 @@ class ZynqScopeTaskController(object):
     """
     def __init__(self, zs_init_args):
         log.info("ZynqScopeTaskController: __init__")
-
-        # Create task queues and manager then initialise process with these resources
-        self.evq = multiprocessing.Queue()
-        self.rsq = multiprocessing.Queue()
-        self.acq_resp = multiprocessing.Queue()
-        self.render_queue = multiprocessing.Queue()
-        self.shared_dict = multiprocessing.Manager().dict()
-
-        self.zstask = ZynqScopeSubprocess(self.evq, self.rsq, self.acq_resp, self.render_queue, self.shared_dict, zs_init_args)
-        self.status = zc.ZynqAcqStatus()
-        self.rawcam_running = False
-
-        self.acqstat = ZynqScopeAcqStats()
-        self.acqstat.num_waves_acqd = 0
-
-        # Initialise local rawcam task
-        #rawcam.init()
         
         # Fill common request objects cache
         self.roc = {
@@ -592,8 +575,28 @@ class ZynqScopeTaskController(object):
             'ZynqScopeInitTrigger' : ZynqScopeInitTrigger()
         }
         
-        # Cache for last fetched attributes
         self.attribs_cache = None
+        self.acq_running = False
+
+        self.acqstat = ZynqScopeAcqStats()
+        self.acqstat.num_waves_acqd = 0
+
+        # Create task queues and manager then initialise process with these resources
+        self.init_zynq_task()
+
+    def init_zynq_task(self):
+        self.evq = multiprocessing.Queue()
+        self.rsq = multiprocessing.Queue()
+        self.acq_resp = multiprocessing.Queue()
+        self.render_queue = multiprocessing.Queue()
+        self.shared_dict = multiprocessing.Manager().dict()
+
+        self.zstask = ZynqScopeSubprocess(self.evq, self.rsq, self.acq_resp, self.render_queue, self.shared_dict, zs_init_args)
+        self.status = zc.ZynqAcqStatus()
+        self.rawcam_running = False
+
+        # Initialise local rawcam task
+        #rawcam.init()
     
     def evq_cache(self, key):
         """Pack a cached message quickly into the queue for the subprocess."""
@@ -644,7 +647,7 @@ class ZynqScopeTaskController(object):
         log.debug("ZSTC: ZynqScopeStartAutoAcquisition")
         self.evq_cache('ZynqScopeStartAutoAcquisition')
 
-        # for now, set this
+        self.acq_running = True
         self.zstask.shared_dict['render_to_mmap'] = True
 
     def setup_render_dimensions(self, width, height):
@@ -703,7 +706,14 @@ class ZynqScopeTaskController(object):
     
     def acquisition_tick(self):
         # Check if the subtask has crashed.  It shouldn't ... but if it does, restart it.
-        log.info("Subtask exit: %r" % self.zstask.exitcode) 
+        if self.zstask.exitcode not in [0, None]:
+            log.critical("ZynqScopeTask crashed with exit code: %r -- attempting to restart it" % self.zstask.exitcode)
+            self.init_zynq_task()
+            self.start_task()
+
+            if self.acq_running:
+                log.critical("Restarting acquisition to pre-crash state")
+                self.start_acquisition()
 
     def init_trigger(self):
         self.evq_cache('ZynqScopeInitTrigger')
