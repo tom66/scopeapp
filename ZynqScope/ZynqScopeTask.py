@@ -583,6 +583,7 @@ class ZynqScopeTaskController(object):
 
         # Create task queues and manager then initialise process with these resources
         self.zs_init_args = zs_init_args
+        self.target_dims = (0, 0)
         self.init_zynq_task()
 
     def init_zynq_task(self):
@@ -656,6 +657,7 @@ class ZynqScopeTaskController(object):
         cmd.width = width
         cmd.height = height
         self.evq.put(cmd)
+        self.target_dims = (width, height)
 
     def setup_render_channel_colour(self, idx, colour_tuple):
         cmd = self.roc['ZynqScopeRenderChangeChannelColour']
@@ -715,6 +717,7 @@ class ZynqScopeTaskController(object):
             if self.acq_running:
                 log.critical("Restarting acquisition to pre-crash state")
                 self.start_acquisition()
+                self.setup_render_dimensions(*self.target_dims)
 
     def init_trigger(self):
         self.evq_cache('ZynqScopeInitTrigger')
