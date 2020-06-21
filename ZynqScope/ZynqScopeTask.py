@@ -584,6 +584,7 @@ class ZynqScopeTaskController(object):
         # Create task queues and manager then initialise process with these resources
         self.zs_init_args = zs_init_args
         self.target_dims = (0, 0)
+        self.subtask_restarts = 0
         self.init_zynq_task()
 
     def init_zynq_task(self):
@@ -718,6 +719,11 @@ class ZynqScopeTaskController(object):
                 log.critical("Restarting acquisition to pre-crash state")
                 self.setup_render_dimensions(*self.target_dims)
                 self.start_acquisition()
+
+            self.subtask_restarts += 1
+
+        if self.subtask_restarts > 20:
+            raise RuntimeError("Sub-task keeps crashing.  Fix it!")
 
     def init_trigger(self):
         self.evq_cache('ZynqScopeInitTrigger')
