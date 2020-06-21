@@ -199,7 +199,7 @@ class ArmwaveRenderEngine(zs.BaseRenderEngine):
         return self._shm_get_display()
 
     def _shm_get_display(self):
-        log.info("return SHM ID %d" % elf._shm_buffers[self._shm_display_index])
+        log.info("return SHM ID %d" % self._shm_buffers[self._shm_display_index])
         return self._shm_buffers[self._shm_display_index]
 
     def _shm_get_working(self):
