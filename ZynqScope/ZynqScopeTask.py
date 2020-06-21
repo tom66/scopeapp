@@ -367,12 +367,17 @@ class ZynqScopeSubprocess(multiprocessing.Process):
                 raise RuntimeError("Unimplemented/unsupported task class: %r (type: %r)" % (msg, typ))
     
     def cleanup_rawcam_buffers(self):
+        log.info("Start cleanup")
+
         while len(self.buffers_freeable) > 0:
+            log.info("Start free entry")
             entry = self.buffers_freeable.pop()
             self.zs.rawcam_buffer_free_friendly(entry)
             del entry
+            log.info("Deleted entry")
 
         self.buffers_working = []
+        log.info("Done cleanup")
 
     def start_auto_acquisition(self):
         """Start automatic acquisition (i.e. continuous running as opposed to single shot.)
