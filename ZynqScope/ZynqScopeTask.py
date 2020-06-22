@@ -421,7 +421,7 @@ class ZynqScopeSubprocess(multiprocessing.Process):
 
         #self.zs.zcmd.start_acquisition()
         log.info("Writing period: %d us" % int(1e6 / DEFAULT_ACQUISITION_RATE))
-        self.zs.zcmd.ac_reset()
+        self.zs.zcmd.ac_stop()
         self.zs.zcmd.flush()
         self.zs.zcmd.ac_setup_acq_and_stream(1e6 / DEFAULT_ACQUISITION_RATE)
         self.zs.zcmd.ac_start()
