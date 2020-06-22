@@ -235,7 +235,7 @@ class ZynqScopeSubprocess(multiprocessing.Process):
         log.info("ZynqScopeSubprocess __init__(): task_period=%2.6f, target_acq_period=%2.2f" % (self.task_period, self.target_acq_period))
 
     def process_header(self, resp):
-        log.critical("buffer: %r" % resp.get_memoryview())
+        log.critical("buffer: %r" % resp.buffers[0].get_memoryview())
 
     def do_render(self, resp):
         #log.info("start do_render")
@@ -530,7 +530,7 @@ class ZynqScopeSubprocess(multiprocessing.Process):
                             #self.acq_response_queue.put(resp)
 
                             #log.info("Try to render ...")
-                            self.process_header(self.buffers_freeable[0])
+                            self.process_header(resp)
                             self.do_render(resp)
                             td = time.time() - self.time_last_acq
                             if print_acq:
