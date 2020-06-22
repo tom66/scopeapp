@@ -37,7 +37,7 @@
             <property name="visible">True</property>
             <property name="can_focus">False</property>
             <property name="ypad">5</property>
-            <property name="label" translatable="yes">RunState</property>
+            <property name="label" translatable="yes">Idle</property>
             <property name="width_chars">6</property>
           </object>
           <packing>
@@ -180,7 +180,7 @@ X wfms/s</property>
                 <property name="name">lbl_status_delay</property>
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
-                <property name="label" translatable="yes">Delay</property>
+                <property name="label" translatable="yes">0.00 ps</property>
                 <property name="justify">center</property>
                 <property name="width_chars">10</property>
               </object>
@@ -259,7 +259,7 @@ X wfms/s</property>
                 <property name="name">lbl_status_trigger_info</property>
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
-                <property name="label" translatable="yes">TrigPt</property>
+                <property name="label" translatable="yes">0.00V</property>
                 <property name="justify">center</property>
               </object>
               <packing>
