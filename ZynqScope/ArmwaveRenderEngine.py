@@ -77,7 +77,7 @@ class ArmwaveRenderEngine(zs.BaseRenderEngine):
 
     def set_channel_colour(self, index, colour):
         col = list(colour)
-        col = list(map(lambda x: int(x * self.channel_ints[index]), col)) + [1.0,]
+        col = list(map(lambda x: int(x * self.channel_ints[index]), col)) + [1.0, 1]
         self.channel_colours[index] = colour  # Store colour
         aw.set_channel_colour(index, *col)
         aw.set_channel_palette(index, aw.PLT_SINGLE_COLOUR)
@@ -86,9 +86,10 @@ class ArmwaveRenderEngine(zs.BaseRenderEngine):
         # Global brightness or independent brightness?  Why not both?
         colour = self.channel_colours[index]
         col = list(colour)
-        col = list(map(lambda x: int(x * brightness), col)) + [1.0,]
+        col = list(map(lambda x: int(x * brightness), col)) + [1.0, 1]
         self.channel_ints[index] = brightness
         aw.set_channel_colour(index, *col)
+        aw.set_channel_palette(index, aw.PLT_SINGLE_COLOUR)
 
     def set_xid(self, xid):
         #log.critical("Trying to grab xid %d [NAWT]" % xid)
