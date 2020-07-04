@@ -375,6 +375,8 @@ class ScopeArenaController(object):
             self.ctrl.zst.set_xid(xid.get_xid())
             self.xid = xid.get_xid()
 
+        self.da.queue_draw()
+
         """
         # TODO: Rewrite with with()?
         try:
