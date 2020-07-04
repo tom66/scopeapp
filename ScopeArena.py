@@ -299,7 +299,7 @@ class ScopeArenaController(object):
         """
 
         self.img = Gtk.Image()
-        self.img.set_size_request((200, 200))
+        self.img.set_size_request(200, 200)
         self.fixed.put(self.img, 0, 0)
 
     def prepare_state(self):
