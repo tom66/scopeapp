@@ -104,6 +104,10 @@ class ArmwaveRenderEngine(zs.BaseRenderEngine):
             log.critical("Completed")
             self.xid = xid
 
+    def set_draw_dims(self, x, y, w, h):
+        log.info("set_draw_dims(%d,%d,%d,%d)" % (x, y, w, h))
+        aw.set_draw_dims(x, y, w, h)
+
     def set_target_dimensions(self, width, height):
         """Set new target dimensions and return requested size."""
         log.info("set_target_dimensions(%d,%d)" % (width, height))

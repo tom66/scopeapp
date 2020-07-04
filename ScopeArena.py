@@ -371,10 +371,13 @@ class ScopeArenaController(object):
         alloc = self.fixed.get_allocation()
         log.info("allocation: %d,%d" % (alloc.width, alloc.height))
 
-        if xid != None and self.xid != xid.get_xid():
-            log.info("New window: %s (XID: %d)" % (repr(xid), xid.get_xid()))
-            self.ctrl.zst.set_xid(xid.get_xid())
-            self.xid = xid.get_xid()
+        if xid != None:
+            if self.xid != xid.get_xid():
+                log.info("New window: %s (XID: %d)" % (repr(xid), xid.get_xid()))
+                self.ctrl.zst.set_xid(xid.get_xid())
+                self.xid = xid.get_xid()
+
+            self.ctrl.zst.set_draw_dims(0, 0, alloc.width, alloc.height)
 
         #self.da.show()
         #self.da.queue_draw()

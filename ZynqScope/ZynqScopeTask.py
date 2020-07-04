@@ -113,6 +113,13 @@ class ZynqScopeRenderPassXID(ZynqScopeTaskQueueCommand):
     def __init__(self, xid):
         self.xid = xid
 
+class ZynqScopeRenderSetDrawDimensions(ZynqScopeTaskQueueCommand):
+    def __init__(self, x, y, w, h):
+        self.x = x
+        self.y = y
+        self.w = w
+        self.h = h
+
 class ZynqScopeInitTrigger(ZynqScopeTaskQueueCommand): pass
 
 class ZynqScopeApplyTrigger(ZynqScopeTaskQueueCommand):
@@ -384,6 +391,10 @@ class ZynqScopeSubprocess(multiprocessing.Process):
             log.info("ZynqScopeRenderPassXID: new XID %d" % (msg.xid))
             self.rengine.set_xid(msg.xid)
 
+        elif typ is ZynqScopeRenderSetDrawDimensions:
+            log.info("ZynqScopeRenderSetDrawDimensions: new dims (%d,%d,%d,%d)" % (msg.x, msg.y, msg.w, msg.h))
+            self.rengine.set_draw_dims(msg.x, msg.y, msg.w, msg.h)
+
         else:
             if not isinstance(msg, ZynqScopeTaskQueueCommand):
                 raise RuntimeError("Queue message not subclass of ZynqScopeTaskQueueCommand")
@@ -606,7 +617,8 @@ class ZynqScopeTaskController(object):
             'ZynqScopeApplyADCMapping' : ZynqScopeApplyADCMapping(None),
             'ZynqScopeApplyTrigger' : ZynqScopeApplyTrigger(None),
             'ZynqScopeInitTrigger' : ZynqScopeInitTrigger(),
-            'ZynqScopeRenderPassXID' : ZynqScopeRenderPassXID(0)
+            'ZynqScopeRenderPassXID' : ZynqScopeRenderPassXID(0),
+            'ZynqScopeRenderSetDrawDimensions' : ZynqScopeRenderSetDrawDimensions(0, 0, 0, 0)
         }
         
         self.attribs_cache = None
@@ -681,9 +693,13 @@ class ZynqScopeTaskController(object):
             return False
     
     def set_xid(self, xid):
-        xidcmd = self.roc['ZynqScopeRenderPassXID']
-        xidcmd.xid = xid
-        self.evq.put(xidcmd)
+        cmd = self.roc['ZynqScopeRenderPassXID']
+        cmd.xid = xid
+        self.evq.put(cmd)
+
+    def set_draw_dims(self, x, y, w, h):
+        cmd = self.roc['ZynqScopeRenderSetDrawDimensions']
+        cmd.xid = xid
 
     def start_acquisition(self):
         log.debug("ZSTC: ZynqScopeStartAutoAcquisition")
