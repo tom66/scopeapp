@@ -368,7 +368,7 @@ class ScopeArenaController(object):
         #    log.warn("Not done first redraw, skipping update")
         #    return
         xid = self.window.get_window()
-        alloc = self.img.get_allocation()
+        alloc = self.fixed.get_allocation()
         log.info("allocation: %d,%d" % (alloc.width, alloc.height))
 
         if xid != None and self.xid != xid.get_xid():
