@@ -363,7 +363,7 @@ class ScopeArenaController(object):
         xid = self.grat_da.get_window()
         if xid != None and self.xid != xid:
             log.info("New window: %s (XID: %d)" % (repr(xid), xid.get_xid()))
-            self.zst.set_xid(xid)
+            self.ctrl.zst.set_xid(xid)
             self.xid = xid
 
         """
