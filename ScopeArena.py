@@ -360,7 +360,9 @@ class ScopeArenaController(object):
             return
 
         self.xid = self.grat_da.get_window()
-        log.info("xid: %s" % repr(self.xid))
+        if self.xid != None:
+            log.info("win: %s" % repr(self.xid))
+            log.info("xid: %d" % self.xid.get_xid())
 
         """
         # TODO: Rewrite with with()?
