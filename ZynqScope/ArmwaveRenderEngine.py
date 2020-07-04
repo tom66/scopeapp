@@ -90,7 +90,8 @@ class ArmwaveRenderEngine(zs.BaseRenderEngine):
         aw.set_channel_colour(index, *col)
 
     def set_xid(self, xid):
-        log.critical("Trying to grab xid %d [NAWT]" % xid)
+        #log.critical("Trying to grab xid %d [NAWT]" % xid)
+        log.critical("doing XWindow stuff")
         #aw.grab_xid(xid)
         aw.create_xwindow()
         aw.init_xvimage_shared(512, 256)
