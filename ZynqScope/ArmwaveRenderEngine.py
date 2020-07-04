@@ -93,13 +93,14 @@ class ArmwaveRenderEngine(zs.BaseRenderEngine):
 
     def set_xid(self, xid):
         #log.critical("Trying to grab xid %d [NAWT]" % xid)
-        log.critical("doing XWindow stuff")
-        aw.grab_xid(xid)
-        #aw.create_xwindow()
-        aw.init_xvimage_shared(512, 256)
-        aw.set_graticule_colour(90, 90, 90)
-        aw.set_graticule_dims(0, 12, 8, 5, 5, 0.2)
-        log.critical("Completed")
+        log.critical("doing XWindow stuff %s" % repr(xid))
+        if xid != None:
+            aw.grab_xid(xid)
+            #aw.create_xwindow()
+            aw.init_xvimage_shared(512, 256)
+            aw.set_graticule_colour(90, 90, 90)
+            aw.set_graticule_dims(0, 12, 8, 5, 5, 0.2)
+            log.critical("Completed")
 
     def set_target_dimensions(self, width, height):
         """Set new target dimensions and return requested size."""
