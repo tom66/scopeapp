@@ -92,6 +92,8 @@ class ArmwaveRenderEngine(zs.BaseRenderEngine):
     def set_xid(self, xid):
         log.critical("Trying to grab xid %d" % xid)
         aw.grab_xid(xid)
+        aw.set_graticule_colour(90, 90, 90)
+        aw.set_graticule_dims(0, 12, 8, 5, 5, 0.2)
         log.critical("Completed")
 
     def set_target_dimensions(self, width, height):
@@ -103,7 +105,8 @@ class ArmwaveRenderEngine(zs.BaseRenderEngine):
 
         # Setup armwave
         aw.cleanup()
-        aw.setup_render(self.wave_params[0], self.wave_params[1], self.wave_params[2], self.wave_params[3], width, height, 0)
+        aw.setup_render(self.wave_params[0], self.wave_params[1], self.wave_params[2], self.wave_params[3], width, height, \
+            aw.AM_FLAG_GRAT_RENDER_FRAME | aw.AM_FLAG_GRAT_RENDER_DIVS)
         aw.init_xvimage_shared(width, height)
         aw.test_create_am_sine(0.25, 1e-5, 8)
         log.warning("setup_render done")
