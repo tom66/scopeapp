@@ -366,7 +366,7 @@ class ScopeArenaController(object):
         #if not self.first_draw:
         #    log.warn("Not done first redraw, skipping update")
         #    return
-        xid = self.window.get_window()
+        xid = self.img.get_window()
 
         if xid != None and self.xid != xid.get_xid():
             log.info("New window: %s (XID: %d)" % (repr(xid), xid.get_xid()))
