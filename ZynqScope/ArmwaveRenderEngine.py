@@ -53,16 +53,9 @@ def shm_unlink(name):
 
 class ArmwaveRenderEngine(zs.BaseRenderEngine):
     """Default Y-T Render Engine using ArmWave."""
-    _shm_buffers = []
-    _shm_size = 0
-    _shm_working_index = None
-    _shm_display_index = None
 
     def __init__(self):
         log.info("Initialising ArmwaveRenderEngine")
-
-        # default size
-        self._create_shms(640 * 480 * 4)
 
         # Initialise ArmWave
         aw.init()
@@ -77,42 +70,13 @@ class ArmwaveRenderEngine(zs.BaseRenderEngine):
             self.channel_colours[n + 1] = (0, 255, 0)
             self.channel_ints[n + 1] = 10
 
-    def _create_shms(self, size):
-        self._shm_buffers = []
-        self._shm_working_index = 0
-        self._shm_display_index = 1
-        self._shm_size = size
-
-        lock_mgr = multiprocessing.Manager()
-
-        for i in range(2):
-            # Create a new shm and store the fd (ID) and shm name
-            shm_name = SHM_NAME_TEMPLATE % (i, random.randint(0, 0xffffffff))
-            shm_id = shm_open(shm_name)
-            os.ftruncate(shm_id, size)
-            #m = mmap.mmap(shm_id, size)
-            sem = lock_mgr.Lock()
-
-            self._shm_buffers.append((shm_name, shm_id, sem, size))
-            log.info("Create SHM by name %s id %d (%d bytes)" % (shm_name, shm_id, size))
-
-    def _resize_shms(self, size):
-        new_shm = []
-
-        for shm in self._shm_buffers:
-            log.info("Resize SHM by name %s id %d to %d bytes (was %d bytes)" % (shm[0], shm[1], size, shm[3]))
-            os.ftruncate(shm[1], size)
-            new_shm.append((shm[0], shm[1], shm[2], size))
-
-        self._shm_buffers = new_shm
-
     def update_wave_params(self, start_t, end_t, n_waves, wave_stride):
         self.wave_params = (start_t, end_t, n_waves, wave_stride)
         log.info("update_wave_params: new %s" % repr(self.wave_params))
 
     def set_channel_colour(self, index, colour):
         col = list(colour)
-        col = map(lambda x: int(x * self.channel_ints[index]), col)
+        col = map(lambda x: int(x * self.channel_ints[index]), col) + [1.0,]
         self.channel_colours[index] = colour  # Store colour
         aw.set_channel_colour(index, *col)
 
@@ -120,7 +84,7 @@ class ArmwaveRenderEngine(zs.BaseRenderEngine):
         # Global brightness or independent brightness?  Why not both?
         colour = self.channel_colours[index]
         col = list(colour)
-        col = map(lambda x: int(x * brightness), col)
+        col = map(lambda x: int(x * brightness), col) + [1.0,]
         self.channel_ints[index] = brightness
         aw.set_channel_colour(index, *col)
 
@@ -130,11 +94,6 @@ class ArmwaveRenderEngine(zs.BaseRenderEngine):
 
         if width == 0 and height == 0:
             raise ValueError("zero size buffer in set_target_dimensions")
-
-        new_size = width * height * 4  # 4 bytes per pixel
-        if self._shm_size != new_size:
-            self._shm_size = new_size
-            self._resize_shms(new_size)
 
         # Setup armwave
         aw.cleanup()
@@ -150,21 +109,10 @@ class ArmwaveRenderEngine(zs.BaseRenderEngine):
 
         return new_size
 
-    def get_requested_shms(self):
-        """Return the list of requested SHMs for the parent process to create for us.  This ensures that
-        the fds are accessible from both parent and child."""
-        shms = []
-
-        for i in range(2):
-            shm_name = SHM_NAME_TEMPLATE % i
-            shms.append((shm_name, self._shm_size))
-
-        return shms
-
     def render_single_mmal(self, mmal_data_ptr):
         # Acquire the presently working shm.  Block until it is available.
-        self._shm_buffers[self._shm_working_index][2].acquire()
-        buf = self._shm_buffers[self._shm_working_index]
+        #self._shm_buffers[self._shm_working_index][2].acquire()
+        #buf = self._shm_buffers[self._shm_working_index]
 
         #aw.render_frame_x11()
 
@@ -207,16 +155,3 @@ class ArmwaveRenderEngine(zs.BaseRenderEngine):
         # synchronised with the correct buffer.
         #return self._shm_get_display()
         return None
-
-    def _shm_get_display(self):
-        #log.info("return SHM %s" % repr(self._shm_buffers[self._shm_display_index]))
-        return self._shm_buffers[self._shm_display_index]
-
-    def _shm_get_working(self):
-        return self._shm_buffers[self._shm_working_index]
-
-    def _shm_swap(self):
-        #log.info("shms: %d %d" % (self._shm_display_index, self._shm_working_index))
-        temp = self._shm_working_index
-        self._shm_working_index = self._shm_display_index
-        self._shm_display_index = temp
