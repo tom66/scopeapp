@@ -99,7 +99,6 @@ class ArmwaveRenderEngine(zs.BaseRenderEngine):
             aw.grab_xid(xid)
             #aw.create_xwindow()
             aw.init_xvimage_shared(512, 256)
-            aw.set_graticule_colour(90, 90, 90)
             aw.set_graticule_dims(10, 12, 8, 5, 5, 0.2)
             log.critical("Completed")
             self.xid = xid
@@ -178,6 +177,7 @@ class ArmwaveRenderEngine(zs.BaseRenderEngine):
         #return self._shm_get_display()
 
         if self.xid:
+            aw.set_graticule_colour(90, 90, 90)
             aw.render_frame_x11()
 
         return None
