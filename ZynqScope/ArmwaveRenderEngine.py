@@ -104,6 +104,8 @@ class ArmwaveRenderEngine(zs.BaseRenderEngine):
         # Setup armwave
         aw.cleanup()
         aw.setup_render(self.wave_params[0], self.wave_params[1], self.wave_params[2], self.wave_params[3], width, height, 0)
+        aw.init_xvimage_shared(width, height)
+        aw.test_create_am_sine(0.25, 1e-5, 8)
         log.warning("setup_render done")
 
         # setup test wavesets
@@ -113,7 +115,7 @@ class ArmwaveRenderEngine(zs.BaseRenderEngine):
         #aw.test_create_am_sine(0.1, 10e-6, self.test_waveset_count)
         #log.info("done generating %d wavesets" % self.test_waveset_count)
 
-        return new_size
+        return (0, 0)
 
     def render_single_mmal(self, mmal_data_ptr):
         # Acquire the presently working shm.  Block until it is available.
@@ -160,4 +162,6 @@ class ArmwaveRenderEngine(zs.BaseRenderEngine):
         # ONLY use the display shm returned by this call as it is not otherwise guaranteed to be 
         # synchronised with the correct buffer.
         #return self._shm_get_display()
+
+        aw.render_frame_x11()
         return None
