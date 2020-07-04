@@ -90,8 +90,9 @@ class ArmwaveRenderEngine(zs.BaseRenderEngine):
         aw.set_channel_colour(index, *col)
 
     def set_xid(self, xid):
-        log.critical("Trying to grab xid %d" % xid)
-        aw.grab_xid(xid)
+        log.critical("Trying to grab xid %d [NAWT]" % xid)
+        #aw.grab_xid(xid)
+        aw.create_xwindow()
         aw.set_graticule_colour(90, 90, 90)
         aw.set_graticule_dims(0, 12, 8, 5, 5, 0.2)
         log.critical("Completed")
