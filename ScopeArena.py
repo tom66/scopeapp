@@ -369,7 +369,10 @@ class ScopeArenaController(object):
         #    return
         xid = self.window.get_window()
         alloc = self.fixed.get_allocation()
+        pos = self.fixed.translate_coordinates(self.fixed, 0, 0)
+
         log.info("allocation: %d,%d" % (alloc.width, alloc.height))
+        log.info("positions:  %d,%d" % (pos[0], pos[1]))
 
         if xid != None:
             if self.xid != xid.get_xid():
