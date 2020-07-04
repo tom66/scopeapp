@@ -90,7 +90,7 @@ class ArmwaveRenderEngine(zs.BaseRenderEngine):
 
     def set_xid(self, xid):
         log.critical("Trying to grab xid %d" % xid)
-        aw.armwave_grab_xid(xid)
+        aw.grab_xid(xid)
         log.critical("Completed")
 
     def set_target_dimensions(self, width, height):
