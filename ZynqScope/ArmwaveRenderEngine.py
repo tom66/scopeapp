@@ -88,6 +88,11 @@ class ArmwaveRenderEngine(zs.BaseRenderEngine):
         self.channel_ints[index] = brightness
         aw.set_channel_colour(index, *col)
 
+    def set_xid(self, xid):
+        log.critical("Trying to grab xid %d" % xid)
+        aw.armwave_grab_xid(xid)
+        log.critical("Completed")
+
     def set_target_dimensions(self, width, height):
         """Set new target dimensions and return requested size."""
         log.info("set_target_dimensions(%d,%d)" % (width, height))

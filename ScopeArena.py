@@ -280,6 +280,7 @@ class ScopeArenaController(object):
         self.stat_waves = 0
 
         self.wave_pb = None
+        self.xid = None
 
         self.set_wave_intensity(self.wave_intensity)
 
@@ -359,10 +360,11 @@ class ScopeArenaController(object):
             log.warn("Not done first redraw, skipping update")
             return
 
-        self.xid = self.grat_da.get_window()
-        if self.xid != None:
-            log.info("win: %s" % repr(self.xid))
-            log.info("xid: %d" % self.xid.get_xid())
+        xid = self.grat_da.get_window()
+        if xid != None and self.xid != xid:
+            log.info("New window: %s (XID: %d)" % (repr(xid), xid.get_xid()))
+            self.zst.set_xid(xid)
+            self.xid = xid
 
         """
         # TODO: Rewrite with with()?

@@ -109,6 +109,10 @@ class ZynqScopeRenderChangeChannelIntensity(ZynqScopeTaskQueueCommand):
         self.ch = ch
         self.ints = ints
 
+class ZynqScopeRenderPassXID(ZynqScopeTaskQueueCommand):
+    def __init__(self, xid):
+        self.xid = xid
+
 class ZynqScopeInitTrigger(ZynqScopeTaskQueueCommand): pass
 
 class ZynqScopeApplyTrigger(ZynqScopeTaskQueueCommand):
@@ -596,7 +600,8 @@ class ZynqScopeTaskController(object):
             'ZynqScopeRenderChangeChannelIntensity' : ZynqScopeRenderChangeChannelIntensity(0, 0),
             'ZynqScopeApplyADCMapping' : ZynqScopeApplyADCMapping(None),
             'ZynqScopeApplyTrigger' : ZynqScopeApplyTrigger(None),
-            'ZynqScopeInitTrigger' : ZynqScopeInitTrigger()
+            'ZynqScopeInitTrigger' : ZynqScopeInitTrigger(),
+            'ZynqScopeRenderPassXID' : ZynqScopeRenderPassXID(0)
         }
         
         self.attribs_cache = None
@@ -670,6 +675,11 @@ class ZynqScopeTaskController(object):
             log.warn("Stop failed?: %r" % e)
             return False
     
+    def set_xid(self, xid):
+        xidcmd = self.roc['ZynqScopeRenderPassXID']
+        xidcmd.xid = xid
+        self.evq.put(xidcmd)
+
     def start_acquisition(self):
         log.debug("ZSTC: ZynqScopeStartAutoAcquisition")
         self.evq_cache('ZynqScopeStartAutoAcquisition')
