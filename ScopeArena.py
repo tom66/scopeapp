@@ -292,9 +292,11 @@ class ScopeArenaController(object):
         call_(self.fixed, *pack_args)
         self.window = window
 
+        """
         self.grat_da = Gtk.DrawingArea()
         self.grat_da.connect('draw', self._draw)
         self.fixed.put(self.grat_da, 0, 0)
+        """
 
         self.img = Gtk.Image()
         self.fixed.put(self.img, 0, 0)
@@ -325,7 +327,7 @@ class ScopeArenaController(object):
         """Resize notifier."""
         log.warn("notify_resize")
         self.update_size_allocation()
-        self.grat_da.queue_draw()
+        #self.grat_da.queue_draw()
 
     def notify_channel_colour_change(self):
         """Update channel colour if an intensity has changed."""
@@ -360,7 +362,7 @@ class ScopeArenaController(object):
             log.warn("Not done first redraw, skipping update")
             return
 
-        xid = self.grat_da.get_window()
+        xid = self.img.get_window()
         if xid != None and self.xid != xid.get_xid():
             log.info("New window: %s (XID: %d)" % (repr(xid), xid.get_xid()))
             self.ctrl.zst.set_xid(xid.get_xid())
@@ -428,8 +430,8 @@ class ScopeArenaController(object):
         # Redraw graticule if size has changed
         if cr != None:
             self.grat_rdr.set_context(cr, self.size_alloc)
-            self.grat_da.set_size_request(self.size_alloc[0], self.size_alloc[1])
-            self.grat_rdr.render()
+            #self.grat_da.set_size_request(self.size_alloc[0], self.size_alloc[1])
+            #self.grat_rdr.render()
             #self.grat_da.queue_draw()
 
         targ_dims = self.grat_rdr.get_wave_arena_dims()
