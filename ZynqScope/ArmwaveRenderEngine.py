@@ -144,7 +144,7 @@ class ArmwaveRenderEngine(zs.BaseRenderEngine):
         t1 = time.time()
         #log.info("TA: %.1f" % ((t1 - t0) * 1000))
 
-        aw.set_wave_pointer_u32(mmal_data_ptr)
+        aw.set_wave_pointer_u32(mmal_data_ptr)1
         
         t0 = time.time()
         aw.generate()
@@ -175,5 +175,5 @@ class ArmwaveRenderEngine(zs.BaseRenderEngine):
 
         if self.xid:
             aw.render_frame_x11()
-            
+
         return None
