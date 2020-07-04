@@ -93,6 +93,7 @@ class ArmwaveRenderEngine(zs.BaseRenderEngine):
         log.critical("Trying to grab xid %d [NAWT]" % xid)
         #aw.grab_xid(xid)
         aw.create_xwindow()
+        aw.init_xvimage_shared(1024, 256)
         aw.set_graticule_colour(90, 90, 90)
         aw.set_graticule_dims(0, 12, 8, 5, 5, 0.2)
         log.critical("Completed")
@@ -108,7 +109,6 @@ class ArmwaveRenderEngine(zs.BaseRenderEngine):
         aw.cleanup()
         aw.setup_render(self.wave_params[0], self.wave_params[1], self.wave_params[2], self.wave_params[3], width, height, \
             aw.AM_FLAG_GRAT_RENDER_FRAME | aw.AM_FLAG_GRAT_RENDER_DIVS)
-        aw.init_xvimage_shared(width, height)
         aw.test_create_am_sine(0.25, 1e-5, 8)
         log.warning("setup_render done")
 
