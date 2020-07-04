@@ -59,6 +59,7 @@ class ArmwaveRenderEngine(zs.BaseRenderEngine):
 
         # Initialise ArmWave
         aw.init()
+        aw.init_x11()
 
         self.done_test_wave = False
 
