@@ -58,7 +58,7 @@ timebase_options = [ 50e-9, 100e-9, 200e-9, 500e-9,   1e-6,    2e-6,    5e-6,   
 
 timebase_options = [ 50e-9, 100e-9, 200e-9, 500e-9,   1e-6,    2e-6,    5e-6,    10e-6,  20e-6,   50e-6]
 
-default_timebase = 0 # 10
+default_timebase = 1 # 10
 
 class BaseRenderEngine(object): 
     """STUB base class - maybe expanded later"""
