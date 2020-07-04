@@ -302,6 +302,10 @@ class ScopeArenaController(object):
         self.img.set_size_request(200, 200)
         self.fixed.put(self.img, 0, 0)
 
+        self.da = Gtk.DrawingArea()
+        self.da.set_size_request(200, 200)
+        self.fixed.put(self.da, 0, 0)
+
     def prepare_state(self):
         return Utils.pack_dict_json(self, self.pack_vars_types)
     
@@ -363,7 +367,7 @@ class ScopeArenaController(object):
         #    log.warn("Not done first redraw, skipping update")
         #    return
 
-        xid = self.window.get_window()
+        xid = self.da.get_window()
 
         if xid != None and self.xid != xid.get_xid():
             log.info("New window: %s (XID: %d)" % (repr(xid), xid.get_xid()))
