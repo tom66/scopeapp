@@ -380,6 +380,10 @@ class ZynqScopeSubprocess(multiprocessing.Process):
             self.zs.set_adc_mapping(msg.adc_map)
             log.info("Done")
 
+        elif typ is ZynqScopeRenderPassXID:
+            log.info("ZynqScopeRenderPassXID: new XID %d" % (msg.xid))
+            self.rengine.set_xid(msg.xid)
+
         else:
             if not isinstance(msg, ZynqScopeTaskQueueCommand):
                 raise RuntimeError("Queue message not subclass of ZynqScopeTaskQueueCommand")
