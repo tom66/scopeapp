@@ -379,7 +379,7 @@ class ScopeArenaController(object):
                 self.ctrl.zst.set_xid(xid.get_xid())
                 self.xid = xid.get_xid()
 
-            self.ctrl.zst.set_draw_dims(0, 0, alloc.width, alloc.height)
+            self.ctrl.zst.set_draw_dims(alloc.x, alloc.y, alloc.width, alloc.height)
 
         #self.da.show()
         #self.da.queue_draw()
