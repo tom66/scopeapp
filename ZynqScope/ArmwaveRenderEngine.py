@@ -65,6 +65,7 @@ class ArmwaveRenderEngine(zs.BaseRenderEngine):
 
         self.channel_colours = {}
         self.channel_ints = {}
+        self.xid = None
 
         # TODO:  Pass # of expected channels
         for n in range(4):
@@ -101,6 +102,7 @@ class ArmwaveRenderEngine(zs.BaseRenderEngine):
             aw.set_graticule_colour(90, 90, 90)
             aw.set_graticule_dims(0, 12, 8, 5, 5, 0.2)
             log.critical("Completed")
+            self.xid = xid
 
     def set_target_dimensions(self, width, height):
         """Set new target dimensions and return requested size."""
@@ -171,5 +173,7 @@ class ArmwaveRenderEngine(zs.BaseRenderEngine):
         # synchronised with the correct buffer.
         #return self._shm_get_display()
 
-        aw.render_frame_x11()
+        if self.xid:
+            aw.render_frame_x11()
+            
         return None
