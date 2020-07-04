@@ -699,7 +699,11 @@ class ZynqScopeTaskController(object):
 
     def set_draw_dims(self, x, y, w, h):
         cmd = self.roc['ZynqScopeRenderSetDrawDimensions']
-        cmd.xid = xid
+        cmd.x = x
+        cmd.y = y
+        cmd.w = w
+        cmd.h = h
+        self.evq.put(cmd)
 
     def start_acquisition(self):
         log.debug("ZSTC: ZynqScopeStartAutoAcquisition")
