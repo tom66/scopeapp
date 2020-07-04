@@ -369,7 +369,7 @@ class ScopeArenaController(object):
         #    return
         xid = self.window.get_window()
         alloc = self.img.get_allocation()
-        log.info("allocation: %r" % (alloc.width, alloc.height))
+        log.info("allocation: %d,%d" % (alloc.width, alloc.height))
 
         if xid != None and self.xid != xid.get_xid():
             log.info("New window: %s (XID: %d)" % (repr(xid), xid.get_xid()))
