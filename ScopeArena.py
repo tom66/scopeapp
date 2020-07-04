@@ -297,6 +297,8 @@ class ScopeArenaController(object):
 
         self.img = Gtk.Image()
         self.fixed.put(self.img, 0, 0)
+        self.xid = self.img.get_window()
+        log.info("xid: %s" % repr(self.xid))
 
     def prepare_state(self):
         return Utils.pack_dict_json(self, self.pack_vars_types)
@@ -430,8 +432,8 @@ class ScopeArenaController(object):
         self.fixed.move(self.img, ox, oy)
         
         # Drive the renderer
-        if width != self.last_target_dims[0] or height != self.last_target_dims[1]:
-            self.ctrl.zst.setup_render_dimensions(width, height)
+        #if width != self.last_target_dims[0] or height != self.last_target_dims[1]:
+        #    self.ctrl.zst.setup_render_dimensions(width, height)
 
         #self.local_aobj.update_wave_params(0, width, 96, width)
         #self.local_aobj.set_target_dimensions(width, height)

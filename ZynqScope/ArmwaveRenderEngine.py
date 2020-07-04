@@ -166,10 +166,13 @@ class ArmwaveRenderEngine(zs.BaseRenderEngine):
         self._shm_buffers[self._shm_working_index][2].acquire()
         buf = self._shm_buffers[self._shm_working_index]
 
-        mmap_obj = mmap.mmap(buf[1], buf[3])
+        #aw.render_frame_x11()
+
+        #mmap_obj = mmap.mmap(buf[1], buf[3])
 
         #log.info("mmap_obj: %s length %d" % (repr(mmap_obj), len(mmap_obj)))
 
+        """
         t0 = time.time()
         aw.clear_buffer(0)
         t1 = time.time()
@@ -190,18 +193,20 @@ class ArmwaveRenderEngine(zs.BaseRenderEngine):
             raise RuntimeError("Pixbuf render failed with PyFalse: possibly corrupt pointer?")
         t1 = time.time()
         #log.info("TC: %.1f" % ((t1 - t0) * 1000))
+        """
 
         # Close the mmap.  We're done working with it.
-        mmap_obj.close()
+        #mmap_obj.close()
 
         # Release the working shm.  Swap buffers.
-        working = self._shm_working_index
-        self._shm_swap()
-        self._shm_buffers[working][2].release()
+        #working = self._shm_working_index
+        #self._shm_swap()
+        #self._shm_buffers[working][2].release()
 
         # ONLY use the display shm returned by this call as it is not otherwise guaranteed to be 
         # synchronised with the correct buffer.
-        return self._shm_get_display()
+        #return self._shm_get_display()
+        return None
 
     def _shm_get_display(self):
         #log.info("return SHM %s" % repr(self._shm_buffers[self._shm_display_index]))

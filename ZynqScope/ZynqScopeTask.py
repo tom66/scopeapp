@@ -3,7 +3,7 @@ This file is part of YAOS and is licenced under the MIT Licence.
 """
 
 import sys, operator, math, inspect, copy, time, spidev, pickle
-import multiprocessing, ctypes
+import multiprocessing, ctypes, struct
 from types import ModuleType
 
 sys.path.append('..')
@@ -146,6 +146,8 @@ class ZynqScopeAcquisitionResponse(object):
     def __repr__(self):
         return "<ZynqScopeAcquisitionResponse n_buffers=%d status=%r time=%f>" % (len(self.buffers), self.status, self.time)
 
+class ZynqScopeCSIPacketHeader(object):
+
 class ZynqScopePicklableMemoryBuff(object): 
     def __init__(self, pirawcam_buff):
         self.mmal_ptr = pirawcam_buff.mmal_ptr
@@ -153,6 +155,9 @@ class ZynqScopePicklableMemoryBuff(object):
         self.length = pirawcam_buff.length
         self.flags = pirawcam_buff.flags
         self.pts = pirawcam_buff.pts
+        self.header_struct = struct.Struct("QHHIIIIIII")
+        self.health_struct = struct.Struct("QhHHHHHHHH") 
+        self.csi_stats_struct = struct.Struct("III") 
 
     def __repr__(self):
         return "<ZynqScopePicklableMemoryBuff mmal_ptr=0x%08x data_ptr=0x%08x length=%d flags=0x%04x pts=%d>" % \
@@ -163,6 +168,9 @@ class ZynqScopePicklableMemoryBuff(object):
 
     def get_memoryview(self):
         return rawcam.get_memoryview_from_buffer_params(self.data_ptr, self.length)
+
+    def parse_header(self):
+        resp = bytes(resp.buffers[0].get_memoryview()[0:1024])
 
     def dump_to_file(self, fn):
         fp = open(fn, "wb")
@@ -237,21 +245,13 @@ class ZynqScopeSubprocess(multiprocessing.Process):
         log.info("ZynqScopeSubprocess __init__(): task_period=%2.6f, target_acq_period=%2.2f" % (self.task_period, self.target_acq_period))
 
     def process_header(self, resp):
-        log.critical("buffer: %r" % bytes(resp.buffers[0].get_memoryview()[0:64]))
+        log.critical("buffer: %r" % bytes(resp.buffers[0].get_memoryview()[0:512]))
 
     def do_render(self, resp):
         #log.info("start do_render")
 
         if self.shared_dict['render_to_mmap']:
-            #log.critical("render from:    0x%08x" % resp.buffers[0].data_ptr)
-            #log.critical("render buffers: %s" % repr(resp.buffers))
-            #log.critical("zs_params:      %s" % repr(self.zs.params))
-
-            # Max 2 items in the queue.
-            if self.render_queue.qsize() <= 1:
-                #log.info("Put in queue")
-                self.render_queue.put(self.rengine.render_single_mmal(resp.buffers[0].data_ptr + 512))  # 512 byte offset for header; header to be decoded later
-                #log.info("Done put")
+            self.rengine.render_single_mmal(resp.buffers[0].data_ptr + 512)  # 512 byte offset for header; header to be decoded later
         else:
             log.warn("Render inhibited as render_to_mmap is False")
 
