@@ -297,8 +297,6 @@ class ScopeArenaController(object):
 
         self.img = Gtk.Image()
         self.fixed.put(self.img, 0, 0)
-        self.xid = self.grat_da.get_window()
-        log.info("xid: %s" % repr(self.xid))
 
     def prepare_state(self):
         return Utils.pack_dict_json(self, self.pack_vars_types)
@@ -361,6 +359,10 @@ class ScopeArenaController(object):
             log.warn("Not done first redraw, skipping update")
             return
 
+        self.xid = self.grat_da.get_window()
+        log.info("xid: %s" % repr(self.xid))
+
+        """
         # TODO: Rewrite with with()?
         try:
             # Try to grab a render buffer
@@ -408,6 +410,7 @@ class ScopeArenaController(object):
             log.critical("Exception during local render: %r" % e)
             self.ctrl.zst.release_render(render)
             #raise e
+        """
 
     def _draw(self, wdg, cr):
         """Draw/expose callback"""
