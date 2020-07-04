@@ -147,6 +147,7 @@ class ZynqScopeAcquisitionResponse(object):
         return "<ZynqScopeAcquisitionResponse n_buffers=%d status=%r time=%f>" % (len(self.buffers), self.status, self.time)
 
 class ZynqScopeCSIPacketHeader(object):
+    pass
 
 class ZynqScopePicklableMemoryBuff(object): 
     def __init__(self, pirawcam_buff):
