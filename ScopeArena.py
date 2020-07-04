@@ -297,7 +297,7 @@ class ScopeArenaController(object):
 
         self.img = Gtk.Image()
         self.fixed.put(self.img, 0, 0)
-        self.xid = self.img.get_window()
+        self.xid = self.grat_da.get_window()
         log.info("xid: %s" % repr(self.xid))
 
     def prepare_state(self):
@@ -345,6 +345,7 @@ class ScopeArenaController(object):
             return False
 
         new_alloc = (rect.width, rect.height)
+        log.info("new_alloc: %s" % repr(new_alloc))
 
         if self.size_alloc != new_alloc:
             #log.debug("New alloc: %d x %d" % new_alloc)
