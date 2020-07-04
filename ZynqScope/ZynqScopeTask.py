@@ -382,7 +382,7 @@ class ZynqScopeSubprocess(multiprocessing.Process):
 
         elif typ is ZynqScopeRenderPassXID:
             log.info("ZynqScopeRenderPassXID: new XID %d" % (msg.xid))
-            self.rengine.set_xid(msg.xid)
+            pass#self.rengine.set_xid(msg.xid)
 
         else:
             if not isinstance(msg, ZynqScopeTaskQueueCommand):
@@ -426,6 +426,7 @@ class ZynqScopeSubprocess(multiprocessing.Process):
         # prepare the render 
         self.rengine.update_wave_params(0, self.zs.params.memory_depth, self.zs.params.nwaves, self.zs.params.memory_depth)
         self.rengine.set_target_dimensions(1024, 256)  # fixed for now?
+        self.rengine.set_xid(None)
 
         self.zs.zcmd.flush()
 
