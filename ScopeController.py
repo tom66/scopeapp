@@ -719,7 +719,7 @@ class ScopeController(object):
     
     def acq_run(self):
         log.debug("acq_run() outer")
-        self.zst.start_acquisition()
+        #self.zst.start_acquisition()
 
         if self.run_state == ACQ_IS_STOPPED:
             # Sync all changes to the acquisition side
