@@ -364,8 +364,10 @@ class ScopeArenaController(object):
         #    return
 
         xid = self.img.get_window()
+
         if xid != None and self.xid != xid.get_xid():
             log.info("New window: %s (XID: %d)" % (repr(xid), xid.get_xid()))
+            self.img.hide_all()
             self.ctrl.zst.set_xid(xid.get_xid())
             self.xid = xid.get_xid()
 
