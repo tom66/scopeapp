@@ -98,7 +98,7 @@ class ArmwaveRenderEngine(zs.BaseRenderEngine):
         if xid != None:
             aw.grab_xid(xid)
             #aw.create_xwindow()
-            aw.init_xvimage_shared(1232, 256)
+            aw.init_xvimage_shared(1216, 256)
             aw.set_graticule_dims(10, 12, 8, 5, 5, 0.2)
             log.critical("Completed")
             self.xid = xid

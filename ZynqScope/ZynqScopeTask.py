@@ -436,7 +436,7 @@ class ZynqScopeSubprocess(multiprocessing.Process):
 
         # prepare the render 
         self.rengine.update_wave_params(0, self.zs.params.memory_depth, self.zs.params.nwaves, self.zs.params.memory_depth)
-        self.rengine.set_target_dimensions(1232, 256)  # fixed for now?
+        self.rengine.set_target_dimensions(1216, 256)  # fixed for now?
         #self.rengine.set_xid(None)
 
         self.zs.zcmd.flush()
