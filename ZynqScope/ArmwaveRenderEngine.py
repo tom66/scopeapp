@@ -119,6 +119,7 @@ class ArmwaveRenderEngine(zs.BaseRenderEngine):
         aw.setup_render(self.wave_params[0], self.wave_params[1], self.wave_params[2], self.wave_params[3], width, height, \
             aw.AM_FLAG_GRAT_RENDER_FRAME | aw.AM_FLAG_GRAT_RENDER_DIVS | aw.AM_FLAG_GRAT_RENDER_SUBDIV)
         aw.test_create_am_sine(0.25, 1e-5, 8)
+        aw.init_xvimage_shared(1216, 256)
         log.warning("setup_render done")
 
         # setup test wavesets
