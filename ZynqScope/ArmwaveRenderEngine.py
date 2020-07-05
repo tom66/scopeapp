@@ -178,6 +178,7 @@ class ArmwaveRenderEngine(zs.BaseRenderEngine):
         #return self._shm_get_display()
 
         if self.xid:
+            log.info("mmal=0x%08x" % mmal_data_ptr)
             aw.set_wave_pointer_u32(mmal_data_ptr)
             aw.set_graticule_colour(90, 90, 90)
             aw.render_frame_x11()
