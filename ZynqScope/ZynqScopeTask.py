@@ -263,7 +263,7 @@ class ZynqScopeSubprocess(multiprocessing.Process):
         #log.info("start do_render")
 
         if self.shared_dict['render_to_mmap']:
-            log.critical("render_single_mmal()")
+            #log.critical("render_single_mmal()")
             self.rengine.render_single_mmal(resp.buffers[0].data_ptr + 512)  # 512 byte offset for header; header to be decoded later
         else:
             log.warn("Render inhibited as render_to_mmap is False")
