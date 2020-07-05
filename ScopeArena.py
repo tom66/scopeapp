@@ -281,6 +281,7 @@ class ScopeArenaController(object):
 
         self.wave_pb = None
         self.xid = None
+        self.dims = None
 
         self.set_wave_intensity(self.wave_intensity)
 
@@ -369,6 +370,7 @@ class ScopeArenaController(object):
         #    return
         xid = self.window.get_window()
         alloc = self.fixed.get_allocation()
+        new_dims = (alloc.x, alloc.y, alloc.width, alloc.height)
 
         #log.info("allocation: %d,%d" % (alloc.width, alloc.height))
         #log.info("positions:  %d,%d" % (alloc.x, alloc.y))
@@ -379,7 +381,9 @@ class ScopeArenaController(object):
                 self.ctrl.zst.set_xid(xid.get_xid())
                 self.xid = xid.get_xid()
 
-            self.ctrl.zst.set_draw_dims(alloc.x, alloc.y, alloc.width, alloc.height)
+            if self.dims != new_dims:
+                self.ctrl.zst.set_draw_dims(*new_dims)
+                self.dims = new_dims
 
         #self.da.show()
         #self.da.queue_draw()
