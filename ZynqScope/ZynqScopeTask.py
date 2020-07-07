@@ -373,7 +373,7 @@ class ZynqScopeSubprocess(multiprocessing.Process):
         elif typ is ZynqScopeGetStats:
             # Return a safed object copy of all scope parameters which can be accessed
             log.error("Requested Stats %s" % repr(self.stats))
-            self.rsq.put(self.stats)
+            self.rsq.put(copy.deepcopy(self.stats))
             
         elif typ is ZynqScopeSendCompAcqStreamCommand:
             # Send a composite acquisition status command and return the response data.
