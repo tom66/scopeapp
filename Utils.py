@@ -16,7 +16,7 @@ from gi.repository import GdkPixbuf
 import math, colorsys, logging
 
 # Quantify library: https://pypi.org/project/quantiphy/
-from quantify import Quantity
+from quantiphy import Quantity
 
 log = logging.getLogger()
 
