@@ -717,9 +717,13 @@ class ZynqScopeTaskController(object):
     def update_stats(self):
         log.critical("Start getting stats")
         self.evq_cache('ZynqScopeGetStats')
-        log.info("")
-        self.stats = self.rsq.get(True, ZST_TIMEOUT)
-        log.critical("Got stats: %s" % repr(self.stats))
+        
+        try:
+            self.stats = self.rsq.get(True, ZST_TIMEOUT)
+            log.critical("Got stats: %s" % repr(self.stats))
+        except:
+            pass
+
         return self.stats
 
     def get_supported_timebases(self):
