@@ -134,8 +134,12 @@ class ZynqScopeStopCompleted(ZynqScopeTaskQueueResponse): pass
 class ZynqScopeStats(ZynqScopeTaskQueueResponse):
     def __init__(self):
         self.num_waves_sent = 0
-        self.last_wave_rates = [0]
-        self.last_frame_times = [1]
+        self.last_wave_rates = []
+        self.last_frame_times = []
+
+    def reset_stats(self):
+        self.last_wave_rates = []
+        self.last_frame_times = []
 
     def add_wave_rate(self, rate):
         #log.info("wr:%.3f r:%s" % (rate, repr(self.last_wave_rates)))
