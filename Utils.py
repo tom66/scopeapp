@@ -15,6 +15,9 @@ from gi.repository import GdkPixbuf
 
 import math, colorsys, logging
 
+# Quantify library: https://pypi.org/project/quantiphy/
+from quantify import Quantity
+
 log = logging.getLogger()
 
 APP_VERSION_MAJOR = 0
@@ -119,6 +122,7 @@ def round_sig_figs(x, sf):
 def unit_format_suffix(value, suffix, precision=2):
     """Print given value as a SI-scaled unit.  Precision option specifies how many significant digits to display."""
     # TRANSLATORS: SI units generally are not translated, please check carefully before translating.
+    """
     if abs(value) < 1e-12: 
         return _("0 {unit}").format(unit=suffix) # Values below 1 pico are assumed to be zero
     elif abs(value) >= 1e-12 and abs(value) < 1e-9:
@@ -139,6 +143,9 @@ def unit_format_suffix(value, suffix, precision=2):
         return _("{value} G{unit}").format(value=float_trail_free(round_sig_figs(value * 1e-9, precision)), unit=suffix)
     elif abs(value) >= .99e12:
         return _("{value} T{unit}").format(value=float_trail_free(round_sig_figs(value * 1e-12, precision)), unit=suffix)
+    """
+
+    return Quantity(value).render(suffix, prec=precision)
 
 def unit_format_atten(value, suffix):
     """Print given value (e.g. V) as a uV/div, mV/div, V/div or kV/div setting.  Input is floating point."""
