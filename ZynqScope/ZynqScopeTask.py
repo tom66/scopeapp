@@ -147,6 +147,7 @@ class ZynqScopeStats(object):
         self.last_frame_times.append(td)
 
     def get_average_wave_rate(self):
+        log.info("%s" % repr(self.last_wave_rates))
         if len(self.last_wave_rates) == 0:
             return 0
         else:
