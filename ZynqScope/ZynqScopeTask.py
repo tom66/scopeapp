@@ -584,16 +584,15 @@ class ZynqScopeSubprocess(multiprocessing.Process):
 
                             self.time_acqs += 1
 
-                            if print_acq:
-                                td = (time.time() - self.time_last_acq_log) / self.time_acqs
-                                log.info("Last render %.2f ms, effective frame rate %.1f fps (%d waves/sec) (based on %d acqs)" \
-                                    % (td * 1000, 1.0 / td, (1.0 / td) * self.zs.params.nwaves, self.time_acqs))
+                            td = (time.time() - self.time_last_acq_log) / self.time_acqs
+                            #log.info("Last render %.2f ms, effective frame rate %.1f fps (%d waves/sec) (based on %d acqs)" \
+                            #    % (td * 1000, 1.0 / td, (1.0 / td) * self.zs.params.nwaves, self.time_acqs))
 
-                                self.last_nwaves =  (1.0 / td) * self.zs.params.nwaves
-                                self.stats.add_wave_rate(self.last_nwaves)
-                                self.stats.add_frame_time(td)
-                                self.time_last_acq_log = time.time()
-                                self.time_acqs = 0
+                            self.last_nwaves =  (1.0 / td) * self.zs.params.nwaves
+                            self.shared_dict['stats'].add_wave_rate(self.last_nwaves)
+                            self.shared_dict['stats'].add_frame_time(td)
+                            self.time_last_acq_log = time.time()
+                            self.time_acqs = 0
 
                             #log.info("Done render")
 
