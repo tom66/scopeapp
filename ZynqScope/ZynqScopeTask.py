@@ -325,7 +325,8 @@ class ZynqScopeSubprocess(multiprocessing.Process):
                 return False
 
             # sync state
-            self.shared_dict['stats'] = copy.copy(self.stats)
+            log.info("my state: %s" % repr(self.stats))
+            self.shared_dict['stats'] = self.stats
             
             time.sleep(self.task_period)
         
