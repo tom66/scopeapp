@@ -381,7 +381,7 @@ class ScopeArenaController(object):
                 self.ctrl.zst.set_xid(xid.get_xid())
                 self.xid = xid.get_xid()
 
-            if True: #self.dims != new_dims:
+            if self.dims != new_dims:
                 self.ctrl.zst.set_draw_dims(*new_dims)
                 self.dims = new_dims
 

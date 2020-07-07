@@ -3,7 +3,7 @@ This file is part of YAOS and is licenced under the MIT Licence.
 """
 
 import sys, operator, math, inspect, copy, time, spidev, pickle
-import multiprocessing, ctypes, struct
+import multiprocessing, ctypes, struct, statistics
 from types import ModuleType
 
 sys.path.append('..')
@@ -130,11 +130,29 @@ class ZynqScopeApplyADCMapping(ZynqScopeTaskQueueCommand):
     def __init__(self, adc_map):
         self.adc_map = adc_map
 
-class ZynqScopeAcqStats(object):
-    num_waves_acqd = 0
-
-class ZynqScopeAcqStatsSender(object):
+class ZynqScopeStats(object):
     num_waves_sent = 0
+    last_wave_rates = [0]
+    last_frame_times = [1]
+
+    def add_wave_rate(self, rate):
+        if len(self.last_wave_rates) > 10:
+            self.last_wave_rates.pop(0)
+        self.last_wave_rates.append(rate)
+
+    def add_frame_time(self, td):
+        if len(self.last_frame_times) > 10:
+            self.last_frame_times.pop(0)
+        self.last_frame_times.append(td)
+
+    def get_average_wave_rate(self):
+        return statistics.mean(self.last_wave_rates)
+
+    def get_average_frame_time(self):
+        return statistics.mean(self.last_frame_times)
+
+    def get_average_frame_rate(self):
+        return 1.0 / self.get_average_frame_time()
 
 def compress_class_attrs_for_response(resp, clas_, exclude=[]):
     #print("compress_class_attrs_for_response %r %r" % (resp, clas_))
@@ -218,8 +236,6 @@ class ZynqScopeSubprocess(multiprocessing.Process):
     rawcam_seq = 0
     last_pts = None
 
-    stats = ZynqScopeAcqStatsSender()
-
     rengine = None
 
     def __init__(self, event_queue, response_queue, acq_response_queue, render_queue, shared_dict, zs_init_args):
@@ -239,9 +255,8 @@ class ZynqScopeSubprocess(multiprocessing.Process):
         self.shared_dict['render_to_mmap'] = False
         self.shared_dict['mmap_display'] = None
         self.shared_dict['params'] = zs.ZynqScopeCurrentParameters()
+        self.shared_dict['stats'] = zs.ZynqScopeStats()
         self.shared_dict['timebase_settings'] = [None]
-
-        self.stats.num_waves_sent = 0
 
         self.tlast = 0.0
         self.time_acqs = 0
@@ -437,6 +452,7 @@ class ZynqScopeSubprocess(multiprocessing.Process):
         # prepare the render 
         self.rengine.update_wave_params(0, self.zs.params.memory_depth, self.zs.params.nwaves, self.zs.params.memory_depth)
         self.rengine.set_target_dimensions(1216, 256)  # fixed for now?
+        self.rengine.fixup_timebase()
         #self.rengine.set_xid(None)
 
         self.zs.zcmd.flush()
@@ -564,6 +580,9 @@ class ZynqScopeSubprocess(multiprocessing.Process):
                                 log.info("Last render %.2f ms, effective frame rate %.1f fps (%d waves/sec) (based on %d acqs)" \
                                     % (td * 1000, 1.0 / td, (1.0 / td) * self.zs.params.nwaves, self.time_acqs))
 
+                                self.last_nwaves =  (1.0 / td) * self.zs.params.nwaves
+                                self.stats.add_wave_rate(self.last_nwaves)
+                                self.stats.add_frame_time(td)
                                 self.time_last_acq_log = time.time()
                                 self.time_acqs = 0
 
@@ -624,9 +643,6 @@ class ZynqScopeTaskController(object):
         self.attribs_cache = None
         self.acq_running = False
 
-        self.acqstat = ZynqScopeAcqStats()
-        self.acqstat.num_waves_acqd = 0
-
         # Create task queues and manager then initialise process with these resources
         self.zs_init_args = zs_init_args
         self.target_dims = (0, 0)
@@ -647,6 +663,9 @@ class ZynqScopeTaskController(object):
         # Initialise local rawcam task
         #rawcam.init()
     
+    def get_stats(self):
+        return self.shared_dict['stats']
+
     def evq_cache(self, key):
         """Pack a cached message quickly into the queue for the subprocess."""
         self.evq.put(self.roc[key])

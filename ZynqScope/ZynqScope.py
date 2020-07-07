@@ -83,7 +83,7 @@ class ZynqScopeCurrentParameters(object):
             (self.sample_depth, Utils.unit_format_suffix_handle_exc(self.memory_depth, 'pts', precision=2), \
             Utils.unit_format_suffix_handle_exc(self.sample_rate, 'Sa/s', precision=1), self.trigger_point * 100, \
             Utils.unit_format_suffix_handle_exc(self.delay, 's', precision=5), self.nwaves, self.flags)
- 
+
 class ZynqScopeTimebaseOption(object):
     timebase_div = 0
     timebase_span = 0
@@ -108,7 +108,7 @@ class ZynqScopeTimebaseOption(object):
              Utils.unit_format_suffix_handle_exc(self.memory_auto, 'pts', precision=6), \
              Utils.unit_format_suffix_handle_exc(self.sample_rate_auto, 'Sa/s', precision=3), Utils.unit_format_suffix_handle_exc(self.sample_rate_max, 'Sa/s', precision=3), 
              self.interp)
-        
+
 class ZynqScopeSampleRateBehaviourModel(object): 
     """Encapsulating class for divider/PLL behaviour model.  The rates,
     dividers and frequency lists must be in descending order of resulting

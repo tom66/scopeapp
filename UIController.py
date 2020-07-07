@@ -655,6 +655,9 @@ class MainApplication(object):
             #
             # pts = points,  wfm/s = waveforms per second;  only translate the units if they are not commonly understood in engineering 
             # fields in your locale.
+            stats = self.ctrl.get_zs_stats()
+            log.info("%s" % repr(stats))
+
             self.lbl_status_npoints_nwaves.set_markup(\
                 "{points_string}\n{nwaves_string}".format(\
                     points_string=Utils.unit_format_suffix_handle_exc(memory_depth, _("pts"), precision=2), \

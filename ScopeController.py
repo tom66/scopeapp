@@ -709,6 +709,9 @@ class ScopeController(object):
             else:
                 return "STOP"
     
+    def get_zs_stats(self):
+        return self.zst.get_stats()
+
     def change_notifier(self, param):
         log.debug("change_notifier: %s" % param)
         
@@ -723,6 +726,7 @@ class ScopeController(object):
 
         if self.run_state == ACQ_IS_STOPPED:
             # Sync all changes to the acquisition side
+            self.zst.set_next_timebase_index(self.timebase.timebase_index)
             self.zst.sync_to_real_world()
             self.zst.start_acquisition()
             self.run_state = ACQ_IS_RUNNING

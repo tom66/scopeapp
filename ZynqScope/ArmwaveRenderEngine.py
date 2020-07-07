@@ -66,6 +66,7 @@ class ArmwaveRenderEngine(zs.BaseRenderEngine):
         self.channel_colours = {}
         self.channel_ints = {}
         self.xid = None
+        self.last_draw_dims = None
 
         # TODO:  Pass # of expected channels
         for n in range(4):
@@ -106,6 +107,7 @@ class ArmwaveRenderEngine(zs.BaseRenderEngine):
     def set_draw_dims(self, x, y, w, h):
         log.info("set_draw_dims(%d,%d,%d,%d)" % (x, y, w, h))
         aw.set_draw_dims(x, y, w, h)
+        self.last_draw_dims = (x, y, w, h)
 
     def set_target_dimensions(self, width, height):
         """Set new target dimensions and return requested size."""
@@ -131,52 +133,12 @@ class ArmwaveRenderEngine(zs.BaseRenderEngine):
 
         return (0, 0)
 
+    def fixup_timebase(self):
+        """Sort out anything else that needs to be cleaned up after a timebase change."""
+        if self.last_draw_dims != None:
+            aw.set_draw_dims(*self.last_draw_dims)
+
     def render_single_mmal(self, mmal_data_ptr):
-        # Acquire the presently working shm.  Block until it is available.
-        #self._shm_buffers[self._shm_working_index][2].acquire()
-        #buf = self._shm_buffers[self._shm_working_index]
-
-        #aw.render_frame_x11()
-
-        #mmap_obj = mmap.mmap(buf[1], buf[3])
-
-        #log.info("mmap_obj: %s length %d" % (repr(mmap_obj), len(mmap_obj)))
-
-        """
-        t0 = time.time()
-        aw.clear_buffer(0)
-        t1 = time.time()
-        #log.info("TA: %.1f" % ((t1 - t0) * 1000))
-
-        aw.set_wave_pointer_u32(mmal_data_ptr)1
-        
-        t0 = time.time()
-        aw.generate()
-        t1 = time.time()
-        #log.info("TB: %.1f" % ((t1 - t0) * 1000))
-
-        #log.info("start fill into pixbuf")
-
-        t0 = time.time()
-        if not aw.fill_pixbuf_into_pybuffer(mmap_obj):
-            mmap_obj.close()
-            raise RuntimeError("Pixbuf render failed with PyFalse: possibly corrupt pointer?")
-        t1 = time.time()
-        #log.info("TC: %.1f" % ((t1 - t0) * 1000))
-        """
-
-        # Close the mmap.  We're done working with it.
-        #mmap_obj.close()
-
-        # Release the working shm.  Swap buffers.
-        #working = self._shm_working_index
-        #self._shm_swap()
-        #self._shm_buffers[working][2].release()
-
-        # ONLY use the display shm returned by this call as it is not otherwise guaranteed to be 
-        # synchronised with the correct buffer.
-        #return self._shm_get_display()
-
         if self.xid:
             log.info("mmal=0x%08x" % mmal_data_ptr)
             aw.set_wave_pointer_u32(mmal_data_ptr)
