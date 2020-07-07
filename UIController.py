@@ -634,6 +634,7 @@ class MainApplication(object):
         # TODO: Only update these on change...
         #waveforms_per_second = round(self.ctrl.get_waves_per_second(), 2)
         waveforms_per_second = round(self.ctrl.get_current_average_waves_per_second(), 2)
+        log.info("wfms:%.3f" % self.ctrl.get_current_average_waves_per_second())
         memory_depth = self.ctrl.get_memory_depth()
         sample_rate = self.ctrl.get_sample_rate()
         bits = self.ctrl.get_sample_depth()

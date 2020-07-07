@@ -136,7 +136,7 @@ class ZynqScopeStats(object):
     last_frame_times = [1]
 
     def add_wave_rate(self, rate):
-        log.info("wr:%.3f" % rate)
+        #log.info("wr:%.3f" % rate)
         if len(self.last_wave_rates) > 10:
             self.last_wave_rates.pop(0)
         self.last_wave_rates.append(rate)
