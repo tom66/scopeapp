@@ -146,13 +146,22 @@ class ZynqScopeStats(object):
         self.last_frame_times.append(td)
 
     def get_average_wave_rate(self):
-        return statistics.mean(self.last_wave_rates)
+        if len(self.last_wave_rates) == 0:
+            return 0
+        else:
+            return statistics.mean(self.last_wave_rates)
 
     def get_average_frame_time(self):
-        return statistics.mean(self.last_frame_times)
+        if len(self.last_frame_times) == 0:
+            return 0
+        else:
+            return statistics.mean(self.last_frame_times)
 
     def get_average_frame_rate(self):
-        return 1.0 / self.get_average_frame_time()
+        if len(self.last_frame_times) == 0:
+            return 0
+        else:
+            return 1.0 / statistics.mean(self.last_frame_times)
 
 def compress_class_attrs_for_response(resp, clas_, exclude=[]):
     #print("compress_class_attrs_for_response %r %r" % (resp, clas_))
