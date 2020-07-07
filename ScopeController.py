@@ -673,10 +673,16 @@ class ScopeController(object):
         return self.zst.get_attributes().memory_depth
     
     def get_current_average_waves_per_second(self):
-        return self.zst.get_stats().get_average_wave_rate()
+        if self.zst.has_stats():
+            return self.zst.get_stats().get_average_wave_rate()
+        else:
+            return 0
 
     def get_current_frames_per_second(self):
-        return self.zst.get_stats().get_average_frame_rate()
+        if self.zst.has_stats():
+            return self.zst.get_stats().get_average_frame_rate()
+        else:
+            return 0
 
     def get_waves_per_second(self):
         return self.zst.get_attributes().wave_rate
@@ -714,7 +720,7 @@ class ScopeController(object):
                 return "TRIGD"
             else:
                 return "STOP"
-                
+
     def change_notifier(self, param):
         log.debug("change_notifier: %s" % param)
         

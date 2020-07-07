@@ -74,6 +74,7 @@ class ZynqScopeSyncAcquisitionSettings(ZynqScopeTaskQueueCommand): pass
 class ZynqScopeGetStatus(ZynqScopeTaskQueueCommand): pass
 class ZynqScopeGetAcqStatus(ZynqScopeTaskQueueCommand): pass
 class ZynqScopeGetAttributes(ZynqScopeTaskQueueCommand): pass
+class ZynqScopeGetStats(ZynqScopeTaskQueueCommand): pass
 
 class ZynqScopeRawcamConfigure(ZynqScopeTaskQueueCommand):
     def __init__(self, buffer_size):
@@ -89,10 +90,6 @@ class ZynqScopeStartAutoAcquisition(ZynqScopeTaskQueueCommand):
         self.rate = rate
 
 class ZynqScopeStopAutoAcquisition(ZynqScopeTaskQueueCommand): pass
-
-class ZynqScopeAttributesResponse(ZynqScopeTaskQueueResponse): pass
-class ZynqScopeNullResponse(ZynqScopeTaskQueueResponse): pass
-class ZynqScopeStopCompleted(ZynqScopeTaskQueueResponse): pass
 
 class ZynqScopeRenderSetupTargetDimensions(ZynqScopeTaskQueueCommand): 
     def __init__(self, width, height):
@@ -130,7 +127,11 @@ class ZynqScopeApplyADCMapping(ZynqScopeTaskQueueCommand):
     def __init__(self, adc_map):
         self.adc_map = adc_map
 
-class ZynqScopeStats(object):
+class ZynqScopeAttributesResponse(ZynqScopeTaskQueueResponse): pass
+class ZynqScopeNullResponse(ZynqScopeTaskQueueResponse): pass
+class ZynqScopeStopCompleted(ZynqScopeTaskQueueResponse): pass
+
+class ZynqScopeStats(ZynqScopeTaskQueueResponse):
     num_waves_sent = 0
     last_wave_rates = [0]
     last_frame_times = [1]
@@ -323,10 +324,6 @@ class ZynqScopeSubprocess(multiprocessing.Process):
                 self.die_cleanup()
                 self.terminate()
                 return False
-
-            # sync state
-            log.info("my state: %s" % repr(self.stats))
-            self.shared_dict['stats'] = self.stats
             
             time.sleep(self.task_period)
         
@@ -369,6 +366,10 @@ class ZynqScopeSubprocess(multiprocessing.Process):
             compress_class_attrs_for_response(resp, self.zs, exclude=[zc.ZynqCommands, rawcam.interface, ModuleType])
             #print(resp)
             self.rsq.put(resp)
+            
+        elif typ is ZynqScopeGetStats:
+            # Return a safed object copy of all scope parameters which can be accessed
+            self.rsq.put(self.stats)
             
         elif typ is ZynqScopeSendCompAcqStreamCommand:
             # Send a composite acquisition status command and return the response data.
@@ -643,6 +644,7 @@ class ZynqScopeTaskController(object):
             'ZynqScopeRawcamStart' : ZynqScopeRawcamStart(),
             'ZynqScopeRawcamDequeueBuffer' : ZynqScopeRawcamDequeueBuffer(),
             'ZynqScopeRawcamStop' : ZynqScopeRawcamStop(),
+            'ZynqScopeGetStats' : ZynqScopeGetStats(),
             'ZynqScopeStartAutoAcquisition' : ZynqScopeStartAutoAcquisition(None),
             'ZynqScopeStopAutoAcquisition' : ZynqScopeStopAutoAcquisition(),
             'ZynqScopeRenderSetupTargetDimensions' : ZynqScopeRenderSetupTargetDimensions(0, 0),
@@ -657,6 +659,8 @@ class ZynqScopeTaskController(object):
         
         self.attribs_cache = None
         self.acq_running = False
+        self.stats = None
+        self.last_stats = 0.0
 
         # Create task queues and manager then initialise process with these resources
         self.zs_init_args = zs_init_args
@@ -679,8 +683,10 @@ class ZynqScopeTaskController(object):
         #rawcam.init()
     
     def get_stats(self):
-        log.info("%s" % repr(self.shared_dict['stats']))
-        return self.shared_dict['stats']
+        return self.stats
+
+    def has_stats(self):
+        return self.stats != None
 
     def evq_cache(self, key):
         """Pack a cached message quickly into the queue for the subprocess."""
@@ -698,6 +704,10 @@ class ZynqScopeTaskController(object):
     def get_attributes(self):
         return self.shared_dict['params']
     
+    def update_stats(self):
+        self.evq_cache('ZynqScopeGetStats')
+        return self.rsq.get(True, ZST_TIMEOUT)
+
     def get_supported_timebases(self):
         return self.shared_dict['timebase_settings']
 
@@ -805,6 +815,11 @@ class ZynqScopeTaskController(object):
         self.evq_cache('ZynqScopeSimpleCommand_SetupForTimebase')
     
     def acquisition_tick(self):
+        # Fetch the sub task statistics every 100ms
+        if (time.time() - self.last_stats) > 0.1:
+            self.update_stats()
+            self.last_stats = time.time()
+
         # Check if the subtask has crashed.  It shouldn't ... but if it does, restart it.
         if self.zstask.exitcode not in [0, None]:
             log.critical("ZynqScopeTask crashed with exit code: %r -- attempting to restart it" % self.zstask.exitcode)
