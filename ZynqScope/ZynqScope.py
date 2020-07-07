@@ -480,7 +480,7 @@ class ZynqScope(object):
         set to a maximum of 2048, a minimum of 1, or X% of the frame time."""
         #print("acq_time:", acq_time)
         nwaves = math.floor(((1.0 / self.acq_framerate) * self.acq_frametime_frac) / acq_time)
-        return int(max(1, min(850, nwaves)))
+        return int(max(1, min(625, nwaves)))
     
     def setup_for_timebase(self):
         """
