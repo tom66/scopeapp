@@ -633,7 +633,7 @@ class MainApplication(object):
         """
         # TODO: Only update these on change...
         #waveforms_per_second = round(self.ctrl.get_waves_per_second(), 2)
-        waveforms_per_second = round(self.ctrl.get_current_average_waves_per_second(), 2)
+        waveforms_per_second = round(self.ctrl.get_current_average_waves_per_second(), 3)
         log.info("wfms:%.3f" % self.ctrl.get_current_average_waves_per_second())
         memory_depth = self.ctrl.get_memory_depth()
         sample_rate = self.ctrl.get_sample_rate()
@@ -663,7 +663,7 @@ class MainApplication(object):
             self.lbl_status_npoints_nwaves.set_markup(\
                 "{points_string}\n{nwaves_string}".format(\
                     points_string=Utils.unit_format_suffix_handle_exc(memory_depth, _("pts"), precision=2), \
-                    nwaves_string=Utils.unit_format_suffix_handle_exc(waveforms_per_second, _("wfm/s"), precision=1) \
+                    nwaves_string=Utils.unit_format_suffix_handle_exc(waveforms_per_second, _("wfm/s"), precision=3) \
                 ))
 
             self.last_acq_params = _acq_params
