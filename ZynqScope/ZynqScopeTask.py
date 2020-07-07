@@ -706,7 +706,8 @@ class ZynqScopeTaskController(object):
     
     def update_stats(self):
         self.evq_cache('ZynqScopeGetStats')
-        return self.rsq.get(True, ZST_TIMEOUT)
+        self.stats = self.rsq.get(True, ZST_TIMEOUT)
+        return self.stats
 
     def get_supported_timebases(self):
         return self.shared_dict['timebase_settings']
@@ -816,7 +817,7 @@ class ZynqScopeTaskController(object):
     
     def acquisition_tick(self):
         # Fetch the sub task statistics every 100ms
-        log.warning("%.3f" % ((time.time() - self.last_stats)))
+        #log.warning("%.3f" % ((time.time() - self.last_stats)))
 
         if (time.time() - self.last_stats) > 0.1:
             log.critical("Updating stats")
