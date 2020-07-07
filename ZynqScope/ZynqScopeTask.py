@@ -266,8 +266,9 @@ class ZynqScopeSubprocess(multiprocessing.Process):
         self.shared_dict['render_to_mmap'] = False
         self.shared_dict['mmap_display'] = None
         self.shared_dict['params'] = zs.ZynqScopeCurrentParameters()
-        self.shared_dict['stats'] = ZynqScopeStats()
         self.shared_dict['timebase_settings'] = [None]
+
+        self.stats = ZynqScopeStats()
 
         self.tlast = 0.0
         self.time_acqs = 0
@@ -322,6 +323,9 @@ class ZynqScopeSubprocess(multiprocessing.Process):
                 self.die_cleanup()
                 self.terminate()
                 return False
+
+            # sync state
+            self.shared_dict['stats'] = copy.copy(self.stats)
             
             time.sleep(self.task_period)
         
@@ -591,8 +595,8 @@ class ZynqScopeSubprocess(multiprocessing.Process):
                             #    % (td * 1000, 1.0 / td, (1.0 / td) * self.zs.params.nwaves, self.time_acqs))
 
                             self.last_nwaves =  (1.0 / td) * self.zs.params.nwaves
-                            self.shared_dict['stats'].add_wave_rate(self.last_nwaves)
-                            self.shared_dict['stats'].add_frame_time(td)
+                            self.stats.add_wave_rate(self.last_nwaves)
+                            self.stats.add_frame_time(td)
                             self.time_last_acq_log = time.time()
                             self.time_acqs = 0
 
