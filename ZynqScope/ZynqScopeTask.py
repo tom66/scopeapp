@@ -475,12 +475,13 @@ class ZynqScopeSubprocess(multiprocessing.Process):
 
         self.zs.setup_for_timebase()
 
+        self.stats.reset_stats()
+
         # prepare the render 
         self.rengine.update_wave_params(0, self.zs.params.memory_depth, self.zs.params.nwaves, self.zs.params.memory_depth)
         self.rengine.set_target_dimensions(1216, 256)  # fixed for now?
         self.rengine.fixup_timebase()
         #self.rengine.set_xid(None)
-
         self.zs.zcmd.flush()
 
         #self.zs.zcmd.setup_trigger_edge(zc.TRIG_CH_ADCSRC1, 0x7f, 0x10, zc.TRIG_EDGE_RISING) # write default trigger
