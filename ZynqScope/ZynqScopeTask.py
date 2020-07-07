@@ -674,7 +674,7 @@ class ZynqScopeTaskController(object):
         #rawcam.init()
     
     def get_stats(self):
-        log.info("%s" % repr(self.shared_dict))
+        log.info("%s" % repr(self.shared_dict['stats']))
         return self.shared_dict['stats']
 
     def evq_cache(self, key):
