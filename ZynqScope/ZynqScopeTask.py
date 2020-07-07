@@ -816,6 +816,8 @@ class ZynqScopeTaskController(object):
     
     def acquisition_tick(self):
         # Fetch the sub task statistics every 100ms
+        log.warning("%.3f" % ((time.time() - self.last_stats)))
+
         if (time.time() - self.last_stats) > 0.1:
             log.critical("Updating stats")
             self.update_stats()
