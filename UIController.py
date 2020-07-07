@@ -632,7 +632,8 @@ class MainApplication(object):
         Update acquisition parameters: memory depth, waves/sec, bit depth, etc.
         """
         # TODO: Only update these on change...
-        waveforms_per_second = round(self.ctrl.get_waves_per_second(), 2)
+        #waveforms_per_second = round(self.ctrl.get_waves_per_second(), 2)
+        waveforms_per_second = round(self.ctrl.get_current_average_waves_per_second(), 2)
         memory_depth = self.ctrl.get_memory_depth()
         sample_rate = self.ctrl.get_sample_rate()
         bits = self.ctrl.get_sample_depth()
@@ -655,8 +656,8 @@ class MainApplication(object):
             #
             # pts = points,  wfm/s = waveforms per second;  only translate the units if they are not commonly understood in engineering 
             # fields in your locale.
-            stats = self.ctrl.get_zs_stats()
-            log.info("%s" % repr(stats))
+            #stats = self.ctrl.get_zs_stats()
+            #log.info("%s" % repr(stats))
 
             self.lbl_status_npoints_nwaves.set_markup(\
                 "{points_string}\n{nwaves_string}".format(\

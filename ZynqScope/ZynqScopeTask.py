@@ -255,7 +255,7 @@ class ZynqScopeSubprocess(multiprocessing.Process):
         self.shared_dict['render_to_mmap'] = False
         self.shared_dict['mmap_display'] = None
         self.shared_dict['params'] = zs.ZynqScopeCurrentParameters()
-        self.shared_dict['stats'] = zs.ZynqScopeStats()
+        self.shared_dict['stats'] = ZynqScopeStats()
         self.shared_dict['timebase_settings'] = [None]
 
         self.tlast = 0.0
