@@ -715,7 +715,9 @@ class ZynqScopeTaskController(object):
         return self.shared_dict['params']
     
     def update_stats(self):
+        log.critical("Start getting stats")
         self.evq_cache('ZynqScopeGetStats')
+        log.info("")
         self.stats = self.rsq.get(True, ZST_TIMEOUT)
         log.critical("Got stats: %s" % repr(self.stats))
         return self.stats
