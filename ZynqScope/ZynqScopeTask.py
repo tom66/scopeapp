@@ -166,6 +166,9 @@ class ZynqScopeStats(ZynqScopeTaskQueueResponse):
         else:
             return 1.0 / statistics.mean(self.last_frame_times)
 
+    def __repr__(self):
+        return "<ZynqScopeStats: %d wave rates, %d frame times>" % (len(self.last_wave_rates), len(self.last_frame_times))
+
 def compress_class_attrs_for_response(resp, clas_, exclude=[]):
     #print("compress_class_attrs_for_response %r %r" % (resp, clas_))
     attrs = inspect.getmembers(clas_)
@@ -369,6 +372,7 @@ class ZynqScopeSubprocess(multiprocessing.Process):
             
         elif typ is ZynqScopeGetStats:
             # Return a safed object copy of all scope parameters which can be accessed
+            log.error("Requested Stats %s" % repr(self.stats))
             self.rsq.put(self.stats)
             
         elif typ is ZynqScopeSendCompAcqStreamCommand:
