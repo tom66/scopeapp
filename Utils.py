@@ -145,7 +145,7 @@ def unit_format_suffix(value, suffix, precision=2):
         return _("{value} T{unit}").format(value=float_trail_free(round_sig_figs(value * 1e-12, precision)), unit=suffix)
     """
 
-    return Quantity(value, suffix).fixed(prec=precision, strip_zeros=False)
+    return Quantity(value, suffix).render(prec=precision, strip_zeros=False)
 
 def unit_format_atten(value, suffix):
     """Print given value (e.g. V) as a uV/div, mV/div, V/div or kV/div setting.  Input is floating point."""
