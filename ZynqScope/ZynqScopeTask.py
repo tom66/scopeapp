@@ -549,7 +549,7 @@ class ZynqScopeSubprocess(multiprocessing.Process):
 
                             #buff.dump_to_file("rxtest/sender%d.bin" % self.stats.num_waves_sent)
 
-                            self.stats.num_waves_sent += 1
+                            #self.stats.num_waves_sent += 1
                             self.rawcam_seq += 1
 
                             if self.last_pts != None:
