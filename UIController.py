@@ -649,7 +649,7 @@ class MainApplication(object):
             self.lbl_status_bits_samplerate.set_markup(\
                 _("{bits_value}-bit\n{samplerate_string}").format(
                     bits_value=bits, \
-                    samplerate_string=Utils.unit_format_suffix_handle_exc(sample_rate, _("Sa/s"), precision=3) \
+                    samplerate_string=Utils.unit_format_suffix_handle_exc(sample_rate, _("Sa/s"), precision=2) \
                 ))
             
             # TRANSLATORS: lbl_status_npoints_nwaves contains the number of points per waveform and the number of waveforms per second
@@ -662,8 +662,8 @@ class MainApplication(object):
 
             self.lbl_status_npoints_nwaves.set_markup(\
                 "{points_string}\n{nwaves_string}".format(\
-                    points_string=Utils.unit_format_suffix_handle_exc(memory_depth, _("pts"), precision=2), \
-                    nwaves_string=Utils.unit_format_suffix_handle_exc(waveforms_per_second, _("wfm/s"), precision=3) \
+                    points_string=Utils.unit_format_suffix_handle_exc(memory_depth, _("pts"), precision=1), \
+                    nwaves_string=Utils.unit_format_suffix_handle_exc(waveforms_per_second, _("wfm/s"), precision=2) \
                 ))
 
             self.last_acq_params = _acq_params
