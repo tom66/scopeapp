@@ -139,12 +139,12 @@ class ZynqScopeStats(ZynqScopeTaskQueueResponse):
 
     def add_wave_rate(self, rate):
         #log.info("wr:%.3f r:%s" % (rate, repr(self.last_wave_rates)))
-        if len(self.last_wave_rates) > 10:
+        if len(self.last_wave_rates) > 50:
             self.last_wave_rates.pop(0)
         self.last_wave_rates.append(rate)
 
     def add_frame_time(self, td):
-        if len(self.last_frame_times) > 10:
+        if len(self.last_frame_times) > 50:
             self.last_frame_times.pop(0)
         self.last_frame_times.append(td)
 
