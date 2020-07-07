@@ -676,13 +676,13 @@ class ScopeController(object):
         if self.zst.has_stats():
             return self.zst.get_stats().get_average_wave_rate()
         else:
-            return 0
+            return -1
 
     def get_current_frames_per_second(self):
         if self.zst.has_stats():
             return self.zst.get_stats().get_average_frame_rate()
         else:
-            return 0
+            return -1
 
     def get_waves_per_second(self):
         return self.zst.get_attributes().wave_rate
