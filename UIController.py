@@ -186,8 +186,8 @@ class MainApplication(object):
         # Set logo
         self.ebx_img_logo = self.builder.get_object("ebx_img_logo")
         self.ebx_img_logo.connect("button-press-event", self._logo_clicked)
-        self.img_logo = self.builder.get_object("img_logo")
-        self.img_logo.set_from_file(self.cfgmgr['UI']['Logo'])
+        #self.img_logo = self.builder.get_object("img_logo")
+        #self.img_logo.set_from_file(self.cfgmgr['UI']['Logo'])
         
         # Apply common CSS classes
         self.add_css_class_by_widget_name("lbl_status_run", "runstate_common")
