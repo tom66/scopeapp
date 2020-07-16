@@ -216,7 +216,7 @@ class ZynqScopeCSIPacketHeader(object):
         self.csi_stats_struct = struct.Struct("III") 
 
     def parse_header(self, data):
-        log.critical(bytes(data))
+        log.critical(data)
         log.critical(self.header_struct.unpack(data))
 
 class ZynqScopePicklableMemoryBuff(object): 
@@ -239,9 +239,6 @@ class ZynqScopePicklableMemoryBuff(object):
 
     def get_memoryview(self):
         return rawcam.get_memoryview_from_buffer_params(self.data_ptr, self.length)
-
-    def parse_header(self):
-        resp = bytes(resp.buffers[0].get_memoryview()[0:1024])
 
     def dump_to_file(self, fn):
         fp = open(fn, "wb")
@@ -318,7 +315,7 @@ class ZynqScopeSubprocess(multiprocessing.Process):
         log.info("ZynqScopeSubprocess __init__(): task_period=%2.6f, target_acq_period=%2.2f" % (self.task_period, self.target_acq_period))
 
     def process_header(self, resp):
-        self.csi_header.parse_header(resp.buffers[0].get_memoryview()[0:512])
+        self.csi_header.parse_header(bytes(resp.buffers[0].get_memoryview()[0:512]))
         #log.critical("buffer: %r" % bytes(resp.buffers[0].get_memoryview()[0:512]))
 
     def do_render(self, resp):
