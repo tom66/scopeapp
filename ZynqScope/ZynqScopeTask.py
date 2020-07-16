@@ -216,8 +216,13 @@ class ZynqScopeCSIPacketHeader(object):
         self.csi_stats_struct = struct.Struct("III") 
 
     def parse_header(self, data):
-        log.critical("%r" % data)
-        log.critical(self.header_struct.unpack(data))
+        if len(data) > 0:
+            #log.critical(self.header_struct.unpack(data))
+            ptr = self.header_struct.size
+            fields = self.header_struct.unpack(data[0:ptr])
+            log.critical(repr(fields))
+        else:
+            log.warning("Empty header received")
 
 class ZynqScopePicklableMemoryBuff(object): 
     def __init__(self, pirawcam_buff):
