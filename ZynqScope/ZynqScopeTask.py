@@ -215,11 +215,21 @@ class ZynqScopeCSIPacketHeader(object):
         self.health_struct = struct.Struct("QhHHHHHHHH") 
         self.csi_stats_struct = struct.Struct("III") 
 
+    def unpack_tuple(self, obj, fields):
+        n = 0
+        for field in fields:
+            log.info("field: %s  value: %r" % (field, obj[n]))
+            setattr(self, field, obj[n])
+            n += 1
+
     def parse_header(self, data):
         if len(data) > 0:
             #log.critical(self.header_struct.unpack(data))
             ptr = self.header_struct.size
             fields = self.header_struct.unpack(data[0:ptr])
+            self.unpack_tuple(fields, ('magic', 'crc', 'subpkt', 'seq', 'n_waves_request', \
+                'n_waves_done', 'start_wave_index', 'end_wave_index', 'wave_stride', 'wave_length'))
+
             log.critical(repr(fields))
         else:
             log.warning("Empty header received")
