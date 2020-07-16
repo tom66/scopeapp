@@ -474,25 +474,24 @@ class ZynqScopeSubprocess(multiprocessing.Process):
                 self.acquisition_tick()
 
         self.zs.setup_for_timebase()
-
         self.stats.reset_stats()
 
         # prepare the render 
         self.rengine.update_wave_params(0, self.zs.params.memory_depth, self.zs.params.nwaves, self.zs.params.memory_depth)
         self.rengine.set_target_dimensions(1216, 256)  # fixed for now?
         self.rengine.fixup_timebase()
-        #self.rengine.set_xid(None)
         self.zs.zcmd.flush()
 
-        #self.zs.zcmd.setup_trigger_edge(zc.TRIG_CH_ADCSRC1, 0x7f, 0x10, zc.TRIG_EDGE_RISING) # write default trigger
-
-        #self.zs.zcmd.start_acquisition()
         log.info("Writing period: %d us" % int(1e6 / DEFAULT_ACQUISITION_RATE))
         self.zs.zcmd.ac_stop()
         self.zs.zcmd.flush()
         self.zs.zcmd.ac_setup_acq_and_stream(1e6 / DEFAULT_ACQUISITION_RATE)
         self.zs.zcmd.ac_start()
         self.zs.zcmd.flush()
+        
+        # Flush the last trigger configuration: make sure we are set up correctly
+        self.zs.trig_eng.flush_last_config()
+
         self.time_last_acq = time.time()
         self.start_signal = True
         self.shared_dict['running_state'] = ACQSTATE_RUNNING_WAIT
