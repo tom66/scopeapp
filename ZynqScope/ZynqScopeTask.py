@@ -218,7 +218,7 @@ class ZynqScopeCSIPacketHeader(object):
     def unpack_tuple(self, obj, fields):
         n = 0
         for field in fields:
-            log.info("field: %s  value: 0x%016x" % (field, obj[n]))
+            #log.info("field: %s  value: %d" % (field, obj[n]))
             setattr(self, field, obj[n])
             n += 1
 
@@ -230,7 +230,7 @@ class ZynqScopeCSIPacketHeader(object):
             self.unpack_tuple(fields, ('magic', 'crc', 'subpkt', 'seq', 'n_waves_request', \
                 'n_waves_done', 'start_wave_index', 'end_wave_index', 'wave_stride', 'wave_length'))
 
-            log.critical(repr(fields))
+            #log.critical(repr(fields))
         else:
             log.warning("Empty header received")
 
