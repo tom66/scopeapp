@@ -218,7 +218,7 @@ class ZynqScopeCSIPacketHeader(object):
     def unpack_tuple(self, obj, fields):
         n = 0
         for field in fields:
-            log.info("field: %s  value: %r" % (field, obj[n]))
+            log.info("field: %s  value: 0x%016x" % (field, obj[n]))
             setattr(self, field, obj[n])
             n += 1
 
