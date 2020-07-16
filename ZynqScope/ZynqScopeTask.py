@@ -228,7 +228,11 @@ class ZynqScopeCSIPacketHeader(object):
             ptr = self.header_struct.size
             fields = self.header_struct.unpack(data[0:ptr])
             self.unpack_tuple(fields, ('magic', 'crc', 'subpkt', 'seq', 'n_waves_request', \
-                'n_waves_done', 'start_wave_index', 'end_wave_index', 'wave_stride', 'wave_length'))
+                'n_waves_done', 'start_wave_index', 'end_wave_index', 'wave_stride', 'wave_length',
+                'wavebuffer_ptr', 'tagbuffer_ptr'))
+
+            log.info("wavebuffer_ptr = 0x%08x", self.wavebuffer_ptr)
+            log.info("tagbuffer_ptr  = 0x%08x", self.tagbuffer_ptr)
 
             #log.critical(repr(fields))
         else:
