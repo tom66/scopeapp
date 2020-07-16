@@ -216,7 +216,7 @@ class ZynqScopeCSIPacketHeader(object):
         self.csi_stats_struct = struct.Struct("III") 
 
     def parse_header(self, data):
-        log.critical(data)
+        log.critical("%r" % data)
         log.critical(self.header_struct.unpack(data))
 
 class ZynqScopePicklableMemoryBuff(object): 
