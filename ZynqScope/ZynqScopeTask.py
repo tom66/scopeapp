@@ -196,7 +196,27 @@ class ZynqScopeAcquisitionResponse(object):
         return "<ZynqScopeAcquisitionResponse n_buffers=%d status=%r time=%f>" % (len(self.buffers), self.status, self.time)
 
 class ZynqScopeCSIPacketHeader(object):
-    pass
+    magic = 0
+    crc = 0
+    subpkt = 0
+    seq = 0
+    n_waves_request = 0
+    n_waves_done = 0
+    start_wave_index = 0
+    end_wave_index = 0
+    wave_stride = 0
+    wave_length = 0
+
+    wavebuffer_ptr = 0
+    tagbuffer_ptr = 0
+
+    def __init__(self):
+        self.header_struct = struct.Struct("QHHIIIIIIIII")
+        self.health_struct = struct.Struct("QhHHHHHHHH") 
+        self.csi_stats_struct = struct.Struct("III") 
+
+    def parse_header(self, data):
+        log.critical(self.header_struct.unpack(data))
 
 class ZynqScopePicklableMemoryBuff(object): 
     def __init__(self, pirawcam_buff):
@@ -258,6 +278,9 @@ class ZynqScopeSubprocess(multiprocessing.Process):
 
     rengine = None
 
+    stats = None
+    csi_header = None
+
     def __init__(self, event_queue, response_queue, acq_response_queue, render_queue, shared_dict, zs_init_args):
         super(ZynqScopeSubprocess, self).__init__()
         
@@ -278,6 +301,7 @@ class ZynqScopeSubprocess(multiprocessing.Process):
         self.shared_dict['timebase_settings'] = [None]
 
         self.stats = ZynqScopeStats()
+        self.csi_header = ZynqScopeCSIPacketHeader()
 
         self.tlast = 0.0
         self.time_acqs = 0
@@ -293,7 +317,8 @@ class ZynqScopeSubprocess(multiprocessing.Process):
         log.info("ZynqScopeSubprocess __init__(): task_period=%2.6f, target_acq_period=%2.2f" % (self.task_period, self.target_acq_period))
 
     def process_header(self, resp):
-        log.critical("buffer: %r" % bytes(resp.buffers[0].get_memoryview()[0:512]))
+        self.csi_header.parse_header(resp.buffers[0].get_memoryview()[0:512])
+        #log.critical("buffer: %r" % bytes(resp.buffers[0].get_memoryview()[0:512]))
 
     def do_render(self, resp):
         #log.info("start do_render")
