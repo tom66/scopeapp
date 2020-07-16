@@ -124,11 +124,11 @@ class ZynqScopeTriggerManager(object):
         self._last_config_obj = None
 
     def connect_execute_cb(self, cb):
-        log.info("ZynqScopeTriggerManager: connect_execute_cb(%r)" % cb)
+        log.info("connect_execute_cb(%r)" % cb)
         self.cb = cb
 
     def set_adc_mapping(self, mapping):
-        log.info("ZynqScopeTriggerManager: set_adc_mapping(%r)" % mapping)
+        log.info("set_adc_mapping(%r)" % mapping)
 
         if not isinstance(mapping, zsadcmap.ZynqScopeADCMapping):
             raise RuntimeError("Unsupported alternative ADC mapping class, must be subclass of ZynqScopeADCMapping")
@@ -136,11 +136,11 @@ class ZynqScopeTriggerManager(object):
         self._adc_map = mapping
 
     def refresh_for_adc_map_change(self):
-        log.info("ZynqScopeTriggerManager: refresh_for_adc_map_change()")
+        log.info("refresh_for_adc_map_change()")
         self.set_config(self._last_config_obj)
 
     def set_config(self, config_obj):
-        log.info("ZynqScopeTriggerManager: set_config(%r)" % config_obj)
+        log.info("set_config(%r)" % config_obj)
 
         if self._adc_map is None:
             raise RuntimeError("ADC mapping not yet provided; how am I going to work this out?")
@@ -158,3 +158,10 @@ class ZynqScopeTriggerManager(object):
                 self.cb(entry[0], entry[1]) # getattr(self.zcmd, entry[0])(*entry[1])
 
             log.info(repr(seq))
+
+    def flush_last_config(self):
+        if self._last_config_obj != None:
+            log.info("Flushing last config")
+            self.set_config(self._last_config_obj)
+        else:
+            log.warn("No last configuration to flush")
