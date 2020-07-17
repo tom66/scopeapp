@@ -41,6 +41,8 @@ RAWCAM_OVERHEAD = 1.50              # 50% overhead (estimated)
 ZYNQ_CSI_HEADER_SIZE = 512          # Header consumes total of 512 bytes
 ZYNQ_CSI_TRIGGER_WORD_SIZE = 4      # 4 bytes per trigger word
 
+ZYNQ_CSI_HEADER_MAGIC = 0x50fa005365566157
+
 ZST_TIMEOUT = 0.5
 
 # Load debug logger
@@ -211,8 +213,6 @@ class ZynqScopeCSIPacketHeader(object):
     wavebuffer_ptr = 0
     tagbuffer_ptr = 0
 
-    HEADER_MAGIC = 0x50fa005365566157
-
     def __init__(self):
         self.header_struct = struct.Struct("QHHIIIIIIIII")
         self.health_struct = struct.Struct("QhHHHHHHHH") 
@@ -226,7 +226,7 @@ class ZynqScopeCSIPacketHeader(object):
             n += 1
 
     def header_valid(self):
-        return self.magic == HEADER_MAGIC
+        return self.magic == ZYNQ_CSI_HEADER_MAGIC
 
     def parse_header(self, data):
         if len(data) > 0:
