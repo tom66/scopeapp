@@ -38,7 +38,8 @@ ACQSTATE_STOPPED = 3
 RAWCAM_BITRATE = 0.4e9              # 300MHz, 2 lanes, DDR: 1.2Gbit/s
 RAWCAM_OVERHEAD = 1.50              # 50% overhead (estimated)
 
-ZYNQ_CSI_HEADER_SIZE = 512
+ZYNQ_CSI_HEADER_SIZE = 512          # Header consumes total of 512 bytes
+ZYNQ_CSI_TRIGGER_WORD_SIZE = 4      # 4 bytes per trigger word
 
 ZST_TIMEOUT = 0.5
 
@@ -344,8 +345,8 @@ class ZynqScopeSubprocess(multiprocessing.Process):
 
         if self.shared_dict['render_to_mmap']:
             #log.critical("render_single_mmal()")
-            self.rengine.render_single_mmal(resp.buffers[0].data_ptr + 512)  # 512 byte offset for header; header to be decoded later
-        else:
+            self.rengine.render_single_mmal(self.csi_header.wavebuffer_ptr)
+        else:.
             log.warn("Render inhibited as render_to_mmap is False")
 
         #log.info("end do_render")
@@ -578,9 +579,11 @@ class ZynqScopeSubprocess(multiprocessing.Process):
             # params before starting.
             self.acq_params = self.zs.params
             self.zs.rawcam_init()
-            # TODO: Size needs to be dynamic...
-            self.zs.rawcam_configure(self.acq_params.expected_buffer_size + ZYNQ_CSI_HEADER_SIZE)
+
+            size = self.acq_params.expected_buffer_size + (self.acq_params.nwaves * ZYNQ_CSI_TRIGGER_WORD_SIZE) + ZYNQ_CSI_HEADER_SIZE
+            self.zs.rawcam_configure(size)
             self.zs.rawcam_start()
+
             #self.zs.rawcam_disable()
             self.zs.rawcam_enable()
             time.sleep(0.001)  # Give rawcam a moment to start
