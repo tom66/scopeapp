@@ -593,7 +593,8 @@ class ZynqScopeSubprocess(multiprocessing.Process):
             self.zs.rawcam_init()
 
             size = self.acq_params.expected_buffer_size + (self.acq_params.nwaves * ZYNQ_CSI_TRIGGER_WORD_SIZE) + ZYNQ_CSI_HEADER_SIZE
-            log.critical("size = %d (nwaves=%d, bufsize=%d)" % (size, self.acq_params.nwaves, self.acq_params.nwaves * ZYNQ_CSI_TRIGGER_WORD_SIZE))
+            log.critical("expsize = %d, size = %d (nwaves=%d, bufsize=%d)" % \
+                (self.expected_buffer_size, size, self.acq_params.nwaves, self.acq_params.nwaves * ZYNQ_CSI_TRIGGER_WORD_SIZE))
             self.zs.rawcam_configure(size)
             self.zs.rawcam_start()
 
