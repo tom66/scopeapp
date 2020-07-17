@@ -211,6 +211,8 @@ class ZynqScopeCSIPacketHeader(object):
     wavebuffer_ptr = 0
     tagbuffer_ptr = 0
 
+    HEADER_MAGIC = 0x50fa005365566157
+
     def __init__(self):
         self.header_struct = struct.Struct("QHHIIIIIIIII")
         self.health_struct = struct.Struct("QhHHHHHHHH") 
@@ -224,8 +226,7 @@ class ZynqScopeCSIPacketHeader(object):
             n += 1
 
     def header_valid(self):
-        log.info("0x%016x" % self.magic)
-        return True
+        return self.magic == HEADER_MAGIC
 
     def parse_header(self, data):
         if len(data) > 0:
