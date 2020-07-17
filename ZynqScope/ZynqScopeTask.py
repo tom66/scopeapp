@@ -346,7 +346,7 @@ class ZynqScopeSubprocess(multiprocessing.Process):
         if self.shared_dict['render_to_mmap']:
             #log.critical("render_single_mmal()")
             self.rengine.render_single_mmal(self.csi_header.wavebuffer_ptr)
-        else:.
+        else:
             log.warn("Render inhibited as render_to_mmap is False")
 
         #log.info("end do_render")
