@@ -223,6 +223,10 @@ class ZynqScopeCSIPacketHeader(object):
             setattr(self, field, obj[n])
             n += 1
 
+    def header_valid(self):
+        log.info("0x%016x" % self.magic)
+        return True
+
     def parse_header(self, data):
         if len(data) > 0:
             #log.critical(self.header_struct.unpack(data))
@@ -345,8 +349,11 @@ class ZynqScopeSubprocess(multiprocessing.Process):
 
         if self.shared_dict['render_to_mmap']:
             #log.critical("render_single_mmal()")
-            mmal_ptr = resp.buffers[0].data_ptr + self.csi_header.wavebuffer_ptr
-            self.rengine.render_single_mmal(mmal_ptr)  # 512 byte offset for header; header to be decoded later
+            if self.csi_header.header_valid():
+                mmal_ptr = resp.buffers[0].data_ptr + self.csi_header.wavebuffer_ptr
+                self.rengine.render_single_mmal(mmal_ptr)  # 512 byte offset for header; header to be decoded later
+            else:
+                log.warn("Header invalid for packet - ignoring")
         else:
             log.warn("Render inhibited as render_to_mmap is False")
 
