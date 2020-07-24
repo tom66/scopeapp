@@ -36,8 +36,8 @@ RASPI_PIN_PKT_READY = 12
 RASPI_PIN_SEND = 13
 
 # Extra 40 samples in pre trig, take away 40 samples from post trig
-PRETRIG_EXTRA = 40
-POSTTRIG_EXTRA = -40
+PRETRIG_EXTRA = 48
+POSTTRIG_EXTRA = -48
 
 # Supported timebases
 """
