@@ -528,9 +528,11 @@ class ZynqScope(object):
 
         if (post_size < 0):
             post_size = self.mem_depth_minimum_pp
-            
+
         if (pre_size < 0):
             pre_size = self.mem_depth_minimum_pp
+
+        log.critical("After Padding:  Pre: %d,  Post: %d" % (pre_size, post_size))
 
         # Correct all buffers to be a multiple of a cache line.  The total buffer need only
         # be divisible by 32, but ensuring both pre and post buffers are is easier.
