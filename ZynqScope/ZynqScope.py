@@ -35,6 +35,10 @@ RAWCAM_WCT_HEADER = 0x0000
 RASPI_PIN_PKT_READY = 12
 RASPI_PIN_SEND = 13
 
+# Extra 40 samples in pre trig, take away 40 samples from post trig
+PRETRIG_EXTRA = 40
+POSTTRIG_EXTRA = -40
+
 # Supported timebases
 """
 timebase_options = [1e-9, 2e-9, 5e-9, 10e-9, 20e-9, 50e-9, 100e-9, 200e-9, 500e-9, 
@@ -519,10 +523,15 @@ class ZynqScope(object):
         
         pre_size = int(pre_size)
         post_size = int(post_size)
-        
-        #print("pre/post:", pre_size, post_size)
-        assert(post_size >= self.mem_depth_minimum_pp)
-        
+        pre_size += PRETRIG_EXTRA
+        post_size += POSTTRIG_EXTRA
+
+        if (post_size < 0):
+            post_size = self.mem_depth_minimum_pp
+            
+        if (pre_size < 0):
+            pre_size = self.mem_depth_minimum_pp
+
         # Correct all buffers to be a multiple of a cache line.  The total buffer need only
         # be divisible by 32, but ensuring both pre and post buffers are is easier.
         pre_size += ZYNQ_SAMPLE_WORD_CACHE_DIVISIBLE - 1
