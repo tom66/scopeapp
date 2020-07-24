@@ -37,8 +37,8 @@ RASPI_PIN_SEND = 13
 
 # Extra X samples in pre trig, take away X samples from post trig
 # This corrects the trigger position
-PRETRIG_EXTRA = 40
-POSTTRIG_EXTRA = -40
+PRETRIG_EXTRA = 48
+POSTTRIG_EXTRA = -48
 
 # Supported timebases
 """
