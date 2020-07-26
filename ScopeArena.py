@@ -326,9 +326,9 @@ class ScopeArenaController(object):
             # Armwave intensity is scaled up, but we internally manage with 0-1 only.
             # TODO: We should probably abstract this out to Armwave?
             intensity = min(intensity, 1.0) 
-            aw_ints = max(intensity * MAX_WAVE_INTENSITY, MIN_WAVE_INTENSITY)
-            log.info("Set intensity to %.1f - Armwave sees %.1f" % (intensity, aw_ints))
-            self.ctrl.zst.setup_render_channel_intensity(1, aw_ints)
+            #aw_ints = max(intensity * MAX_WAVE_INTENSITY, MIN_WAVE_INTENSITY)
+            #log.info("Set intensity to %.1f - Armwave sees %.1f" % (intensity, aw_ints))
+            self.ctrl.zst.setup_render_channel_intensity(0, intensity)
 
     def notify_resize(self):
         """Resize notifier."""
