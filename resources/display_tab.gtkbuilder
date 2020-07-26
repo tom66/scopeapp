@@ -8,6 +8,7 @@
     <property name="page_increment">10</property>
   </object>
   <object class="GtkAdjustment" id="adj_intensity">
+    <property name="lower">10</property>
     <property name="upper">100</property>
     <property name="step_increment">1</property>
     <property name="page_increment">10</property>
@@ -114,6 +115,7 @@
             <child>
               <object class="GtkButton" id="btn_disp_tog_vectors">
                 <property name="visible">True</property>
+                <property name="sensitive">False</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
                 <property name="valign">center</property>
@@ -134,6 +136,7 @@
             <child>
               <object class="GtkButton" id="btn_disp_tog_fast">
                 <property name="visible">True</property>
+                <property name="sensitive">False</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
                 <property name="valign">center</property>
