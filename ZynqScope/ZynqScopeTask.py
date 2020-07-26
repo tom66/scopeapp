@@ -241,6 +241,7 @@ class ZynqScopeCSIPacketHeader(object):
 
             log.info("wavebuffer_ptr = 0x%08x", self.wavebuffer_ptr)
             log.info("tagbuffer_ptr  = 0x%08x", self.tagbuffer_ptr)
+            log.info("n_waves_done   = %d", self.n_waves_done)
 
             #log.critical(repr(fields))
         else:
