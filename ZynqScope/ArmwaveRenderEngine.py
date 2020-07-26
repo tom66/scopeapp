@@ -10,6 +10,8 @@ import ZynqScope.armwave.armwave as aw
 
 import multiprocessing
 
+DEFAULT_SCALED_INTENSITY = 5
+
 # catch SIGSEGV, SIGABRT, etc.
 import faulthandler
 faulthandler.enable()
@@ -79,19 +81,22 @@ class ArmwaveRenderEngine(zs.BaseRenderEngine):
 
     def set_channel_colour(self, index, colour):
         col = list(colour)
-        col = list(map(lambda x: int(x * self.channel_ints[index]), col)) + [1.0, 1]
+        col = list(map(lambda x: int(x * DEFAULT_SCALED_INTENSITY), col)) + [1.0, 1]
         self.channel_colours[index] = colour  # Store colour
         aw.set_channel_colour(index, *col)
         aw.set_channel_palette(index, aw.PLT_SINGLE_COLOUR)
 
     def set_channel_brightness(self, index, brightness):
         # Global brightness or independent brightness?  Why not both?
-        colour = self.channel_colours[index]
-        col = list(colour)
-        col = list(map(lambda x: int(x * brightness), col)) + [1.0, 1]
+        #colour = self.channel_colours[index]
+        #col = list(colour)
+        #col = list(map(lambda x: int(x * brightness), col)) + [1.0, 1]
         self.channel_ints[index] = brightness
-        aw.set_channel_colour(index, *col)
-        aw.set_channel_palette(index, aw.PLT_SINGLE_COLOUR)
+        #aw.set_channel_colour(index, *col)
+        #aw.set_channel_palette(index, aw.PLT_SINGLE_COLOUR)
+        if (brightness > 1.0f):
+            raise ValueError("Intensity out of range %.3f" % brightness)
+        aw.set_channel_render_intensity(index, int(brightness * 255))
 
     def set_xid(self, xid):
         #log.critical("Trying to grab xid %d [NAWT]" % xid)
