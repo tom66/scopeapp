@@ -94,7 +94,7 @@ class ArmwaveRenderEngine(zs.BaseRenderEngine):
         self.channel_ints[index] = brightness
         #aw.set_channel_colour(index, *col)
         #aw.set_channel_palette(index, aw.PLT_SINGLE_COLOUR)
-        if (brightness > 1.0f):
+        if (brightness > 1.0):
             raise ValueError("Intensity out of range %.3f" % brightness)
         aw.set_channel_render_intensity(index, int(brightness * 255))
 
