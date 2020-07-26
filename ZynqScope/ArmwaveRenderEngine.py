@@ -138,6 +138,9 @@ class ArmwaveRenderEngine(zs.BaseRenderEngine):
         if self.last_draw_dims != None:
             aw.set_draw_dims(*self.last_draw_dims)
 
+    def set_nwaves(self, nwaves):
+        aw.inform_waves(nwaves)
+
     def render_single_mmal(self, mmal_data_ptr, mmal_trig_buff_ptr):
         if self.xid:
             log.info("mmal=0x%08x" % mmal_data_ptr)

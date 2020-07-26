@@ -356,6 +356,8 @@ class ZynqScopeSubprocess(multiprocessing.Process):
 
                 tagbuffer_ptr = resp.buffers[0].data_ptr + self.csi_header.tagbuffer_ptr
                 mmal_ptr = resp.buffers[0].data_ptr + self.csi_header.wavebuffer_ptr
+
+                self.rengine.set_nwaves(self.csi_header.n_waves_done)
                 self.rengine.render_single_mmal(mmal_ptr, tagbuffer_ptr)  # 512 byte offset for header; header to be decoded later
             else:
                 log.warn("Header invalid for packet - ignoring")
