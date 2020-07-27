@@ -172,9 +172,10 @@ class DisplayTab(object):
     @__state_change
     def _chk_rainbow_palette_toggle(self, *args):
         if self.root_mgr.ctrl.arena != None:
-            self.root_mgr.ctrl.arena.set_palette_mode(ScopeArena.PLT_RAINBOW_THERMAL)
-        else:
-            self.root_mgr.ctrl.arena.set_palette_mode(ScopeArena.PLT_SINGLE_COLOUR_COMPRESS)
+            if self.chk_rainbow_palette.get_active():
+                self.root_mgr.ctrl.arena.set_palette_mode(ScopeArena.PLT_RAINBOW_THERMAL)
+            else:
+                self.root_mgr.ctrl.arena.set_palette_mode(ScopeArena.PLT_SINGLE_COLOUR_COMPRESS)
 
     @__state_change
     def _scl_intensity_change(self, *args):
