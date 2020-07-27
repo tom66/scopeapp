@@ -98,7 +98,7 @@ class ArmwaveRenderEngine(zs.BaseRenderEngine):
         log.info("BrightIndex=%d", index)
 
     def set_channel_palette(self, index, pmode):
-        aw.armwave_set_channel_palette(index, pmode)
+        aw.set_channel_palette(index, pmode)
         log.info("Set channel palette Ch=%d PMODE=%d" % (index, pmode))
 
     def set_xid(self, xid):
