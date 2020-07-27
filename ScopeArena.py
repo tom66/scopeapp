@@ -328,7 +328,7 @@ class ScopeArenaController(object):
             intensity = min(intensity, 1.0) 
             #aw_ints = max(intensity * MAX_WAVE_INTENSITY, MIN_WAVE_INTENSITY)
             #log.info("Set intensity to %.1f - Armwave sees %.1f" % (intensity, aw_ints))
-            self.ctrl.zst.setup_render_channel_intensity(0, intensity)
+            self.ctrl.zst.setup_render_channel_intensity(1, intensity)
 
     def notify_resize(self):
         """Resize notifier."""
