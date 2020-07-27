@@ -109,6 +109,11 @@ class ZynqScopeRenderChangeChannelIntensity(ZynqScopeTaskQueueCommand):
         self.ch = ch
         self.ints = ints
 
+class ZynqScopeRenderChangeChannelPalette(ZynqScopeTaskQueueCommand):
+    def __init__(self, ch, pmode):
+        self.ch = ch
+        self.pmode = pmode
+
 class ZynqScopeRenderPassXID(ZynqScopeTaskQueueCommand):
     def __init__(self, xid):
         self.xid = xid
@@ -473,6 +478,10 @@ class ZynqScopeSubprocess(multiprocessing.Process):
         elif typ is ZynqScopeRenderChangeChannelColour:
             log.info("ZynqScopeRenderChangeChannelColour: setting channel %d colour to %s" % (msg.ch, repr(msg.colour)))
             self.rengine.set_channel_colour(msg.ch, msg.colour)
+
+        elif typ is ZynqScopeRenderChangeChannelPalette:
+            log.info("ZynqScopeRenderChangeChannelPalette: setting channel %d palette to %d" % (msg.ch, msg.pmode))
+            self.rengine.set_channel_palette(msg.ch, msg.pmode)
 
         elif typ is ZynqScopeInitTrigger:
             log.info("ZynqScopeInitTrigger: connect trigger manager")
@@ -858,7 +867,13 @@ class ZynqScopeTaskController(object):
         cmd.ch = idx
         cmd.ints = intensity
         self.evq.put(cmd)
-        
+    
+    def setup_render_palette_mode(self, idx, pmode):
+        cmd = self.roc['ZynqScopeRenderChangeChannelPalette']
+        cmd.ch = idx
+        cmd.pmode = pmode
+        self.evq.put(cmd)
+
     def apply_adc_mapping(self, adc_map):
         cmd = self.roc['ZynqScopeApplyADCMapping']
         cmd.adc_map = adc_map

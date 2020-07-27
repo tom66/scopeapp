@@ -91,17 +91,15 @@ class ArmwaveRenderEngine(zs.BaseRenderEngine):
         log.info("ColourIndex=%d", index)
 
     def set_channel_brightness(self, index, brightness):
-        # Global brightness or independent brightness?  Why not both?
-        #colour = self.channel_colours[index]
-        #col = list(colour)
-        #col = list(map(lambda x: int(x * brightness), col)) + [1.0, 1]
         self.channel_ints[index] = brightness
-        #aw.set_channel_colour(index, *col)
-        #aw.set_channel_palette(index, aw.PLT_SINGLE_COLOUR)
         if (brightness > 1.0):
             raise ValueError("Intensity out of range %.3f" % brightness)
         aw.set_channel_render_intensity(index, int(brightness * 255))
         log.info("BrightIndex=%d", index)
+
+    def set_channel_palette(self, index, pmode):
+        aw.armwave_set_channel_palette(index, pmode)
+        log.info("Set channel palette Ch=%d PMODE=%d" % (index, pmode))
 
     def set_xid(self, xid):
         #log.critical("Trying to grab xid %d [NAWT]" % xid)

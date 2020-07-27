@@ -14,6 +14,7 @@ from gi.repository import Gtk, GLib, Gio, Gdk, GdkPixbuf, GObject, Pango
 import Utils
 import UIController
 import CSSManager
+import ScopeArena
 
 import copy
 
@@ -60,6 +61,7 @@ class DisplayTab(object):
         self.frm_disp_intensity = self.builder.get_object("frm_disp_intensity")
         self.frm_disp_rendering = self.builder.get_object("frm_disp_rendering")
         self.frm_disp_graticule = self.builder.get_object("frm_disp_graticule")
+        self.chk_rainbow_palette = self.builder.get_object("chk_rainbow_palette")
         
         self.chk_grat_crosshair.connect("toggled", self._chk_grat_crosshair_toggle)
         self.chk_grat_divisions.connect("toggled", self._chk_grat_divisions_toggle)
@@ -70,6 +72,7 @@ class DisplayTab(object):
         self.btn_disp_tog_vectors.connect("clicked", self._btn_disp_tog_vectors_click)
         self.btn_disp_tog_fast.connect("clicked", self._btn_disp_tog_fast_click)
         self.btn_disp_tog_AA.connect("clicked", self._btn_disp_tog_AA_click)
+        self.chk_rainbow_palette.connect("toggled", self._chk_rainbow_palette_toggle)
         
         # i10n
         self.btn_disp_tog_dots.set_label(_("Dots"))                 # TRANSLATORS: 'Dots' means no lines between dots
@@ -86,6 +89,7 @@ class DisplayTab(object):
         self.frm_disp_intensity.get_label_widget().set_label(_("Intensity"))
         self.frm_disp_rendering.get_label_widget().set_label(_("Rendering"))
         self.frm_disp_graticule.get_label_widget().set_label(_("Graticule"))
+        self.chk_rainbow_palette.get_label_widget().set_label(_("Rainbow Palette"))
 
         # Load configuration settings
         self.scl_intensity.set_value(self.cfgmgr.Render.WaveDefaultIntensity)
@@ -164,6 +168,13 @@ class DisplayTab(object):
     @__state_change
     def _btn_disp_tog_AA_click(self, *args):
         pass
+
+    @__state_change
+    def _chk_rainbow_palette_toggle(self, *args):
+        if self.root_mgr.ctrl.arena != None:
+            self.root_mgr.ctrl.arena.set_palette_mode(ScopeArena.PLT_RAINBOW_THERMAL)
+        else:
+            self.root_mgr.ctrl.arena.set_palette_mode(ScopeArena.PLT_SINGLE_COLOUR_COMPRESS)
 
     @__state_change
     def _scl_intensity_change(self, *args):

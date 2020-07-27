@@ -19,6 +19,11 @@ GRAT_RENDER_SUBDIVISIONS = 0x08
 MIN_WAVE_INTENSITY = 0.25
 MAX_WAVE_INTENSITY = 5
 
+PLT_SINGLE_COLOUR = 0
+PLT_SINGLE_COLOUR_COMPRESS = 1
+PLT_INVERT_SINGLE_COLOUR = 2
+PLT_RAINBOW_THERMAL = 3
+
 import Utils
 import ZynqScope.ArmwaveRenderEngine as awre
 import ZynqScope.ZynqScopeTask as zst
@@ -329,6 +334,10 @@ class ScopeArenaController(object):
             #aw_ints = max(intensity * MAX_WAVE_INTENSITY, MIN_WAVE_INTENSITY)
             #log.info("Set intensity to %.1f - Armwave sees %.1f" % (intensity, aw_ints))
             self.ctrl.zst.setup_render_channel_intensity(1, intensity)
+
+    def set_palette_mode(self, pmode):
+        if self.ctrl.zst != None:
+            self.ctrl.zst.setup_render_palette_mode(1, pmode)
 
     def notify_resize(self):
         """Resize notifier."""
