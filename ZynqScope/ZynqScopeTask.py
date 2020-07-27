@@ -732,6 +732,7 @@ class ZynqScopeTaskController(object):
             'ZynqScopeRenderSetupTargetDimensions' : ZynqScopeRenderSetupTargetDimensions(0, 0),
             'ZynqScopeRenderChangeChannelColour' : ZynqScopeRenderChangeChannelColour(0, None),
             'ZynqScopeRenderChangeChannelIntensity' : ZynqScopeRenderChangeChannelIntensity(0, 0),
+            'ZynqScopeRenderChangeChannelPalette' : ZynqScopeRenderChangeChannelPalette(0, 0),
             'ZynqScopeApplyADCMapping' : ZynqScopeApplyADCMapping(None),
             'ZynqScopeApplyTrigger' : ZynqScopeApplyTrigger(None),
             'ZynqScopeInitTrigger' : ZynqScopeInitTrigger(),
