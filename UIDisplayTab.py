@@ -89,7 +89,7 @@ class DisplayTab(object):
         self.frm_disp_intensity.get_label_widget().set_label(_("Intensity"))
         self.frm_disp_rendering.get_label_widget().set_label(_("Rendering"))
         self.frm_disp_graticule.get_label_widget().set_label(_("Graticule"))
-        self.chk_rainbow_palette.get_label_widget().set_label(_("Rainbow Palette"))
+        self.chk_rainbow_palette.set_label(_("Rainbow Palette"))
 
         # Load configuration settings
         self.scl_intensity.set_value(self.cfgmgr.Render.WaveDefaultIntensity)
