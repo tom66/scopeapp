@@ -67,6 +67,8 @@ class ArmwaveRenderEngine(zs.BaseRenderEngine):
 
         self.channel_colours = {}
         self.channel_ints = {}
+        self.channel_palettes = {}
+
         self.xid = None
         self.last_draw_dims = None
 
@@ -74,6 +76,7 @@ class ArmwaveRenderEngine(zs.BaseRenderEngine):
         for n in range(4):
             self.channel_colours[n + 1] = (0, 255, 0)
             self.channel_ints[n + 1] = 10
+            self.channel_palettes[n + 1] = aw.PLT_SINGLE_COLOUR_COMPRESS
 
     def update_wave_params(self, start_t, end_t, n_waves, wave_stride):
         self.wave_params = (start_t, end_t, n_waves, wave_stride)
@@ -84,7 +87,7 @@ class ArmwaveRenderEngine(zs.BaseRenderEngine):
         col = list(map(lambda x: int(x * DEFAULT_SCALED_INTENSITY), col)) + [1.0, 1]
         self.channel_colours[index] = colour  # Store colour
         aw.set_channel_colour(index, *col)
-        aw.set_channel_palette(index, aw.PLT_SINGLE_COLOUR_COMPRESS)
+        aw.set_channel_palette(index, self.channel_palettes[index])
 
     def set_channel_brightness(self, index, brightness):
         # Global brightness or independent brightness?  Why not both?
