@@ -442,7 +442,7 @@ class ZynqScopeSubprocess(multiprocessing.Process):
             
         elif typ is ZynqScopeGetStats:
             # Return a safed object copy of all scope parameters which can be accessed
-            log.error("Requested Stats %s" % repr(self.stats))
+            #log.error("Requested Stats %s" % repr(self.stats))
             self.rsq.put(copy.deepcopy(self.stats))
             
         elif typ is ZynqScopeSendCompAcqStreamCommand:
@@ -790,12 +790,12 @@ class ZynqScopeTaskController(object):
         return self.shared_dict['params']
     
     def update_stats(self):
-        log.critical("Start getting stats")
+        #log.critical("Start getting stats")
         self.evq_cache('ZynqScopeGetStats')
         
         try:
             self.stats = self.rsq.get(True, ZST_TIMEOUT)
-            log.critical("Got stats: %s" % repr(self.stats))
+            #log.critical("Got stats: %s" % repr(self.stats))
         except:
             pass
 
@@ -918,7 +918,7 @@ class ZynqScopeTaskController(object):
         #log.warning("%.3f" % ((time.time() - self.last_stats)))
 
         if (time.time() - self.last_stats) > 0.1:
-            log.critical("Updating stats")
+            #log.critical("Updating stats")
             self.update_stats()
             self.last_stats = time.time()
 
