@@ -244,9 +244,9 @@ class ZynqScopeCSIPacketHeader(object):
 
             #log.critical(repr(data))
 
-            log.info("wavebuffer_ptr = 0x%08x", self.wavebuffer_ptr)
-            log.info("tagbuffer_ptr  = 0x%08x", self.tagbuffer_ptr)
-            log.info("n_waves_done   = %d", self.n_waves_done)
+            #log.info("wavebuffer_ptr = 0x%08x", self.wavebuffer_ptr)
+            #log.info("tagbuffer_ptr  = 0x%08x", self.tagbuffer_ptr)
+            #log.info("n_waves_done   = %d", self.n_waves_done)
 
             #log.critical(repr(fields))
         else:
@@ -605,8 +605,10 @@ class ZynqScopeSubprocess(multiprocessing.Process):
             self.zs.rawcam_init()
 
             size = self.acq_params.expected_buffer_size + (self.acq_params.nwaves * ZYNQ_CSI_TRIGGER_WORD_SIZE) + ZYNQ_CSI_HEADER_SIZE
-            log.critical("expsize = %d, size = %d (nwaves=%d, bufsize=%d)" % \
-                (self.acq_params.expected_buffer_size, size, self.acq_params.nwaves, self.acq_params.nwaves * ZYNQ_CSI_TRIGGER_WORD_SIZE))
+            
+            #log.critical("expsize = %d, size = %d (nwaves=%d, bufsize=%d)" % \
+            #    (self.acq_params.expected_buffer_size, size, self.acq_params.nwaves, self.acq_params.nwaves * ZYNQ_CSI_TRIGGER_WORD_SIZE))
+            
             self.zs.rawcam_configure(size)
             self.zs.rawcam_start()
 
