@@ -27,6 +27,10 @@ NOTIFY_FADEOUT_TIME = 1
 # Small notify widget filter
 NOTIFY_SMALL_WIDGET = 16
 
+# Load debug logger
+import logging
+log = logging.getLogger()
+
 class NotifyController(object):
     def __init__(self):
         self.notifiers = [None, None]
