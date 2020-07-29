@@ -111,6 +111,8 @@ class NotifyMessage(object):
         
         self.t_created = time.time()
         self.t_started = None
+
+        self.lbl_visible = False
     
     def __lt__(self, other):
         # Sort by priority first, then age
@@ -125,8 +127,10 @@ class NotifyMessage(object):
         if self.t_started == None:
             self.t_started = time.time()
         
-        self.label.show_all()
-        self.label.set_markup(self.message)
+        if not self.lbl_visible:
+            self.label.show_all()
+            self.label.set_markup(self.message)
+            self.lbl_visible = True
         
         self.label_ctx.remove_class("notify_info")
         self.label_ctx.remove_class("notify_warning")
@@ -148,6 +152,7 @@ class NotifyMessage(object):
             
             if fade <= 0:
                 self.label.destroy()   # Kill the widget
+                self.self.lbl_visible = False
                 return False
         else:
             #print("setOpacity...")
