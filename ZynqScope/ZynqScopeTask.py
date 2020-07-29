@@ -902,7 +902,7 @@ class ZynqScopeTaskController(object):
 
     def setup_render_graticule_intensity(self, intensity):
         cmd = self.roc['ZynqScopeRenderSetGraticuleIntensity']
-        cmd.colour = colour
+        cmd.ints = ints
         self.evq.put(cmd)
 
     def apply_adc_mapping(self, adc_map):
