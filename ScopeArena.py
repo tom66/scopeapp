@@ -330,17 +330,17 @@ class ScopeArenaController(object):
         log.critical("CRT mode adjustment not implemented")
 
     def set_graticule_intensity(self, intensity):
-        self.ctrl.zst.setup_render_graticule_base_colour(Utils.get_rgb_tuple_from_hex(int(self.cfg.Render.GratMainColour, 0)))
-        self.ctrl.zst.setup_render_graticule_intensity(intensity)
+        if self.ctrl.zst != None:
+            intensity = min(intensity, 1.0) 
+            self.ctrl.zst.setup_render_graticule_base_colour(Utils.get_rgb_tuple_from_hex(int(self.cfg.Render.GratMainColour, 0)))
+            self.ctrl.zst.setup_render_graticule_intensity(intensity)
+            self.grat_intensity = intensity
 
     def set_wave_intensity(self, intensity):
         if self.ctrl.zst != None:
-            # Armwave intensity is scaled up, but we internally manage with 0-1 only.
-            # TODO: We should probably abstract this out to Armwave?
             intensity = min(intensity, 1.0) 
-            #aw_ints = max(intensity * MAX_WAVE_INTENSITY, MIN_WAVE_INTENSITY)
-            #log.info("Set intensity to %.1f - Armwave sees %.1f" % (intensity, aw_ints))
             self.ctrl.zst.setup_render_channel_intensity(1, intensity)
+            self.wave_intensity = intensity
 
     def set_palette_mode(self, pmode):
         if self.ctrl.zst != None:
