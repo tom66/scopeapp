@@ -251,6 +251,7 @@ class ScopeArenaController(object):
     mode_line = False
     wave_intensity = 0.5
     grat_intensity = 0.5
+    palette_mode = 0
 
     pack_vars_types = {
         "wave_intensity":       [(float,), 0, 1],
