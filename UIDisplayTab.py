@@ -18,6 +18,10 @@ import ScopeArena
 
 import copy
 
+# Load debug logger
+import logging
+log = logging.getLogger()
+
 DISPLAY_TAB_LAYOUT_FILE = "resources/display_tab.gtkbuilder"
 DISPLAY_TAB_CSS_FILE = "display_tab.css"
 
