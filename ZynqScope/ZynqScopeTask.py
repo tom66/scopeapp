@@ -493,7 +493,7 @@ class ZynqScopeSubprocess(multiprocessing.Process):
 
         elif typ is ZynqScopeRenderSetGraticuleBaseColour:
             log.info("ZynqScopeRenderSetGraticuleBaseColour: setting graticule base colour %s" % repr(msg.colour))
-            self.rengine.set_graticule_base_colour(*msg.colour)
+            self.rengine.set_graticule_base_colour(msg.colour)
 
         elif typ is ZynqScopeRenderSetGraticuleIntensity:
             log.info("ZynqScopeRenderSetGraticuleIntensity: setting graticule intensity %r" % (msg.intensity))
