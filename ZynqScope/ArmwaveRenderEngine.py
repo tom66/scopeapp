@@ -163,6 +163,7 @@ class ArmwaveRenderEngine(zs.BaseRenderEngine):
             #log.info("mmal=0x%08x" % mmal_data_ptr)
             aw.set_wave_pointer_u32(mmal_data_ptr)
             aw.set_trig_corr_buffer_u32(mmal_trig_buff_ptr)
+            log.info("%s" % repr(self.grat_colour))
             aw.set_graticule_colour(int(self.grat_colour[0] * self.grat_intensity), \
                                     int(self.grat_colour[1] * self.grat_intensity), \
                                     int(self.grat_colour[2] * self.grat_intensity))
