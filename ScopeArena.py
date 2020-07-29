@@ -324,7 +324,7 @@ class ScopeArenaController(object):
         except Exception as e:
             raise Utils.StateSaveFileCorrupted(_("Unable to restore configuration file for ScopeArena: Exception - %s" % str(e)))
 
-        log.info("grat/wave restored intensity: %.3f, %.3f" % (self.grat_intensity, self.wave_intensity))
+        log.critical("grat/wave restored intensity: %.3f, %.3f" % (self.grat_intensity, self.wave_intensity))
     
     def set_crt_mode(self, state):
         log.critical("CRT mode adjustment not implemented")
