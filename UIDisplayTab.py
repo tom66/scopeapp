@@ -184,6 +184,11 @@ class DisplayTab(object):
 
     @__state_change
     def _scl_grat_intensity_change(self, *args):
+        if self.root_mgr.ctrl.arena != None:
+            self.root_mgr.ctrl.arena.set_graticule_intensity(self.scl_grat_intensity.get_value() * 0.01)
+
+    @__state_change
+    def _scl_grat_intensity_change(self, *args):
         pass
 
     def tab_clicked(self, *args):

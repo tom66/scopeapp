@@ -277,9 +277,6 @@ class ScopeArenaController(object):
             cfg.Render.GratMainColour, cfg.Render.GratSubColour, cfg.Render.GratDivColour, \
             self.grat_intensity, cfg.Render.GratSubTickSize)
 
-        self.zst.setup_render_graticule_base_colour(Utils.get_rgb_tuple_from_hex(cfg.Render.GratMainColour))
-        self.zst.setup_render_graticule_intensity(1.0)
-
         self.size_allocated = False
         self.size_alloc = (0, 0)
         self.last_target_dims = (0, 0)
@@ -328,6 +325,10 @@ class ScopeArenaController(object):
     
     def set_crt_mode(self, state):
         log.critical("CRT mode adjustment not implemented")
+
+    def set_graticule_intensity(self, intensity):
+        self.ctrl.zst.setup_render_graticule_base_colour(Utils.get_rgb_tuple_from_hex(cfg.Render.GratMainColour))
+        self.ctrl.zst.setup_render_graticule_intensity(intensity)
 
     def set_wave_intensity(self, intensity):
         if self.ctrl.zst != None:
@@ -396,59 +397,6 @@ class ScopeArenaController(object):
             if self.dims != new_dims:
                 self.ctrl.zst.set_draw_dims(*new_dims)
                 self.dims = new_dims
-
-        #self.da.show()
-        #self.da.queue_draw()
-
-        """
-        # TODO: Rewrite with with()?
-        try:
-            # Try to grab a render buffer
-            try:
-                render = self.ctrl.zst.get_render_from_queue()
-            except zst.ZynqScopeRenderQueueEmptyException:
-                #log.warn("No buffers available; ignoring.")
-                return
-
-            #log.info("MMAP info: %r" % (render,))
-
-            #log.info("trying to MMAP %d of size %d" % (render[1], render[3]))
-            render_mmap = mmap.mmap(render[1], render[3])
-
-            #log.info("render_test")
-            #t0 = time.time()
-            #self.local_aobj.render_test_pb(gdkbuf=self.wave_pb, index=self.stat_waves)
-            #t1 = time.time()
-
-            #log.info("render_test_pb %.1f ms" % ((t1 - t0) * 1000))
-
-            #log.info("Wave arena dimensions: %s" % repr(self.grat_rdr.get_wave_arena_dims()))
-
-            # draw the pixbuf
-            targ_dims = self.grat_rdr.get_wave_arena_dims()
-            width, height = targ_dims[1]
-
-            #mmap_obj.madvise(mmap.MADV_REMOVE)
-            #mmap_obj.close()
-
-            t0 = time.time()
-            #log.info("render_mmap size %d" % len(render_mmap))
-            self.wave_pb = GdkPixbuf.Pixbuf.new_from_bytes(GLib.Bytes(bytes(render_mmap)), GdkPixbuf.Colorspace.RGB, True, 8, width, height, width * 4)
-            self.img.set_from_pixbuf(self.wave_pb)
-            #self.img.queue_draw()
-            t1 = time.time()
-
-            self.ctrl.zst.release_render(render)
-
-            #log.info("set_from_pixbuf %.1f ms" % ((t1 - t0) * 1000))
-
-            self.stat_waves += 1
-        except Exception as e:
-            # Cleanup
-            log.critical("Exception during local render: %r" % e)
-            self.ctrl.zst.release_render(render)
-            #raise e
-        """
 
     def _draw(self, wdg, cr):
         """Draw/expose callback"""
