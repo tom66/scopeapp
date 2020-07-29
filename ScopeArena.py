@@ -256,8 +256,8 @@ class ScopeArenaController(object):
         "wave_intensity":       [(float,), 0, 1],
         "grat_intensity":       [(float,), 0, 1],
         "mode_antialias":       [(bool,)],
-        "mode_line":            [(bool,)]
-        "palette_mode":         [(int,), 0, 3],
+        "mode_line":            [(bool,)],
+        "palette_mode":         [(int,), 0, 3]
     } 
 
     def __init__(self, ctrl, cfg):
