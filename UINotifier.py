@@ -143,7 +143,7 @@ class NotifyMessage(object):
         if age >= NOTIFY_SHOW_AGE:
             age -= NOTIFY_SHOW_AGE
             fade = 1.0 - (age / NOTIFY_FADEOUT_TIME)
-            self.label.set_opacity(fade)
+            #self.label.set_opacity(fade)
             self.last_opacity = fade
             
             if fade <= 0:
