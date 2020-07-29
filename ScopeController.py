@@ -604,6 +604,8 @@ class ScopeController(object):
             log.info("Preparing channel %d" % n)
             state['channel%d' % n] = self.channels[n].prepare_state()
         
+        log.critical("Saving arena: %s" % repr(state['arena']))
+
         return json.dumps(state)
     
     def unpack_json_state(self, state):
