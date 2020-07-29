@@ -119,9 +119,9 @@ class DisplayTab(object):
     
     def refresh_object_attach(self):
         # Sync UI to real values
-        log.critical("RestoreValues: %.3f %.3f" % (self.root_mgr.ctrl.arena.wave_intensity, self.root_mgr.ctrl.arena.grat_intensity))
-        self.scl_intensity.set_value(self.root_mgr.ctrl.arena.wave_intensity)
-        self.scl_grat_intensity.set_value(self.root_mgr.ctrl.arena.grat_intensity)
+        #log.critical("RestoreValues: %.3f %.3f" % (self.root_mgr.ctrl.arena.wave_intensity, self.root_mgr.ctrl.arena.grat_intensity))
+        #self.scl_intensity.set_value(self.root_mgr.ctrl.arena.wave_intensity)
+        #self.scl_grat_intensity.set_value(self.root_mgr.ctrl.arena.grat_intensity)
 
     def make_state(self):
         pass
