@@ -114,6 +114,14 @@ class ZynqScopeRenderChangeChannelPalette(ZynqScopeTaskQueueCommand):
         self.ch = ch
         self.pmode = pmode
 
+class ZynqScopeRenderSetGraticuleBaseColour(ZynqScopeTaskQueueCommand):
+    def __init__(self, colour):
+        self.colour = colour
+
+class ZynqScopeRenderSetGraticuleIntensity(ZynqScopeTaskQueueCommand):
+    def __init__(self, ints):
+        self.ints = ints
+
 class ZynqScopeRenderPassXID(ZynqScopeTaskQueueCommand):
     def __init__(self, xid):
         self.xid = xid
@@ -483,6 +491,14 @@ class ZynqScopeSubprocess(multiprocessing.Process):
             log.info("ZynqScopeRenderChangeChannelPalette: setting channel %d palette to %d" % (msg.ch, msg.pmode))
             self.rengine.set_channel_palette(msg.ch, msg.pmode)
 
+        elif typ is ZynqScopeRenderSetGraticuleBaseColour:
+            log.info("ZynqScopeRenderSetGraticuleBaseColour: setting graticule base colour %r" % (msg.colour))
+            self.rengine.set_graticule_base_colour(*msg.colour)
+
+        elif typ is ZynqScopeRenderSetGraticuleIntensity:
+            log.info("ZynqScopeRenderSetGraticuleIntensity: setting graticule base colour %r" % (msg.intensity))
+            self.rengine.set_graticule_intensity(msg.intensity)
+
         elif typ is ZynqScopeInitTrigger:
             log.info("ZynqScopeInitTrigger: connect trigger manager")
             self.zs.connect_trigger()
@@ -739,9 +755,11 @@ class ZynqScopeTaskController(object):
             'ZynqScopeApplyTrigger' : ZynqScopeApplyTrigger(None),
             'ZynqScopeInitTrigger' : ZynqScopeInitTrigger(),
             'ZynqScopeRenderPassXID' : ZynqScopeRenderPassXID(0),
-            'ZynqScopeRenderSetDrawDimensions' : ZynqScopeRenderSetDrawDimensions(0, 0, 0, 0)
+            'ZynqScopeRenderSetDrawDimensions' : ZynqScopeRenderSetDrawDimensions(0, 0, 0, 0),
+            'ZynqScopeRenderSetGraticuleBaseColour' : ZynqScopeRenderSetGraticuleBaseColour((255, 255, 255)),
+            'ZynqScopeRenderSetGraticuleIntensity' : ZynqScopeRenderSetGraticuleBaseColour(1),
         }
-        
+
         self.attribs_cache = None
         self.acq_running = False
         self.stats = None
@@ -875,6 +893,16 @@ class ZynqScopeTaskController(object):
         cmd = self.roc['ZynqScopeRenderChangeChannelPalette']
         cmd.ch = idx
         cmd.pmode = pmode
+        self.evq.put(cmd)
+
+    def setup_render_graticule_base_colour(self, colour):
+        cmd = self.roc['ZynqScopeRenderSetGraticuleBaseColour']
+        cmd.colour = colour
+        self.evq.put(cmd)
+
+    def setup_render_graticule_intensity(self, intensity):
+        cmd = self.roc['ZynqScopeRenderSetGraticuleIntensity']
+        cmd.colour = colour
         self.evq.put(cmd)
 
     def apply_adc_mapping(self, adc_map):

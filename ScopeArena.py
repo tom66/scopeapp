@@ -276,7 +276,10 @@ class ScopeArenaController(object):
             cfg.Render.XMargin, cfg.Render.YMargin, cfg.Render.YTopOffset, cfg.Render.GratFlags, \
             cfg.Render.GratMainColour, cfg.Render.GratSubColour, cfg.Render.GratDivColour, \
             self.grat_intensity, cfg.Render.GratSubTickSize)
-        
+
+        self.zst.setup_render_graticule_base_colour(Utils.get_rgb_tuple_from_hex(cfg.Render.GratMainColour))
+        self.zst.setup_render_graticule_intensity(1.0)
+
         self.size_allocated = False
         self.size_alloc = (0, 0)
         self.last_target_dims = (0, 0)

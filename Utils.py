@@ -95,6 +95,21 @@ def get_rgb_colour_hsv(h, s, v):
     rgb = colorsys.hsv_to_rgb(h / 360.0, s, v)
     return (int(rgb[0] * 255), int(rgb[1] * 255), int(rgb[2] * 255))
 
+def get_rgb_tuple_from_hex(v):
+    # Alpha ignored
+    r = (v >> 16) & 0xff
+    g = (v >>  8) & 0xff
+    b = (v >>  0) & 0xff
+    return (r, g, b)
+
+def get_rgba_tuple_from_hex(v):
+    # Alpha ignored
+    a = (v >> 24) & 0xff
+    r = (v >> 16) & 0xff
+    g = (v >>  8) & 0xff
+    b = (v >>  0) & 0xff
+    return (a, r, g, b)
+
 def get_hue_fg_colour(h, s, v):
     """Returns the best foreground colour for a given background colour (black or white.)"""
     if s > 0.6:

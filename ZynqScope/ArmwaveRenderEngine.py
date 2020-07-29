@@ -69,6 +69,9 @@ class ArmwaveRenderEngine(zs.BaseRenderEngine):
         self.channel_ints = {}
         self.channel_palettes = {}
 
+        self.grat_colour = (90, 90, 90)
+        self.grat_intensity = 1.0
+
         self.xid = None
         self.last_draw_dims = None
 
@@ -100,6 +103,12 @@ class ArmwaveRenderEngine(zs.BaseRenderEngine):
     def set_channel_palette(self, index, pmode):
         aw.set_channel_palette(index, pmode)
         log.info("Set channel palette Ch=%d PMODE=%d" % (index, pmode))
+
+    def set_graticule_base_colour(self, colour):
+        self.grat_colour = colour
+
+    def set_graticule_intensity(self, intensity):
+        self.grat_intensity = intensity
 
     def set_xid(self, xid):
         #log.critical("Trying to grab xid %d [NAWT]" % xid)
@@ -154,7 +163,7 @@ class ArmwaveRenderEngine(zs.BaseRenderEngine):
             #log.info("mmal=0x%08x" % mmal_data_ptr)
             aw.set_wave_pointer_u32(mmal_data_ptr)
             aw.set_trig_corr_buffer_u32(mmal_trig_buff_ptr)
-            aw.set_graticule_colour(20, 90, 90)
+            aw.set_graticule_colour(self.grat_colour * self.grat_intensity, self.grat_colour * self.grat_intensity, self.grat_colour * self.grat_intensity)
             aw.render_frame_x11()
 
         return None
