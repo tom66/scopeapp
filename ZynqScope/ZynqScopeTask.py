@@ -757,7 +757,7 @@ class ZynqScopeTaskController(object):
             'ZynqScopeRenderPassXID' : ZynqScopeRenderPassXID(0),
             'ZynqScopeRenderSetDrawDimensions' : ZynqScopeRenderSetDrawDimensions(0, 0, 0, 0),
             'ZynqScopeRenderSetGraticuleBaseColour' : ZynqScopeRenderSetGraticuleBaseColour((255, 255, 255)),
-            'ZynqScopeRenderSetGraticuleIntensity' : ZynqScopeRenderSetGraticuleBaseColour(1),
+            'ZynqScopeRenderSetGraticuleIntensity' : ZynqScopeRenderSetGraticuleIntensity(1),
         }
 
         self.attribs_cache = None
