@@ -257,6 +257,7 @@ class ScopeArenaController(object):
         "grat_intensity":       [(float,), 0, 1],
         "mode_antialias":       [(bool,)],
         "mode_line":            [(bool,)]
+        "palette_mode":         [(int,), 0, 3],
     } 
 
     def __init__(self, ctrl, cfg):
@@ -324,6 +325,10 @@ class ScopeArenaController(object):
         except Exception as e:
             raise Utils.StateSaveFileCorrupted(_("Unable to restore configuration file for ScopeArena: Exception - %s" % str(e)))
 
+        self.set_graticule_intensity(self.grat_intensity)
+        self.set_wave_intensity(self.wave_intensity)
+        self.set_palette_mode(self.palette_mode)
+
         log.critical("grat/wave restored intensity: %.3f, %.3f" % (self.grat_intensity, self.wave_intensity))
     
     def set_crt_mode(self, state):
@@ -345,6 +350,7 @@ class ScopeArenaController(object):
     def set_palette_mode(self, pmode):
         if self.ctrl.zst != None:
             self.ctrl.zst.setup_render_palette_mode(1, pmode)
+            self.palette_mode = pmode
 
     def notify_resize(self):
         """Resize notifier."""
