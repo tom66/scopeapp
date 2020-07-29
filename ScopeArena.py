@@ -289,6 +289,7 @@ class ScopeArenaController(object):
         self.dims = None
 
         self.set_wave_intensity(self.wave_intensity)
+        self.set_graticule_intensity(self.grat_intensity)
 
     def gtk_attach(self, window, pack_widget, pack_zone, pack_args=()):
         self.fixed = Gtk.Layout()
@@ -322,6 +323,8 @@ class ScopeArenaController(object):
             self.set_wave_intensity(self.wave_intensity)
         except Exception as e:
             raise Utils.StateSaveFileCorrupted(_("Unable to restore configuration file for ScopeArena: Exception - %s" % str(e)))
+
+        log.info("grat/wave restored intensity: %.3f, %.3f" % (self.grat_intensity, self.wave_intensity))
     
     def set_crt_mode(self, state):
         log.critical("CRT mode adjustment not implemented")

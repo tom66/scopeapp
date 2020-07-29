@@ -726,6 +726,9 @@ class MainApplication(object):
         except:
             self.flash_period = 0.4 # Default
 
+        # Update display settings
+        
+
         log.info("Active tab index: %d" % self.ctrl.active_tab)
         self.nbk_main_settings.set_current_page(self.ctrl.active_tab)
     
