@@ -623,6 +623,7 @@ class ScopeController(object):
             
             # Recall timebase, arena; later recall triggers, acquisition settings, etc.
             self.timebase.restore_state(json_obj['timebase'])
+            log.critical("Restoring arena: %s" % repr(json_obj['arena']))
             self.arena.restore_state(json_obj['arena'])
 
             self.acq_state = STATE_STOPPED              # Default to stopped
