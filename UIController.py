@@ -81,7 +81,6 @@ class MainApplication(object):
     
     ui_tabs = []
     ui_widgets = []
-    display_tab = None
     
     active_ch = 0
     
@@ -243,7 +242,6 @@ class MainApplication(object):
         # Add display tab
         ui_tab = UIDisplayTab.DisplayTab(self, self.nbk_main_settings, len(self.ui_tabs) + 1)
         ui_tab.append_to_notebook()
-        self.display_tab = ui_tab
         self.ui_tabs.append(ui_tab)
 
         # Add trigger tab
@@ -728,9 +726,6 @@ class MainApplication(object):
         except:
             self.flash_period = 0.4 # Default
 
-        # Update display settings
-        self.display_tab.state_update()
-        
         log.info("Active tab index: %d" % self.ctrl.active_tab)
         self.nbk_main_settings.set_current_page(self.ctrl.active_tab)
     

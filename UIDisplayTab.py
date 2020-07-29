@@ -114,7 +114,10 @@ class DisplayTab(object):
         self.refresh_object_attach()
     
     def refresh_object_attach(self):
-        pass
+        # Sync UI to real values
+        log.critical("RestoreValues: %.3f %.3f" % (self.root_mgr.ctrl.arena.wave_intensity, self.root_mgr.ctrl.arena.grat_intensity))
+        self.scl_intensity.set_value(self.root_mgr.ctrl.arena.wave_intensity)
+        self.scl_grat_intensity.set_value(self.root_mgr.ctrl.arena.grat_intensity)
 
     def make_state(self):
         pass
@@ -191,11 +194,6 @@ class DisplayTab(object):
         # Clicking this tab does nothing but set the current page to it.
         self.notebook.set_current_page(self.notebook_index - 1)
     
-    def state_update(self):
-        # Sync UI to real values
-        self.scl_intensity.set_value(self.root_mgr.ctrl.arena.wave_intensity)
-        self.scl_grat_intensity.set_value(self.root_mgr.ctrl.arena.grat_intensity)
-
     def refresh_tab(self):
         # Tab not refreshed if not active, and this is not the first run
         if self.notebook.get_current_page() != (self.notebook_index - 1) and self.init_refresh:
