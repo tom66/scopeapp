@@ -105,6 +105,7 @@ class ArmwaveRenderEngine(zs.BaseRenderEngine):
         log.info("Set channel palette Ch=%d PMODE=%d" % (index, pmode))
 
     def set_graticule_base_colour(self, colour):
+        log.info("set_graticule_base_colour(%s)" % repr(colour))
         self.grat_colour = colour
 
     def set_graticule_intensity(self, intensity):
