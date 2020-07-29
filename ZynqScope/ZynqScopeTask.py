@@ -492,11 +492,11 @@ class ZynqScopeSubprocess(multiprocessing.Process):
             self.rengine.set_channel_palette(msg.ch, msg.pmode)
 
         elif typ is ZynqScopeRenderSetGraticuleBaseColour:
-            log.info("ZynqScopeRenderSetGraticuleBaseColour: setting graticule base colour %r" % (msg.colour))
+            log.info("ZynqScopeRenderSetGraticuleBaseColour: setting graticule base colour %s" % repr(msg.colour))
             self.rengine.set_graticule_base_colour(*msg.colour)
 
         elif typ is ZynqScopeRenderSetGraticuleIntensity:
-            log.info("ZynqScopeRenderSetGraticuleIntensity: setting graticule base colour %r" % (msg.intensity))
+            log.info("ZynqScopeRenderSetGraticuleIntensity: setting graticule intensity %r" % (msg.intensity))
             self.rengine.set_graticule_intensity(msg.intensity)
 
         elif typ is ZynqScopeInitTrigger:
@@ -900,7 +900,7 @@ class ZynqScopeTaskController(object):
         cmd.colour = colour
         self.evq.put(cmd)
 
-    def setup_render_graticule_intensity(self, intensity):
+    def setup_render_graticule_intensity(self, ints):
         cmd = self.roc['ZynqScopeRenderSetGraticuleIntensity']
         cmd.ints = ints
         self.evq.put(cmd)
