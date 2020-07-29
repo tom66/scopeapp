@@ -14,7 +14,7 @@ from gi.repository import Gtk
 import time
 
 # Y-offset for notifications
-NOTIFY_YPOS = 50
+NOTIFY_YPOS = 0
 
 # Supported notification classes
 NOTIFY_WARNING = 2
@@ -40,12 +40,12 @@ class NotifyController(object):
         # has a lower priority than the current notification.  If so, it gets put into slot 1
         # of the notification queue. 
         if self.notifiers[1] == None or notify.cls < self.notifiers[1].cls:
-            print("Replacing secondary notification with %r" % notify)
+            log.info("Replacing secondary notification with %r" % notify)
             if self.notifiers[1] is not None:
                 self.notifiers[1].destroy()
             self.notifiers[1] = notify
         else:
-            print("Replacing current notification with %r" % notify)
+            log.info("Replacing current notification with %r" % notify)
             if self.notifiers[0] is not None:
                 self.notifiers[0].destroy()
             self.notifiers[0] = notify
