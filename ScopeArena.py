@@ -327,7 +327,7 @@ class ScopeArenaController(object):
         log.critical("CRT mode adjustment not implemented")
 
     def set_graticule_intensity(self, intensity):
-        self.ctrl.zst.setup_render_graticule_base_colour(Utils.get_rgb_tuple_from_hex(cfg.Render.GratMainColour))
+        self.ctrl.zst.setup_render_graticule_base_colour(Utils.get_rgb_tuple_from_hex(self.cfg.Render.GratMainColour))
         self.ctrl.zst.setup_render_graticule_intensity(intensity)
 
     def set_wave_intensity(self, intensity):
