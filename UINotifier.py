@@ -152,7 +152,7 @@ class NotifyMessage(object):
             
             if fade <= 0:
                 self.label.destroy()   # Kill the widget
-                self.self.lbl_visible = False
+                self.lbl_visible = False
                 return False
         else:
             #print("setOpacity...")
