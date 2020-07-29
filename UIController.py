@@ -709,9 +709,10 @@ class MainApplication(object):
             tab.refresh_tab()
     
     def ui_update_widgets(self):
-        pass
-        #for wdg in self.ui_widgets:
-        #    wdg.refresh_widget()
+        # Only update these on every 10th frame, until we fix the resource hog bug
+        if self.ticks % 10 == 0:
+            for wdg in self.ui_widgets:
+                wdg.refresh_widget()
     
     def ui_sync_config(self):
         for tab in self.ui_tabs:
